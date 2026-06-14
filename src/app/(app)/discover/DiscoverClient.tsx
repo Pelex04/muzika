@@ -1,0 +1,82 @@
+'use client'
+
+import { Bell, User, Search, Mic } from 'lucide-react'
+import type { Track, Artist } from '@/types'
+import TrackCard from '@/components/track/TrackCard'
+import ArtistCard from '@/components/artist/ArtistCard'
+import HeroBanner from '@/components/track/HeroBanner'
+import QuickNav from '@/components/layout/QuickNav'
+
+interface Props {
+  trendingTrack: Track | null
+  tracks: Track[]
+  artists: Artist[]
+  userId: string | null
+}
+
+export default function DiscoverClient({ trendingTrack, tracks, artists, userId }: Props) {
+  return (
+    <div>
+      {/* Mobile Top Bar */}
+      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-[#E2E5F0] sticky top-0 z-40">
+        <div>
+          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">Good morning</p>
+          <h1 className="text-[22px] font-black text-[#0D1B3E] tracking-tight">Discover</h1>
+        </div>
+        <div className="flex gap-2">
+          <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D]"><Bell className="w-4 h-4" /></button>
+          <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D]"><User className="w-4 h-4" /></button>
+        </div>
+      </div>
+
+      <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
+        {/* Desktop Header */}
+        <div className="hidden md:flex items-center justify-between mb-7">
+          <div>
+            <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Good morning</p>
+            <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Discover</h1>
+          </div>
+          <div className="flex gap-2">
+            <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D] hover:bg-[#ECEEF5]"><Bell className="w-4 h-4" /></button>
+            <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D] hover:bg-[#ECEEF5]"><User className="w-4 h-4" /></button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="flex items-center gap-3 bg-white border-[1.5px] border-[#E2E5F0] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+          <Search className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
+          <input className="flex-1 bg-transparent text-sm text-[#0D1B3E] outline-none placeholder:text-[#8B95A8]" placeholder="Artists, songs, albums, videos…" />
+          <Mic className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
+        </div>
+
+        {/* Hero Banner */}
+        {trendingTrack && <HeroBanner track={trendingTrack} />}
+
+        {/* Quick Nav */}
+        <QuickNav active="home" />
+
+        {/* New Releases */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[17px] font-black text-[#0D1B3E] tracking-tight">New Releases</h2>
+          <a href="/songs" className="text-sm font-bold text-blue-600 hover:underline">See all</a>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 mb-8">
+          {tracks.slice(0, 4).map(track => (
+            <TrackCard key={track.id} track={track} userId={userId} />
+          ))}
+        </div>
+
+        {/* Featured Artists */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[17px] font-black text-[#0D1B3E] tracking-tight">Featured Artists</h2>
+          <a href="/artists" className="text-sm font-bold text-blue-600 hover:underline">See all</a>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 mb-8">
+          {artists.slice(0, 4).map(artist => (
+            <ArtistCard key={artist.id} artist={artist} userId={userId} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
