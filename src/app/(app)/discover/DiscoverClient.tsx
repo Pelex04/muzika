@@ -14,13 +14,22 @@ interface Props {
   userId: string | null
 }
 
+function getGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return 'Good morning'
+  if (hour >= 12 && hour < 17) return 'Good afternoon'
+  if (hour >= 17 && hour < 21) return 'Good evening'
+  return 'Good night'
+}
+
 export default function DiscoverClient({ trendingTrack, tracks, artists, userId }: Props) {
+  const greeting = getGreeting()
   return (
     <div>
       {/* Mobile Top Bar */}
       <div className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-[#E2E5F0] sticky top-0 z-40">
         <div>
-          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">Good morning</p>
+          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">{greeting}</p>
           <h1 className="text-[22px] font-black text-[#0D1B3E] tracking-tight">Discover</h1>
         </div>
         <div className="flex gap-2">
@@ -33,7 +42,7 @@ export default function DiscoverClient({ trendingTrack, tracks, artists, userId 
         {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between mb-7">
           <div>
-            <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Good morning</p>
+            <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">{greeting}</p>
             <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Discover</h1>
           </div>
           <div className="flex gap-2">

@@ -14,40 +14,20 @@ export async function GET(
   // Get track
   const { data: track, error } = await supabase
     .from('tracks')
-    .select('audio_path, price_mwk, artist_id')
+    .select('audio_path')
     .eq('id', id)
+    .eq('published', true)
     .single()
 
   if (error || !track) return NextResponse.json({ error: 'Track not found' }, { status: 404 })
 
-  // Check if artist owns track (can always stream own tracks)
-  const { data: artist } = await supabase
-    .from('artists')
-    .select('id')
-    .eq('id', track.artist_id)
-    .eq('profile_id', user.id)
-    .single()
-
-  // Check if user has purchased track
-  const { data: purchase } = await supabase
-    .from('purchases')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('track_id', id)
-    .eq('payment_status', 'completed')
-    .single()
-
-  if (!artist && !purchase && track.price_mwk > 0) {
-    return NextResponse.json({ error: 'Purchase required', requiresPurchase: true }, { status: 403 })
-  }
-
-  // Generate 1-hour signed URL
+  // No purchase check — streaming is free for everyone
   const { data: signed, error: signErr } = await supabase
     .storage
     .from('tracks')
     .createSignedUrl(track.audio_path, 3600)
 
-  if (signErr || !signed) return NextResponse.json({ error: 'Could not generate URL' }, { status: 500 })
+  if (signErr || !signed) return NextResponse.json({ error: 'Could not load track' }, { status: 500 })
 
   // Increment play count
   await supabase.rpc('increment_play_count', { track_id: id })

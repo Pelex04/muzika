@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation'
 import {
   Music2, Upload, Play, Download, DollarSign,
   Settings, ChevronRight, Mic, Users, BarChart2,
-  BookOpen, Heart, ShoppingBag, Edit3, Trash2
+  BookOpen, Heart, ShoppingBag, Edit3, Trash2, LogOut
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase/client'
 import { formatMWK, formatCount, formatDuration } from '@/lib/utils'
 import type { Profile, Artist, Track } from '@/types'
 
@@ -69,8 +70,14 @@ function StatCard({ label, value, icon: Icon, color = '#2563EB' }: { label: stri
 
 export default function ProfileClient({ profile, artist, tracks, totalEarnings, totalPlays, savedTracks, purchases }: Props) {
   const router = useRouter()
+  const supabase = createClient()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/signin')
+  }
 
   const isArtist = !!artist
 
@@ -152,6 +159,9 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
                   <Mic size={14} /> Become an Artist
                 </Link>
               )}
+              <button onClick={signOut} style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '9px 14px', background: '#F4F6FB', border: '1.5px solid #E2E5F0', color: '#5C677D', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                <LogOut size={14} /> Sign out
+              </button>
             </div>
           </div>
 

@@ -103,8 +103,8 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
             <p className="text-[13px] font-semibold text-white truncate">{profile?.full_name ?? 'User'}</p>
             <p className="text-[11px] text-white/40 capitalize">{profile?.role ?? 'listener'}</p>
           </div>
-          <button onClick={signOut} className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <LogOut className="w-4 h-4 text-white/40 hover:text-white/70" />
+          <button onClick={signOut} title="Sign out" style={{display:'flex',alignItems:'center',background:'none',border:'none',cursor:'pointer',padding:'4px',borderRadius:'6px',transition:'background .15s'}} onMouseOver={e=>(e.currentTarget.style.background='rgba(255,255,255,0.08)')} onMouseOut={e=>(e.currentTarget.style.background='none')}>
+            <LogOut size={15} color="rgba(255,255,255,0.45)" />
           </button>
         </div>
       </div>

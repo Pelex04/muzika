@@ -7,7 +7,7 @@ import {
   Download, Loader2,
 } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
-import { formatDuration, formatMWK } from '@/lib/utils'
+import { formatDuration } from '@/lib/utils'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
@@ -48,12 +48,7 @@ export default function NowPlayingPage() {
     seek(Math.max(0, Math.min(1, pct)) * duration)
   }
 
-  const handlePurchase = async () => {
-    const res = await fetch(`/api/tracks/${currentTrack.id}/purchase`, { method: 'POST' })
-    const data = await res.json()
-    if (data.paymentUrl) window.location.href = data.paymentUrl
-    else toast.error(data.error ?? 'Payment failed')
-  }
+
 
   return (
     <div className="max-w-[420px] mx-auto px-5 md:px-8 py-6 flex flex-col gap-5 items-center w-full">
@@ -167,11 +162,11 @@ export default function NowPlayingPage() {
           </button>
         ))}
         <button
-          onClick={handlePurchase}
-          className="flex flex-col items-center gap-1.5 py-3.5 hover:bg-amber-50 transition-colors"
+          onClick={() => toast.success('Downloading…')}
+          className="flex flex-col items-center gap-1.5 py-3.5 hover:bg-emerald-50 transition-colors"
         >
-          <Download className="w-[18px] h-[18px] text-amber-500" />
-          <span className="text-xs font-bold text-amber-500">{formatMWK(currentTrack.price_mwk)}</span>
+          <Download className="w-[18px] h-[18px]" style={{color:'#10B981'}} />
+          <span className="text-xs font-bold" style={{color:'#10B981'}}>Free</span>
         </button>
       </div>
     </div>

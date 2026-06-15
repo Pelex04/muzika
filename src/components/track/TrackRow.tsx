@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Play, Pause, MoreVertical, TrendingUp, TrendingDown, Download } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
-import { formatMWK, formatDuration, formatCount } from '@/lib/utils'
+import { formatCount } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Track } from '@/types'
 import { cn } from '@/lib/utils'
@@ -36,21 +36,11 @@ export default function TrackRow({
     }
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
-    if (data.requiresPurchase) {
-      toast.error(`Purchase for ${formatMWK(track.price_mwk)} to play`)
-      return
-    }
     if (!data.url) { toast.error('Could not load track'); return }
     play({ ...track, audio_url: data.url }, queue)
   }
 
-  const handlePurchase = async () => {
-    if (!userId) { toast.error('Sign in first'); return }
-    const res = await fetch(`/api/tracks/${track.id}/purchase`, { method: 'POST' })
-    const data = await res.json()
-    if (data.paymentUrl) window.location.href = data.paymentUrl
-    else toast.error(data.error ?? 'Payment failed')
-  }
+
 
   return (
     <div
@@ -115,15 +105,7 @@ export default function TrackRow({
         </div>
       )}
 
-      {/* Price */}
-      {!showTrend && (
-        <div
-          className="bg-amber-50 text-amber-500 text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
-          onClick={e => { e.stopPropagation(); handlePurchase() }}
-        >
-          {formatMWK(track.price_mwk)}
-        </div>
-      )}
+
 
       {/* More */}
       <button

@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
   const coverFile = formData.get('cover') as File | null
   const title = formData.get('title') as string
   const genre = formData.get('genre') as string
-  const priceMwk = parseInt(formData.get('price_mwk') as string)
+  const priceMwk = 0 // Free during launch phase
 
-  if (!audioFile || !title || !genre || isNaN(priceMwk)) {
+  if (!audioFile || !title || !genre) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
 

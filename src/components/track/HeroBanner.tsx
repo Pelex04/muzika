@@ -4,7 +4,7 @@ import { Play, Download } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { formatMWK } from '@/lib/utils'
+
 import type { Track } from '@/types'
 
 export default function HeroBanner({ track }: { track: Track }) {
@@ -14,10 +14,6 @@ export default function HeroBanner({ track }: { track: Track }) {
   const handlePlay = async () => {
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
-    if (data.requiresPurchase) {
-      toast.error('Purchase this track to play it')
-      return
-    }
     if (!data.url) { toast.error('Could not load track'); return }
     play({ ...track, audio_url: data.url })
     router.push('/now-playing')
@@ -67,7 +63,7 @@ export default function HeroBanner({ track }: { track: Track }) {
         <p className="text-[13px] text-white/65 mb-3">{track.artist?.stage_name}</p>
         <div className="inline-flex items-center gap-1.5 bg-blue-500/30 border border-white/18 rounded-full px-3.5 py-1 text-[13px] font-bold text-white">
           <Download className="w-3 h-3" />
-          {formatMWK(track.price_mwk)}
+          Free
         </div>
         <div className="flex gap-1.5 mt-3.5">
           <div className="w-[18px] h-1.5 rounded-full bg-white"/>
