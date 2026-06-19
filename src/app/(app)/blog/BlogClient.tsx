@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Search, Mic, PenSquare } from 'lucide-react'
+import MobileTopBar from '@/components/layout/MobileTopBar'
 import type { BlogPost } from '@/types'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
@@ -42,15 +43,15 @@ export default function BlogClient({ posts }: Props) {
 
   return (
     <div>
-      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-[#E2E5F0] sticky top-0 z-40">
-        <div>
-          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">Stories from the scene</p>
-          <h1 className="text-[22px] font-black text-[#0D1B3E] tracking-tight">Blog &amp; News</h1>
-        </div>
-        <button className="flex items-center gap-1.5 px-3.5 py-2 bg-[#0D1B3E] text-white rounded-lg text-xs font-bold">
-          <PenSquare className="w-3.5 h-3.5" /> Write
-        </button>
-      </div>
+      <MobileTopBar
+        eyebrow="Stories from the scene"
+        title="Blog & News"
+        rightSlot={
+          <button style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', background:'#0D1B3E', color:'#fff', borderRadius:'8px', fontSize:'12px', fontWeight:700, border:'none', cursor:'pointer' }}>
+            <PenSquare size={13} /> Write
+          </button>
+        }
+      />
 
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:flex items-center justify-between mb-7">

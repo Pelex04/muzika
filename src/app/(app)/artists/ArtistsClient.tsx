@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Search, Mic } from 'lucide-react'
+import MobileTopBar from '@/components/layout/MobileTopBar'
 import ArtistCard from '@/components/artist/ArtistCard'
 import type { Artist } from '@/types'
 
@@ -19,12 +20,7 @@ export default function ArtistsClient({ artists, userId }: Props) {
 
   return (
     <div>
-      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-[#E2E5F0] sticky top-0 z-40">
-        <div>
-          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">Browse</p>
-          <h1 className="text-[22px] font-black text-[#0D1B3E] tracking-tight">Artists</h1>
-        </div>
-      </div>
+      <MobileTopBar eyebrow="Browse" title="Artists" />
 
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:block mb-7">

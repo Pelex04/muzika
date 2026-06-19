@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Upload, Music, Image, CheckCircle2, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import MobileTopBar from '@/components/layout/MobileTopBar'
 
 const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz']
 
@@ -114,12 +115,7 @@ export default function UploadPage() {
 
   return (
     <div>
-      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-[#E2E5F0] sticky top-0 z-40">
-        <div>
-          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">Share your music</p>
-          <h1 className="text-[22px] font-black text-[#0D1B3E] tracking-tight">Upload Track</h1>
-        </div>
-      </div>
+      <MobileTopBar eyebrow="Share your music" title="Upload Track" />
 
       <div className="max-w-[640px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:block mb-7">

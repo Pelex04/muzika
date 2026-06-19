@@ -1,6 +1,7 @@
 'use client'
 
 import { Bell, User, Search, Mic } from 'lucide-react'
+import MobileTopBar from '@/components/layout/MobileTopBar'
 import type { Track, Artist } from '@/types'
 import TrackCard from '@/components/track/TrackCard'
 import ArtistCard from '@/components/artist/ArtistCard'
@@ -27,16 +28,7 @@ export default function DiscoverClient({ trendingTrack, tracks, artists, userId 
   return (
     <div>
       {/* Mobile Top Bar */}
-      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-[#E2E5F0] sticky top-0 z-40">
-        <div>
-          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">{greeting}</p>
-          <h1 className="text-[22px] font-black text-[#0D1B3E] tracking-tight">Discover</h1>
-        </div>
-        <div className="flex gap-2">
-          <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D]"><Bell className="w-4 h-4" /></button>
-          <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D]"><User className="w-4 h-4" /></button>
-        </div>
-      </div>
+      <MobileTopBar eyebrow={greeting} title="Discover" />
 
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         {/* Desktop Header */}

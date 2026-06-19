@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, SlidersHorizontal } from 'lucide-react'
+import MobileTopBar from '@/components/layout/MobileTopBar'
 import TrackRow from '@/components/track/TrackRow'
 import type { Track } from '@/types'
 import { cn } from '@/lib/utils'
@@ -32,15 +33,7 @@ export default function SongsClient({ tracks, userId, activeGenre }: Props) {
   return (
     <div>
       {/* Mobile top bar */}
-      <div className="md:hidden flex items-center justify-between px-5 py-4 bg-white border-b border-[#E2E5F0] sticky top-0 z-40">
-        <div>
-          <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-[.7px]">Malawi Top</p>
-          <h1 className="text-[22px] font-black text-[#0D1B3E] tracking-tight">Songs</h1>
-        </div>
-        <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D]">
-          <SlidersHorizontal className="w-4 h-4" />
-        </button>
-      </div>
+      <MobileTopBar eyebrow="Malawi Top" title="Songs" />
 
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         {/* Desktop header */}
