@@ -9,7 +9,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
 import { Upload, Music, Image, CheckCircle2, Loader2 } from 'lucide-react'
-import { formatMWK, calcPlatformFee } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz']
@@ -17,7 +16,6 @@ const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 
 const schema = z.object({
   title: z.string().min(1, 'Track title is required').max(100),
   genre: z.string().min(1, 'Select a genre'),
-  price_mwk: z.number().min(0, 'Price cannot be negative').max(100000),
 })
 type FormData = z.infer<typeof schema>
 
@@ -46,11 +44,9 @@ export default function UploadPage() {
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { price_mwk: 800, genre: '' },
+    defaultValues: { genre: '' },
   })
 
-  const price = watch('price_mwk') || 0
-  const { fee, artistPayout } = calcPlatformFee(price)
 
   const onAudioDrop = useCallback((files: File[]) => {
     const file = files[0]
@@ -92,7 +88,6 @@ export default function UploadPage() {
     formData.append('audio', audioFile)
     formData.append('title', data.title)
     formData.append('genre', data.genre)
-    formData.append('price_mwk', String(data.price_mwk))
     if (coverFile) formData.append('cover', coverFile)
 
     setUploadProgress(30)
@@ -225,36 +220,6 @@ export default function UploadPage() {
             </div>
             {errors.genre && <p className="text-red-500 text-xs mt-1">{errors.genre.message}</p>}
           </div>
-
-          {/* Price */}
-          <div className="bg-[#F4F6FB] rounded-xl p-5">
-            <label className="block text-[11px] font-bold text-[#5C677D] uppercase tracking-[.7px] mb-3">
-              Download Price (MWK)
-            </label>
-            <div className="flex items-center gap-3 bg-white border-[1.5px] border-[#E2E5F0] rounded-xl px-4 py-3 mb-4 focus-within:border-blue-500 transition-all">
-              <span className="text-sm font-bold text-amber-500 flex-shrink-0">MK</span>
-              <input
-                {...register('price_mwk', { valueAsNumber: true })}
-                type="number"
-                min="0"
-                className="flex-1 bg-transparent text-sm text-[#0D1B3E] outline-none"
-                placeholder="Enter price…"
-              />
-            </div>
-            <div className="space-y-1.5">
-              {[
-                { label: 'Your price', value: formatMWK(price), color: 'text-[#0D1B3E]' },
-                { label: 'Muzika fee (15%)', value: formatMWK(fee), color: 'text-[#0D1B3E]' },
-                { label: 'You receive', value: formatMWK(artistPayout), color: 'text-emerald-600' },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="flex justify-between text-sm text-[#5C677D]">
-                  <span>{label}</span>
-                  <span className={cn('font-bold', color)}>{value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Upload progress */}
           {uploading && (
             <div>

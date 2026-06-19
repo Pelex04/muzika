@@ -1,24 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Home, Music, BarChart2, Users, FileText, Upload, Play, Music2, LogOut, User } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import type { Profile } from '@/types'
-import { cn } from '@/lib/utils'
 
 const NAV = [
-  { href: '/discover',     label: 'Home',        icon: Home },
-  { href: '/songs',        label: 'Songs',       icon: Music },
-  { href: '/charts',       label: 'Charts',      icon: BarChart2 },
-  { href: '/artists',      label: 'Artists',     icon: Users },
-  { href: '/blog',         label: 'Blog & News', icon: FileText },
+  { href: '/discover', label: 'Home',        icon: Home },
+  { href: '/songs',    label: 'Songs',       icon: Music },
+  { href: '/charts',   label: 'Charts',      icon: BarChart2 },
+  { href: '/artists',  label: 'Artists',     icon: Users },
+  { href: '/blog',     label: 'Blog & News', icon: Newspaper },
 ]
 
 const ARTIST_NAV = [
-  { href: '/upload',       label: 'Upload Track', icon: Upload },
-  { href: '/now-playing',  label: 'Now Playing',  icon: Play },
+  { href: '/upload',      label: 'Upload Track', icon: Upload },
+  { href: '/now-playing', label: 'Now Playing',  icon: Play },
 ]
 
 export default function Sidebar({ profile }: { profile: Profile | null }) {
@@ -31,84 +29,86 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
     router.push('/signin')
   }
 
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
+
+  const navItem = (href: string, label: string, Icon: any) => (
+    <Link
+      key={href}
+      href={href}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '11px',
+        padding: '9px 12px', borderRadius: '8px', marginBottom: '1px',
+        fontSize: '13.5px', fontWeight: 500, textDecoration: 'none',
+        background: isActive(href) ? 'rgba(59,130,246,0.2)' : 'transparent',
+        color: isActive(href) ? '#fff' : 'rgba(255,255,255,0.5)',
+        transition: 'all .15s',
+      }}
+    >
+      <Icon size={16} style={{ flexShrink: 0, color: isActive(href) ? '#60A5FA' : 'inherit' }} />
+      {label}
+    </Link>
+  )
+
   return (
     <>
       <style>{`
         .muzika-sidebar { display: flex; }
         @media (max-width: 768px) { .muzika-sidebar { display: none !important; } }
       `}</style>
-      <aside className="muzika-sidebar" style={{ width: '228px', background: '#0D1B3E', flexDirection: 'column', flexShrink: 0, borderRight: '1px solid rgba(255,255,255,0.05)' }}>
-      {/* Logo */}
-      <Link href="/discover" className="flex items-center gap-2.5 px-5 py-6 pb-5">
-        <div className="w-[34px] h-[34px] rounded-[9px] bg-gradient-to-br from-blue-500 to-blue-700 grid place-items-center shadow-md">
-          <Music2 className="w-[18px] h-[18px] text-white" />
-        </div>
-        <span className="text-[18px] font-black text-white tracking-tight">
-          MUZI<span className="text-blue-400">KA</span>
-        </span>
-      </Link>
+      <aside className="muzika-sidebar" style={{
+        width: '228px', background: '#0D1B3E',
+        flexDirection: 'column', flexShrink: 0,
+        borderRight: '1px solid rgba(255,255,255,0.05)',
+      }}>
 
-      {/* Nav */}
-      <nav className="flex-1 px-2.5 pb-4">
-        <p className="text-[10px] font-bold text-white/28 uppercase tracking-[1.1px] px-3 pt-4 pb-1.5">Menu</p>
-        {NAV.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(href + '/')
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13.5px] font-medium transition-all mb-0.5',
-                active
-                  ? 'bg-blue-500/20 text-white'
-                  : 'text-white/50 hover:bg-white/6 hover:text-white'
-              )}
-            >
-              <Icon className={cn('w-4 h-4 flex-shrink-0', active && 'text-blue-400')} />
-              {label}
-            </Link>
-          )
-        })}
-
-        <p className="text-[10px] font-bold text-white/28 uppercase tracking-[1.1px] px-3 pt-5 pb-1.5">Artist</p>
-        {ARTIST_NAV.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                'flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13.5px] font-medium transition-all mb-0.5',
-                active
-                  ? 'bg-blue-500/20 text-white'
-                  : 'text-white/50 hover:bg-white/6 hover:text-white'
-              )}
-            >
-              <Icon className={cn('w-4 h-4 flex-shrink-0', active && 'text-blue-400')} />
-              {label}
-            </Link>
-          )
-        })}
-      </nav>
-
-      {/* User */}
-      <div className="p-3.5 border-t border-white/7">
-        <div className="flex items-center gap-2.5 p-2 rounded-lg hover:bg-white/6 cursor-pointer group">
-          <div className="w-[34px] h-[34px] rounded-full bg-[#1C2E55] grid place-items-center flex-shrink-0">
-            <span className="text-white/50 text-sm font-bold">
-              {profile?.full_name?.charAt(0)?.toUpperCase() ?? '?'}
-            </span>
+        {/* Logo */}
+        <Link href="/discover" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '26px 22px 22px', textDecoration: 'none' }}>
+          <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'linear-gradient(135deg,#3B82F6,#1d4ed8)', display: 'grid', placeItems: 'center', boxShadow: '0 2px 8px rgba(59,130,246,.35)', flexShrink: 0 }}>
+            <Music2 size={18} color="white" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-white truncate">{profile?.full_name ?? 'User'}</p>
-            <p className="text-[11px] text-white/40 capitalize">{profile?.role ?? 'listener'}</p>
+          <span style={{ fontSize: '18px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
+            MUZI<span style={{ color: '#60A5FA' }}>KA</span>
+          </span>
+        </Link>
+
+        {/* Main nav */}
+        <nav style={{ flex: 1, padding: '0 10px 16px', overflowY: 'auto' }}>
+          <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.1px', color: 'rgba(255,255,255,0.28)', padding: '16px 12px 7px', textTransform: 'uppercase' }}>Menu</p>
+          {NAV.map(({ href, label, icon }) => navItem(href, label, icon))}
+
+          <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.1px', color: 'rgba(255,255,255,0.28)', padding: '20px 12px 7px', textTransform: 'uppercase' }}>Artist</p>
+          {ARTIST_NAV.map(({ href, label, icon }) => navItem(href, label, icon))}
+        </nav>
+
+        {/* User row */}
+        <div style={{ padding: '14px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px', borderRadius: '8px' }}>
+            <Link href="/profile" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+              <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#1C2E55', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', fontWeight: 700 }}>
+                  {profile?.full_name?.charAt(0)?.toUpperCase() ?? '?'}
+                </span>
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ fontSize: '13px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {profile?.full_name ?? 'User'}
+                </p>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'capitalize' }}>
+                  {profile?.role ?? 'listener'}
+                </p>
+              </div>
+            </Link>
+            <button
+              onClick={signOut}
+              title="Sign out"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', borderRadius: '6px', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+            >
+              <LogOut size={15} color="rgba(255,255,255,0.4)" />
+            </button>
           </div>
-          <button onClick={signOut} title="Sign out" style={{display:'flex',alignItems:'center',background:'none',border:'none',cursor:'pointer',padding:'4px',borderRadius:'6px',transition:'background .15s'}} onMouseOver={e=>(e.currentTarget.style.background='rgba(255,255,255,0.08)')} onMouseOut={e=>(e.currentTarget.style.background='none')}>
-            <LogOut size={15} color="rgba(255,255,255,0.45)" />
-          </button>
         </div>
-      </div>
-    </aside>
+
+      </aside>
     </>
   )
 }

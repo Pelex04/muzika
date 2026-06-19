@@ -8,7 +8,7 @@ const ITEMS = [
   { href: '/discover', label: 'Home',    icon: Home },
   { href: '/artists',  label: 'Artists', icon: Users },
   { href: '/songs',    label: 'Songs',   icon: Music },
-  { href: '/charts',   label: 'Albums',  icon: Disc },
+  { href: '/charts',   label: 'Charts',  icon: Disc },
   { href: '/blog',     label: 'Blog',    icon: FileText },
 ]
 
