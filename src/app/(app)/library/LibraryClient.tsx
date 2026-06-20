@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Heart, Music2, Plus, Loader2 } from 'lucide-react'
+import { Heart, Music2, Plus, Loader2, ListMusic } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePlayerStore } from '@/store/player'
 import type { Track, Playlist } from '@/types'
@@ -73,14 +73,57 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         .lib-track-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: background .12s; }
         .lib-track-row:hover { background: #F4F6FB; }
         .lib-track-art { width: 46px; height: 46px; border-radius: 8px; flex-shrink: 0; overflow: hidden; }
-        .lib-empty { text-align: center; padding: 60px 20px; }
-        .lib-empty-icon { width: 64px; height: 64px; border-radius: 18px; background: #F4F6FB; display: grid; place-items: center; margin: 0 auto 16px; }
-        .playlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 14px; }
-        .playlist-card { background: #fff; border-radius: 12px; overflow: hidden; cursor: pointer; box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08); transition: transform .15s, box-shadow .15s; text-decoration: none; display: block; }
-        .playlist-card:hover { transform: translateY(-3px); }
-        .playlist-cover { aspect-ratio: 1; background: linear-gradient(135deg,#1e3a8a,#0d1b3e); display: grid; place-items: center; }
-        .new-playlist-card { background: #fff; border: 2px dashed #CDD0DE; border-radius: 12px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all .15s; }
+
+        .lib-empty {
+          text-align: center; padding: 56px 24px;
+          background: #fff; border-radius: 14px;
+          box-shadow: 0 1px 3px rgba(13,27,62,.06);
+        }
+        .lib-empty-icon { width: 60px; height: 60px; border-radius: 16px; background: #F4F6FB; display: grid; place-items: center; margin: 0 auto 16px; }
+
+        /* Fixed-width cards, left-aligned, never stretch to fill the row */
+        .playlist-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, 148px);
+          gap: 14px;
+          justify-content: start;
+        }
+        .playlist-card {
+          width: 148px;
+          background: #fff; border-radius: 12px; overflow: hidden;
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08);
+          transition: transform .15s, box-shadow .15s;
+          text-decoration: none; display: block;
+        }
+        .playlist-card:hover { transform: translateY(-3px); box-shadow: 0 4px 6px rgba(13,27,62,.04), 0 12px 30px rgba(13,27,62,.14); }
+        .playlist-cover {
+          aspect-ratio: 1;
+          background: linear-gradient(135deg,#1e3a8a,#0d1b3e);
+          display: grid; place-items: center;
+          position: relative; overflow: hidden;
+        }
+        .playlist-cover svg.rays { position: absolute; inset: 0; opacity: .35; }
+
+        .new-playlist-card {
+          width: 148px; aspect-ratio: 1;
+          background: #fff; border: 1.5px dashed #CDD0DE; border-radius: 12px;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 8px; cursor: pointer; transition: all .15s;
+        }
         .new-playlist-card:hover { border-color: #2563EB; background: #EBF1FF; }
+
+        .create-form-card {
+          width: 148px; aspect-ratio: 1;
+          background: #fff; border-radius: 12px;
+          box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08);
+          padding: 14px; display: flex; flex-direction: column; gap: 8px; justify-content: center;
+        }
+
+        @media (max-width: 480px) {
+          .playlist-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); }
+          .playlist-card, .new-playlist-card, .create-form-card { width: auto; }
+        }
       `}</style>
 
       <MobileTopBar eyebrow="Your music" title="Library" />
@@ -103,9 +146,9 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         {activeTab === 'saved' && (
           savedTracks.length === 0 ? (
             <div className="lib-empty">
-              <div className="lib-empty-icon"><Heart size={26} color="#8B95A8" /></div>
-              <p style={{ fontSize: '17px', fontWeight: 800, color: '#0D1B3E', marginBottom: '6px' }}>No saved tracks yet</p>
-              <p style={{ fontSize: '14px', color: '#8B95A8' }}>Tap the bookmark icon on any track to save it here.</p>
+              <div className="lib-empty-icon"><Heart size={24} color="#8B95A8" /></div>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: '#0D1B3E', marginBottom: '6px' }}>No saved tracks yet</p>
+              <p style={{ fontSize: '13.5px', color: '#8B95A8' }}>Tap the bookmark icon on any track to save it here.</p>
             </div>
           ) : (
             <div style={{ background: '#fff', borderRadius: '12px', padding: '12px', boxShadow: '0 1px 3px rgba(13,27,62,.06)' }}>
@@ -126,47 +169,73 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         )}
 
         {activeTab === 'playlists' && (
-          <div className="playlist-grid">
-            {showCreate ? (
-              <div style={{ background: '#fff', borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px', aspectRatio: '1', justifyContent: 'center' }}>
-                <input
-                  autoFocus
-                  value={newName}
-                  onChange={e => setNewName(e.target.value)}
-                  placeholder="Playlist name…"
-                  onKeyDown={e => e.key === 'Enter' && createPlaylist()}
-                  style={{ padding: '8px 10px', border: '1.5px solid #E2E5F0', borderRadius: '6px', fontSize: '13px', outline: 'none', fontFamily: 'inherit' }}
-                />
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button onClick={createPlaylist} disabled={creating} style={{ flex: 1, padding: '7px', background: '#0D1B3E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
-                    {creating ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite', margin: '0 auto' }} /> : 'Create'}
-                  </button>
-                  <button onClick={() => setShowCreate(false)} style={{ padding: '7px 10px', background: '#F4F6FB', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#5C677D', cursor: 'pointer', fontFamily: 'inherit' }}>
-                    Cancel
-                  </button>
+          playlists.length === 0 && !showCreate ? (
+            <div className="lib-empty">
+              <div className="lib-empty-icon"><ListMusic size={24} color="#8B95A8" /></div>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: '#0D1B3E', marginBottom: '6px' }}>No playlists yet</p>
+              <p style={{ fontSize: '13.5px', color: '#8B95A8', marginBottom: '20px' }}>Create your first playlist to start organizing tracks.</p>
+              <button
+                onClick={() => setShowCreate(true)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '7px',
+                  padding: '10px 20px', background: '#0D1B3E', color: '#fff',
+                  border: 'none', borderRadius: '9px', fontSize: '13.5px', fontWeight: 700,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                }}
+              >
+                <Plus size={15} /> New Playlist
+              </button>
+            </div>
+          ) : (
+            <div className="playlist-grid">
+              {showCreate ? (
+                <div className="create-form-card">
+                  <input
+                    autoFocus
+                    value={newName}
+                    onChange={e => setNewName(e.target.value)}
+                    placeholder="Playlist name…"
+                    onKeyDown={e => e.key === 'Enter' && createPlaylist()}
+                    style={{ padding: '8px 10px', border: '1.5px solid #E2E5F0', borderRadius: '6px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' }}
+                  />
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button onClick={createPlaylist} disabled={creating} style={{ flex: 1, padding: '7px', background: '#0D1B3E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {creating ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : 'Create'}
+                    </button>
+                    <button onClick={() => setShowCreate(false)} style={{ padding: '7px 10px', background: '#F4F6FB', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#5C677D', cursor: 'pointer', fontFamily: 'inherit' }}>
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="new-playlist-card" onClick={() => setShowCreate(true)}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center' }}>
-                  <Plus size={18} color="#2563EB" />
+              ) : (
+                <div className="new-playlist-card" onClick={() => setShowCreate(true)}>
+                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center' }}>
+                    <Plus size={17} color="#2563EB" />
+                  </div>
+                  <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#0D1B3E' }}>New Playlist</span>
                 </div>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#0D1B3E' }}>New Playlist</span>
-              </div>
-            )}
+              )}
 
-            {playlists.map(p => (
-              <Link key={p.id} href={`/library/${p.id}`} className="playlist-card">
-                <div className="playlist-cover">
-                  <Music2 size={32} color="rgba(255,255,255,0.3)" />
-                </div>
-                <div style={{ padding: '10px 12px' }}>
-                  <p style={{ fontSize: '13px', fontWeight: 700, color: '#0D1B3E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</p>
-                  <p style={{ fontSize: '12px', color: '#8B95A8', marginTop: '2px' }}>{p.track_count ?? 0} tracks</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+              {playlists.map(p => (
+                <Link key={p.id} href={`/library/${p.id}`} className="playlist-card">
+                  <div className="playlist-cover">
+                    <svg className="rays" viewBox="0 0 148 148" xmlns="http://www.w3.org/2000/svg">
+                      <g stroke="#d4af37" strokeWidth="1.2">
+                        {[20, 50, 74, 98, 128].map((x, i) => (
+                          <line key={i} x1="74" y1="0" x2={x} y2="148"/>
+                        ))}
+                      </g>
+                    </svg>
+                    <Music2 size={30} color="rgba(255,255,255,0.4)" style={{ position: 'relative', zIndex: 1 }} />
+                  </div>
+                  <div style={{ padding: '10px 12px' }}>
+                    <p style={{ fontSize: '13px', fontWeight: 700, color: '#0D1B3E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</p>
+                    <p style={{ fontSize: '11.5px', color: '#8B95A8', marginTop: '2px' }}>{p.track_count ?? 0} track{p.track_count === 1 ? '' : 's'}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )
         )}
       </div>
 
