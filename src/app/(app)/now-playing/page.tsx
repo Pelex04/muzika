@@ -11,6 +11,7 @@ import { formatDuration } from '@/lib/utils'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
+import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
 
 export default function NowPlayingPage() {
   const router = useRouter()
@@ -23,6 +24,9 @@ export default function NowPlayingPage() {
   } = usePlayerStore()
 
   const [liked, setLiked] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [showPlaylistModal, setShowPlaylistModal] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   if (!currentTrack) {
     return (
@@ -43,6 +47,59 @@ export default function NowPlayingPage() {
   }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
+
+  const handleSave = async () => {
+    try {
+      const res = await fetch(`/api/tracks/${currentTrack.id}/save`, { method: 'POST' })
+      const data = await res.json()
+      setSaved(data.saved)
+      toast.success(data.saved ? 'Saved to your library' : 'Removed from library')
+    } catch {
+      toast.error('Could not save track')
+    }
+  }
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/songs?track=${currentTrack.id}`
+    const shareData = {
+      title: currentTrack.title,
+      text: `Listen to "${currentTrack.title}" by ${currentTrack.artist?.stage_name ?? 'an artist'} on Muzika`,
+      url: shareUrl,
+    }
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData)
+      } catch {
+        // user cancelled share sheet — no error needed
+      }
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      toast.success('Link copied to clipboard')
+    }
+  }
+
+  const handleDownload = async () => {
+    setDownloading(true)
+    try {
+      const res = await fetch(`/api/tracks/${currentTrack.id}/download`)
+      const data = await res.json()
+      if (!data.url) {
+        toast.error('Could not download track')
+        setDownloading(false)
+        return
+      }
+      const a = document.createElement('a')
+      a.href = data.url
+      a.download = data.filename ?? currentTrack.title
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      toast.success('Download started')
+    } catch {
+      toast.error('Download failed')
+    }
+    setDownloading(false)
+  }
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -149,28 +206,43 @@ export default function NowPlayingPage() {
 
       {/* Actions */}
       <div className="w-full grid grid-cols-4 border-[1.5px] border-[#E2E5F0] rounded-xl overflow-hidden">
-        {[
-          { icon: Bookmark, label: 'Save', onClick: () => toast.success('Saved to library') },
-          { icon: ListPlus, label: 'Playlist', onClick: () => toast.info('Playlist feature coming soon') },
-          { icon: Share2,  label: 'Share',   onClick: () => navigator.share?.({ title: currentTrack.title, url: window.location.href }) },
-        ].map(({ icon: Icon, label, onClick }) => (
-          <button
-            key={label}
-            onClick={onClick}
-            className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#E2E5F0] hover:bg-[#F4F6FB] transition-colors"
-          >
-            <Icon className="w-[18px] h-[18px] text-[#5C677D]" />
-            <span className="text-xs font-semibold text-[#5C677D]">{label}</span>
-          </button>
-        ))}
         <button
-          onClick={() => toast.success('Downloading…')}
+          onClick={handleSave}
+          className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#E2E5F0] hover:bg-[#F4F6FB] transition-colors"
+        >
+          <Bookmark className="w-[18px] h-[18px]" style={{ color: saved ? '#2563EB' : '#5C677D' }} fill={saved ? '#2563EB' : 'none'} />
+          <span className="text-xs font-semibold" style={{ color: saved ? '#2563EB' : '#5C677D' }}>{saved ? 'Saved' : 'Save'}</span>
+        </button>
+        <button
+          onClick={() => setShowPlaylistModal(true)}
+          className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#E2E5F0] hover:bg-[#F4F6FB] transition-colors"
+        >
+          <ListPlus className="w-[18px] h-[18px] text-[#5C677D]" />
+          <span className="text-xs font-semibold text-[#5C677D]">Playlist</span>
+        </button>
+        <button
+          onClick={handleShare}
+          className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#E2E5F0] hover:bg-[#F4F6FB] transition-colors"
+        >
+          <Share2 className="w-[18px] h-[18px] text-[#5C677D]" />
+          <span className="text-xs font-semibold text-[#5C677D]">Share</span>
+        </button>
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
           className="flex flex-col items-center gap-1.5 py-3.5 hover:bg-emerald-50 transition-colors"
         >
-          <Download className="w-[18px] h-[18px]" style={{color:'#10B981'}} />
-          <span className="text-xs font-bold" style={{color:'#10B981'}}>Free</span>
+          {downloading
+            ? <Loader2 className="w-[18px] h-[18px]" style={{ color: '#10B981', animation: 'spin 1s linear infinite' }} />
+            : <Download className="w-[18px] h-[18px]" style={{ color: '#10B981' }} />
+          }
+          <span className="text-xs font-bold" style={{ color: '#10B981' }}>{downloading ? 'Saving…' : 'Download'}</span>
         </button>
       </div>
+
+      {showPlaylistModal && (
+        <AddToPlaylistModal trackId={currentTrack.id} onClose={() => setShowPlaylistModal(false)} />
+      )}
     </div>
   )
 }

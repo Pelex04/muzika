@@ -240,3 +240,79 @@ create policy "Artists upload tracks" on storage.objects
 
 -- insert into public.artists (profile_id, stage_name, genre, location, verified)
 -- values ('<your-user-id>', 'Tay Grin', 'Afropop', 'Lilongwe', true);
+
+-- ════════════════════════════════════════════════════════
+--  PLAYLISTS — added for Library / Playlist feature
+-- ════════════════════════════════════════════════════════
+
+create table public.playlists (
+  id          uuid default uuid_generate_v4() primary key,
+  user_id     uuid references public.profiles(id) on delete cascade not null,
+  name        text not null,
+  description text,
+  cover_url   text,
+  is_public   boolean not null default false,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+alter table public.playlists enable row level security;
+
+create policy "Users see own playlists"
+  on playlists for select using (user_id = auth.uid());
+create policy "Public playlists viewable by all"
+  on playlists for select using (is_public = true);
+create policy "Users create own playlists"
+  on playlists for insert with check (user_id = auth.uid());
+create policy "Users update own playlists"
+  on playlists for update using (user_id = auth.uid());
+create policy "Users delete own playlists"
+  on playlists for delete using (user_id = auth.uid());
+
+create table public.playlist_tracks (
+  id          uuid default uuid_generate_v4() primary key,
+  playlist_id uuid references public.playlists(id) on delete cascade not null,
+  track_id    uuid references public.tracks(id) on delete cascade not null,
+  position    integer not null default 0,
+  added_at    timestamptz not null default now(),
+  unique(playlist_id, track_id)
+);
+
+alter table public.playlist_tracks enable row level security;
+
+create policy "Users manage tracks in own playlists"
+  on playlist_tracks for all
+  using (playlist_id in (select id from playlists where user_id = auth.uid()))
+  with check (playlist_id in (select id from playlists where user_id = auth.uid()));
+
+create policy "Tracks in public playlists are viewable"
+  on playlist_tracks for select
+  using (playlist_id in (select id from playlists where is_public = true));
+
+-- Auto-update playlist updated_at when tracks change
+create or replace function public.touch_playlist_updated_at()
+returns trigger as $$
+begin
+  update playlists set updated_at = now()
+  where id = coalesce(NEW.playlist_id, OLD.playlist_id);
+  return null;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_playlist_tracks_change
+  after insert or delete on playlist_tracks
+  for each row execute procedure public.touch_playlist_updated_at();
+
+-- ════════════════════════════════════════════════════════
+--  PLAY / DOWNLOAD COUNTERS (run if not already present)
+-- ════════════════════════════════════════════════════════
+
+create or replace function increment_play_count(track_id uuid)
+returns void as $$
+  update tracks set play_count = play_count + 1 where id = track_id;
+$$ language sql security definer;
+
+create or replace function increment_download_count(track_id uuid)
+returns void as $$
+  update tracks set download_count = download_count + 1 where id = track_id;
+$$ language sql security definer;

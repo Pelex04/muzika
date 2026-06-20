@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Play, Download, Bookmark, MoreVertical } from 'lucide-react'
+import { Play, Bookmark, MoreVertical, ListPlus, Share2, Download, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePlayerStore } from '@/store/player'
-import { formatMWK } from '@/lib/utils'
 import type { Track } from '@/types'
+import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
 
 interface Props {
   track: Track
@@ -16,49 +16,115 @@ interface Props {
 export default function TrackCard({ track, userId, queue }: Props) {
   const { play, currentTrack, isPlaying } = usePlayerStore()
   const isActive = currentTrack?.id === track.id && isPlaying
-  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(track.is_saved ?? false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
 
   const handlePlay = async () => {
     if (!userId) { toast.error('Sign in to play tracks'); return }
-    if (!track.is_purchased && !track.audio_url) {
-      toast.error('Purchase this track to play it')
-      return
-    }
-    // Fetch signed URL from API if needed
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
     if (!data.url) { toast.error('Could not load track'); return }
     play({ ...track, audio_url: data.url }, queue)
   }
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setMenuOpen(false)
     if (!userId) { toast.error('Sign in to save tracks'); return }
-    setSaving(true)
     const res = await fetch(`/api/tracks/${track.id}/save`, { method: 'POST' })
     const data = await res.json()
-    if (data.saved) toast.success('Added to library')
-    else toast.success('Removed from library')
-    setSaving(false)
+    setSaved(data.saved)
+    toast.success(data.saved ? 'Saved to library' : 'Removed from library')
+  }
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setMenuOpen(false)
+    const shareUrl = `${window.location.origin}/songs?track=${track.id}`
+    if (navigator.share) {
+      try { await navigator.share({ title: track.title, url: shareUrl }) } catch {}
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      toast.success('Link copied to clipboard')
+    }
+  }
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setMenuOpen(false)
+    const res = await fetch(`/api/tracks/${track.id}/download`)
+    const data = await res.json()
+    if (!data.url) { toast.error('Could not download track'); return }
+    const a = document.createElement('a')
+    a.href = data.url
+    a.download = data.filename ?? track.title
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    toast.success('Download started')
   }
 
   return (
-    <div className={`bg-white rounded-xl overflow-hidden cursor-pointer shadow-[0_1px_3px_rgba(13,27,62,.06),0_4px_16px_rgba(13,27,62,.08)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(13,27,62,.04),0_12px_40px_rgba(13,27,62,.14)] transition-all group`}>
+    <div className="relative bg-white rounded-xl overflow-hidden cursor-pointer shadow-[0_1px_3px_rgba(13,27,62,.06),0_4px_16px_rgba(13,27,62,.08)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(13,27,62,.04),0_12px_40px_rgba(13,27,62,.14)] transition-all group">
       {/* Art */}
       <div className="relative aspect-square" onClick={handlePlay}>
         {track.cover_url
           ? <img src={track.cover_url} alt={track.title} className="w-full h-full object-cover" />
           : <AlbumArtPlaceholder genre={track.genre} />
         }
-        {/* Price Badge */}
-        <div className="absolute bottom-2 left-2 bg-[rgba(13,27,62,0.82)] text-amber-400 text-[11px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">
-          {formatMWK(track.price_mwk)}
-        </div>
+
+        {/* Saved indicator */}
+        {saved && (
+          <div className="absolute bottom-2 left-2 bg-[rgba(13,27,62,0.82)] text-emerald-400 text-[11px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm flex items-center gap-1">
+            <Check size={11} /> Saved
+          </div>
+        )}
+
+        {/* More button */}
+        <button
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/35 backdrop-blur-sm grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity"
+          onClick={e => { e.stopPropagation(); setMenuOpen(v => !v) }}
+        >
+          <MoreVertical size={14} color="white" />
+        </button>
+
         {/* Play overlay */}
         <div className={`absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ${isActive ? 'opacity-100' : ''}`}>
           <div className="w-12 h-12 rounded-full bg-white grid place-items-center shadow-lg">
             <Play className="w-5 h-5 text-[#0D1B3E] ml-0.5" fill="#0D1B3E" />
           </div>
         </div>
+
+        {/* Context menu */}
+        {menuOpen && (
+          <>
+            <div style={{ position: 'fixed', inset: 0, zIndex: 90 }} onClick={e => { e.stopPropagation(); setMenuOpen(false) }} />
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{
+                position: 'absolute', top: '38px', right: '8px', zIndex: 100,
+                background: '#fff', borderRadius: '12px',
+                boxShadow: '0 8px 24px rgba(13,27,62,.18)',
+                border: '1px solid #E2E5F0',
+                minWidth: '170px', padding: '6px',
+              }}
+            >
+              <button onClick={handleSave} style={menuItemStyle}>
+                <Bookmark size={14} color="#5C677D" /> {saved ? 'Unsave' : 'Save'}
+              </button>
+              <button onClick={e => { e.stopPropagation(); setMenuOpen(false); setPlaylistModalOpen(true) }} style={menuItemStyle}>
+                <ListPlus size={14} color="#5C677D" /> Add to Playlist
+              </button>
+              <button onClick={handleShare} style={menuItemStyle}>
+                <Share2 size={14} color="#5C677D" /> Share
+              </button>
+              <button onClick={handleDownload} style={menuItemStyle}>
+                <Download size={14} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Info */}
@@ -66,8 +132,22 @@ export default function TrackCard({ track, userId, queue }: Props) {
         <p className="text-[13px] font-bold text-[#0D1B3E] truncate">{track.title}</p>
         <p className="text-[12px] text-[#5C677D] mt-0.5 truncate">{track.artist?.stage_name}</p>
       </div>
+
+      {playlistModalOpen && (
+        <div onClick={e => e.stopPropagation()}>
+          <AddToPlaylistModal trackId={track.id} onClose={() => setPlaylistModalOpen(false)} />
+        </div>
+      )}
     </div>
   )
+}
+
+const menuItemStyle: React.CSSProperties = {
+  display: 'flex', alignItems: 'center', gap: '10px',
+  width: '100%', padding: '9px 12px', borderRadius: '8px',
+  border: 'none', background: 'transparent', cursor: 'pointer',
+  fontSize: '13px', fontWeight: 600, color: '#0D1B3E',
+  textAlign: 'left', fontFamily: 'inherit',
 }
 
 function AlbumArtPlaceholder({ genre }: { genre: string }) {

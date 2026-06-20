@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Play, Pause, MoreVertical, TrendingUp, TrendingDown, Download } from 'lucide-react'
+import { Play, Pause, MoreVertical, TrendingUp, TrendingDown, Bookmark, ListPlus, Share2, Download, X } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { formatCount } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Track } from '@/types'
 import { cn } from '@/lib/utils'
+import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
 
 interface Props {
   track: Track
@@ -26,7 +27,8 @@ export default function TrackRow({
   const { play, currentTrack, isPlaying } = usePlayerStore()
   const isActive = currentTrack?.id === track.id
   const isCurrentlyPlaying = isActive && isPlaying
-  const [ctxOpen, setCtxOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
 
   const handlePlay = async () => {
     if (!userId) { toast.error('Sign in to play tracks'); return }
@@ -40,12 +42,45 @@ export default function TrackRow({
     play({ ...track, audio_url: data.url }, queue)
   }
 
+  const handleSave = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setMenuOpen(false)
+    const res = await fetch(`/api/tracks/${track.id}/save`, { method: 'POST' })
+    const data = await res.json()
+    toast.success(data.saved ? 'Saved to library' : 'Removed from library')
+  }
 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setMenuOpen(false)
+    const shareUrl = `${window.location.origin}/songs?track=${track.id}`
+    if (navigator.share) {
+      try { await navigator.share({ title: track.title, url: shareUrl }) } catch {}
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      toast.success('Link copied to clipboard')
+    }
+  }
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setMenuOpen(false)
+    const res = await fetch(`/api/tracks/${track.id}/download`)
+    const data = await res.json()
+    if (!data.url) { toast.error('Could not download track'); return }
+    const a = document.createElement('a')
+    a.href = data.url
+    a.download = data.filename ?? track.title
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    toast.success('Download started')
+  }
 
   return (
     <div
       className={cn(
-        'flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg bg-white cursor-pointer transition-colors group',
+        'relative flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg bg-white cursor-pointer transition-colors group',
         isActive ? 'bg-blue-50' : 'hover:bg-blue-50/70'
       )}
       onClick={handlePlay}
@@ -105,15 +140,52 @@ export default function TrackRow({
         </div>
       )}
 
-
-
       {/* More */}
       <button
-        className="w-7 h-7 rounded-md flex-shrink-0 grid place-items-center text-[#8B95A8] hover:bg-[#ECEEF5] hover:text-[#5C677D] opacity-0 group-hover:opacity-100 transition-all"
-        onClick={e => { e.stopPropagation(); setCtxOpen(true) }}
+        className="w-7 h-7 rounded-md flex-shrink-0 grid place-items-center text-[#8B95A8] hover:bg-[#ECEEF5] hover:text-[#5C677D] opacity-0 group-hover:opacity-100 transition-all relative"
+        onClick={e => { e.stopPropagation(); setMenuOpen(v => !v) }}
       >
         <MoreVertical className="w-4 h-4" />
       </button>
+
+      {/* Context menu */}
+      {menuOpen && (
+        <>
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 90 }}
+            onClick={e => { e.stopPropagation(); setMenuOpen(false) }}
+          />
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'absolute', right: '14px', top: '48px', zIndex: 100,
+              background: '#fff', borderRadius: '12px',
+              boxShadow: '0 8px 24px rgba(13,27,62,.18)',
+              border: '1px solid #E2E5F0',
+              minWidth: '180px', padding: '6px',
+            }}
+          >
+            <button onClick={handleSave} style={menuItemStyle}>
+              <Bookmark size={15} color="#5C677D" /> Save to Library
+            </button>
+            <button onClick={e => { e.stopPropagation(); setMenuOpen(false); setPlaylistModalOpen(true) }} style={menuItemStyle}>
+              <ListPlus size={15} color="#5C677D" /> Add to Playlist
+            </button>
+            <button onClick={handleShare} style={menuItemStyle}>
+              <Share2 size={15} color="#5C677D" /> Share
+            </button>
+            <button onClick={handleDownload} style={menuItemStyle}>
+              <Download size={15} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
+            </button>
+          </div>
+        </>
+      )}
+
+      {playlistModalOpen && (
+        <div onClick={e => e.stopPropagation()}>
+          <AddToPlaylistModal trackId={track.id} onClose={() => setPlaylistModalOpen(false)} />
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes eqBounce {
@@ -123,6 +195,14 @@ export default function TrackRow({
       `}</style>
     </div>
   )
+}
+
+const menuItemStyle: React.CSSProperties = {
+  display: 'flex', alignItems: 'center', gap: '10px',
+  width: '100%', padding: '9px 12px', borderRadius: '8px',
+  border: 'none', background: 'transparent', cursor: 'pointer',
+  fontSize: '13.5px', fontWeight: 600, color: '#0D1B3E',
+  textAlign: 'left', fontFamily: 'inherit',
 }
 
 function ArtPlaceholder({ genre, small }: { genre: string; small?: boolean }) {

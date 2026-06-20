@@ -89,6 +89,29 @@ export interface ArtistFollow {
   created_at: string
 }
 
+export interface Playlist {
+  id: string
+  user_id: string
+  name: string
+  description: string | null
+  cover_url: string | null
+  is_public: boolean
+  created_at: string
+  updated_at: string
+  // joined
+  track_count?: number
+  tracks?: Track[]
+}
+
+export interface PlaylistTrack {
+  id: string
+  playlist_id: string
+  track_id: string
+  position: number
+  added_at: string
+  track?: Track
+}
+
 export type BlogCategory = 'news' | 'artist_blog' | 'interview'
 
 export interface BlogPost {

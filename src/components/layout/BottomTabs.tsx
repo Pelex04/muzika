@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Music, BarChart2, Newspaper } from 'lucide-react'
+import { Home, Music, BarChart2, BookOpen } from 'lucide-react'
 
 const TABS = [
-  { href: '/discover', label: 'Home',   icon: Home },
-  { href: '/songs',    label: 'Songs',  icon: Music },
-  { href: '/charts',   label: 'Charts', icon: BarChart2 },
-  { href: '/blog',     label: 'Blog',   icon: Newspaper },
+  { href: '/discover', label: 'Home',    icon: Home },
+  { href: '/songs',    label: 'Songs',   icon: Music },
+  { href: '/charts',   label: 'Charts',  icon: BarChart2 },
+  { href: '/library',  label: 'Library', icon: BookOpen },
 ]
 
 export default function BottomTabs() {

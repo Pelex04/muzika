@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut } from 'lucide-react'
+import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut, BookOpen } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/types'
 
@@ -10,6 +10,7 @@ const NAV = [
   { href: '/discover', label: 'Home',        icon: Home },
   { href: '/songs',    label: 'Songs',       icon: Music },
   { href: '/charts',   label: 'Charts',      icon: BarChart2 },
+  { href: '/library',  label: 'Library',     icon: BookOpen },
   { href: '/artists',  label: 'Artists',     icon: Users },
   { href: '/blog',     label: 'Blog & News', icon: Newspaper },
 ]
