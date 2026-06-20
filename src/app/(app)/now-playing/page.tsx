@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import {
   ChevronLeft, Heart, SkipBack, SkipForward, Play, Pause,
   Shuffle, Repeat, Repeat1, Bookmark, ListPlus, Share2,
-  Download, Loader2,
+  Download, Loader2, Music2,
 } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { formatDuration } from '@/lib/utils'
@@ -27,7 +27,9 @@ export default function NowPlayingPage() {
   if (!currentTrack) {
     return (
       <div className="flex flex-col items-center justify-center h-full py-24 text-[#8B95A8]">
-        <div className="text-6xl mb-4">🎵</div>
+        <div style={{ width: '64px', height: '64px', borderRadius: '18px', background: '#F4F6FB', display: 'grid', placeItems: 'center', marginBottom: '16px' }}>
+          <Music2 size={28} color="#8B95A8" />
+        </div>
         <p className="text-lg font-semibold mb-2">Nothing playing</p>
         <p className="text-sm mb-6">Pick a song from the library to start listening</p>
         <button

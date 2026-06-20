@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Search, Mic, PenSquare } from 'lucide-react'
+import Link from 'next/link'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import type { BlogPost } from '@/types'
 import { cn } from '@/lib/utils'
@@ -18,10 +19,19 @@ const CAT_COLORS: Record<string, string> = {
   artist_blog: 'text-blue-600',
   interview: 'text-emerald-600',
 }
-const CAT_LABELS: Record<string, string> = {
-  news: '⚡ NEWS',
-  artist_blog: '✏️ ARTIST BLOG',
-  interview: '🎙 INTERVIEW',
+const CAT_TEXT: Record<string, string> = {
+  news: 'NEWS',
+  artist_blog: 'ARTIST BLOG',
+  interview: 'INTERVIEW',
+}
+function CatIcon({ category, size = 11 }: { category: string; size?: number }) {
+  if (category === 'news') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+  }
+  if (category === 'artist_blog') {
+    return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  }
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2a3 3 0 013 3v7a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
 }
 
 interface Props { posts: BlogPost[] }
@@ -47,9 +57,9 @@ export default function BlogClient({ posts }: Props) {
         eyebrow="Stories from the scene"
         title="Blog & News"
         rightSlot={
-          <button style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', background:'#0D1B3E', color:'#fff', borderRadius:'8px', fontSize:'12px', fontWeight:700, border:'none', cursor:'pointer' }}>
+          <Link href="/blog/new" style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', background:'#0D1B3E', color:'#fff', borderRadius:'8px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
             <PenSquare size={13} /> Write
-          </button>
+          </Link>
         }
       />
 
@@ -59,9 +69,9 @@ export default function BlogClient({ posts }: Props) {
             <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Stories from the scene</p>
             <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Blog &amp; News</h1>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-[#0D1B3E] text-white rounded-lg text-sm font-bold hover:bg-[#152f6e] transition-colors">
+          <Link href="/blog/new" className="flex items-center gap-2 px-4 py-2.5 bg-[#0D1B3E] text-white rounded-lg text-sm font-bold hover:bg-[#152f6e] transition-colors">
             <PenSquare className="w-4 h-4" /> Write
-          </button>
+          </Link>
         </div>
 
         <div className="flex items-center gap-3 bg-white border-[1.5px] border-[#E2E5F0] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
@@ -112,8 +122,8 @@ export default function BlogClient({ posts }: Props) {
                   }
                 </div>
                 <div className="bg-white p-4">
-                  <p className={cn('text-[10px] font-black tracking-[.9px] uppercase mb-1.5', CAT_COLORS[hero.category])}>
-                    {CAT_LABELS[hero.category]}
+                  <p className={cn('flex items-center gap-1.5 text-[10px] font-black tracking-[.9px] uppercase mb-1.5', CAT_COLORS[hero.category])}>
+                    <CatIcon category={hero.category} /> {CAT_TEXT[hero.category]}
                   </p>
                   <h3 className="text-base font-bold text-[#0D1B3E] leading-snug">{hero.title}</h3>
                   {hero.excerpt && <p className="text-sm text-[#5C677D] mt-1 line-clamp-2">{hero.excerpt}</p>}
@@ -132,8 +142,8 @@ export default function BlogClient({ posts }: Props) {
                     }
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={cn('text-[10px] font-black tracking-[.9px] uppercase mb-1', CAT_COLORS[post.category])}>
-                      {CAT_LABELS[post.category]}
+                    <p className={cn('flex items-center gap-1.5 text-[10px] font-black tracking-[.9px] uppercase mb-1', CAT_COLORS[post.category])}>
+                      <CatIcon category={post.category} size={10} /> {CAT_TEXT[post.category]}
                     </p>
                     <h3 className="text-sm font-bold text-[#0D1B3E] leading-snug line-clamp-2">{post.title}</h3>
                     <p className="text-xs text-[#8B95A8] mt-1">

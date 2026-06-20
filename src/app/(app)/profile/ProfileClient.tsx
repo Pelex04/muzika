@@ -275,13 +275,13 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
         {isArtist && (
           <div className="stats-grid">
             {[
-              { label: 'Tracks',    value: String(tracks.length), emoji: '🎵' },
-              { label: 'Plays',     value: formatCount(totalPlays), emoji: '▶' },
-              { label: 'Downloads', value: formatCount(tracks.reduce((s, t) => s + (t.download_count || 0), 0)), emoji: '⬇' },
-              { label: 'Earnings',  value: formatMWK(totalEarnings), emoji: '💰' },
-            ].map(({ label, value, emoji }) => (
+              { label: 'Tracks',    value: String(tracks.length), icon: <Music2 size={16} color="#2563EB"/>, bg: '#DBEAFE' },
+              { label: 'Plays',     value: formatCount(totalPlays), icon: <Play size={16} color="#10B981"/>, bg: '#D1FAE5' },
+              { label: 'Downloads', value: formatCount(tracks.reduce((s, t) => s + (t.download_count || 0), 0)), icon: <Download size={16} color="#F59E0B"/>, bg: '#FEF3C7' },
+              { label: 'Earnings',  value: formatMWK(totalEarnings), icon: <DollarSign size={16} color="#8B5CF6"/>, bg: '#EDE9FE' },
+            ].map(({ label, value, icon, bg }) => (
               <div key={label} className="stat-box">
-                <div className="stat-box-icon">{emoji}</div>
+                <div className="stat-box-icon" style={{ background: bg, width: '30px', height: '30px', borderRadius: '8px', display: 'grid', placeItems: 'center', margin: '0 auto 8px' }}>{icon}</div>
                 <div className="stat-box-val">{value}</div>
                 <div className="stat-box-label">{label}</div>
               </div>

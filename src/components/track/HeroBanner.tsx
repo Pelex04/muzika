@@ -55,7 +55,8 @@ export default function HeroBanner({ track }: { track: Track }) {
       {/* Content */}
       <div className="relative z-10">
         <div className="inline-flex items-center gap-1.5 bg-white/13 border border-white/18 rounded-full px-3 py-1 text-[11px] font-bold text-white/90 mb-2.5">
-          ⭐ Trending Now
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Trending Now
         </div>
         <h2 className="text-[22px] font-black text-white tracking-tight leading-tight mb-1">
           {track.title}
@@ -75,7 +76,7 @@ export default function HeroBanner({ track }: { track: Track }) {
       {/* Play button */}
       <button
         className="relative z-10 w-[52px] h-[52px] rounded-full bg-white flex-shrink-0 grid place-items-center shadow-xl group-hover:scale-105 transition-transform"
-        onClick={handlePlay}
+        onClick={(e) => { e.stopPropagation(); handlePlay() }}
       >
         <Play className="w-5 h-5 text-[#0D1B3E] ml-0.5" fill="#0D1B3E" />
       </button>

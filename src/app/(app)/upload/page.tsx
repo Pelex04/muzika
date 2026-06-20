@@ -104,7 +104,7 @@ export default function UploadPage() {
       }
 
       setUploadProgress(100)
-      toast.success('Track published successfully! 🎉')
+      toast.success('Track published successfully!')
       setTimeout(() => router.push('/songs'), 1500)
     } catch (err) {
       toast.error('Upload failed. Please try again.')
