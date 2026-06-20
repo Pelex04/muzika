@@ -105,6 +105,16 @@ export default function LandingPage() {
           overflow: clip;
           min-height: calc(100vh - 68px);
         }
+        .lp-hero-photo {
+          position: absolute;
+          inset: 0;
+          background-image: url('https://images.unsplash.com/photo-1546707012-c46675f12716?auto=format&fit=crop&w=1800&q=80');
+          background-size: cover;
+          background-position: center 30%;
+          opacity: 0.22;
+          mask-image: linear-gradient(100deg, transparent 0%, transparent 30%, rgba(0,0,0,0.5) 55%, black 80%);
+          -webkit-mask-image: linear-gradient(100deg, transparent 0%, transparent 30%, rgba(0,0,0,0.5) 55%, black 80%);
+        }
         .lp-hero-bg {
           position: absolute;
           inset: 0;
@@ -368,6 +378,7 @@ export default function LandingPage() {
         @media (max-width: 1024px) {
           .lp-cards { display: none; }
           .lp-rings { display: none; }
+          .lp-hero-photo { display: none; }
           .lp-h1 { font-size: 52px; }
         }
         @media (max-width: 768px) {
@@ -428,9 +439,7 @@ export default function LandingPage() {
           </Link>
 
           <ul className="lp-nav-links">
-            <li><a href="#">Features</a></li>
             <li><Link href="/artists" style={{color:'inherit',textDecoration:'none'}}>Artists</Link></li>
-            <li><a href="#">Pricing</a></li>
             <li><Link href="/blog" style={{color:'inherit',textDecoration:'none'}}>Blog</Link></li>
           </ul>
 
@@ -442,6 +451,7 @@ export default function LandingPage() {
 
         {/* ── HERO ── */}
         <section className="lp-hero">
+          <div className="lp-hero-photo" />
           <div className="lp-hero-bg" />
 
           {/* Concentric rings */}
@@ -606,12 +616,11 @@ export default function LandingPage() {
 
         {/* ── FOOTER ── */}
         <footer className="lp-footer">
-          <span className="lp-footer-copy">© 2025 Muzika</span>
+          <span className="lp-footer-copy">© 2026 Muzika</span>
           <ul className="lp-footer-links">
-            <li><a href="#">About</a></li>
-            <li><a href="#">Terms</a></li>
-            <li><a href="#">Privacy</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><Link href="/artists" style={{color:'inherit',textDecoration:'none'}}>Artists</Link></li>
+            <li><Link href="/blog" style={{color:'inherit',textDecoration:'none'}}>Blog</Link></li>
+            <li><Link href="/signin" style={{color:'inherit',textDecoration:'none'}}>Sign in</Link></li>
           </ul>
         </footer>
 
