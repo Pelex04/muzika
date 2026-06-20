@@ -378,7 +378,12 @@ export default function LandingPage() {
         @media (max-width: 1024px) {
           .lp-cards { display: none; }
           .lp-rings { display: none; }
-          .lp-hero-photo { display: none; }
+          .lp-hero-photo {
+            opacity: 0.28;
+            background-position: center 25%;
+            mask-image: linear-gradient(180deg, black 0%, rgba(0,0,0,0.4) 30%, transparent 50%);
+            -webkit-mask-image: linear-gradient(180deg, black 0%, rgba(0,0,0,0.4) 30%, transparent 50%);
+          }
           .lp-h1 { font-size: 52px; }
         }
         @media (max-width: 768px) {
