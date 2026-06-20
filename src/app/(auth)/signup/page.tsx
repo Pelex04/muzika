@@ -33,10 +33,6 @@ const S: Record<string, React.CSSProperties> = {
   wrap: { display: 'flex', minHeight: '100vh' },
   left: {
     width: '42%',
-    background: 'linear-gradient(160deg, #0D1B3E 0%, #152040 40%, #1a3570 100%)',
-    padding: '44px',
-    display: 'flex',
-    flexDirection: 'column',
     position: 'relative',
     overflow: 'hidden',
   },

@@ -68,9 +68,7 @@ export default function SignInPage() {
       <style>{`
         .auth-wrap { display:flex; min-height:100vh; }
         .auth-left {
-          width:42%; padding:44px;
-          background:linear-gradient(160deg,#0D1B3E 0%,#152040 40%,#1a3570 100%);
-          display:flex; flex-direction:column;
+          width:42%;
           position:relative; overflow:hidden;
         }
         .auth-right {
