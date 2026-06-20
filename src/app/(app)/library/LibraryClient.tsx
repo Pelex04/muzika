@@ -106,18 +106,38 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         .playlist-cover svg.rays { position: absolute; inset: 0; opacity: .35; }
 
         .new-playlist-card {
-          width: 148px; aspect-ratio: 1;
+          width: 148px;
           background: #fff; border: 1.5px dashed #CDD0DE; border-radius: 12px;
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          gap: 8px; cursor: pointer; transition: all .15s;
+          overflow: hidden;
+          cursor: pointer; transition: all .15s;
+          display: flex; flex-direction: column;
         }
         .new-playlist-card:hover { border-color: #2563EB; background: #EBF1FF; }
+        .new-playlist-top {
+          aspect-ratio: 1;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          gap: 8px;
+        }
+        .new-playlist-footer {
+          padding: 10px 12px;
+          display: flex; align-items: center; justify-content: center;
+        }
 
         .create-form-card {
-          width: 148px; aspect-ratio: 1;
+          width: 148px;
           background: #fff; border-radius: 12px;
           box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08);
-          padding: 14px; display: flex; flex-direction: column; gap: 8px; justify-content: center;
+          overflow: hidden;
+          display: flex; flex-direction: column;
+        }
+        .create-form-top {
+          aspect-ratio: 1;
+          padding: 14px;
+          display: flex; flex-direction: column; gap: 8px; justify-content: center;
+        }
+        .create-form-footer {
+          padding: 10px 12px;
+          font-size: 11.5px; color: #8B95A8; text-align: center;
         }
 
         @media (max-width: 480px) {
@@ -190,29 +210,37 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
             <div className="playlist-grid">
               {showCreate ? (
                 <div className="create-form-card">
-                  <input
-                    autoFocus
-                    value={newName}
-                    onChange={e => setNewName(e.target.value)}
-                    placeholder="Playlist name…"
-                    onKeyDown={e => e.key === 'Enter' && createPlaylist()}
-                    style={{ padding: '8px 10px', border: '1.5px solid #E2E5F0', borderRadius: '6px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' }}
-                  />
-                  <div style={{ display: 'flex', gap: '6px' }}>
-                    <button onClick={createPlaylist} disabled={creating} style={{ flex: 1, padding: '7px', background: '#0D1B3E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {creating ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : 'Create'}
-                    </button>
-                    <button onClick={() => setShowCreate(false)} style={{ padding: '7px 10px', background: '#F4F6FB', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#5C677D', cursor: 'pointer', fontFamily: 'inherit' }}>
-                      Cancel
-                    </button>
+                  <div className="create-form-top">
+                    <input
+                      autoFocus
+                      value={newName}
+                      onChange={e => setNewName(e.target.value)}
+                      placeholder="Playlist name…"
+                      onKeyDown={e => e.key === 'Enter' && createPlaylist()}
+                      style={{ padding: '8px 10px', border: '1.5px solid #E2E5F0', borderRadius: '6px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' }}
+                    />
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <button onClick={createPlaylist} disabled={creating} style={{ flex: 1, padding: '7px', background: '#0D1B3E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {creating ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : 'Create'}
+                      </button>
+                      <button onClick={() => setShowCreate(false)} style={{ padding: '7px 10px', background: '#F4F6FB', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#5C677D', cursor: 'pointer', fontFamily: 'inherit' }}>
+                        Cancel
+                      </button>
+                    </div>
                   </div>
+                  <div className="create-form-footer">New playlist</div>
                 </div>
               ) : (
                 <div className="new-playlist-card" onClick={() => setShowCreate(true)}>
-                  <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center' }}>
-                    <Plus size={17} color="#2563EB" />
+                  <div className="new-playlist-top">
+                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center' }}>
+                      <Plus size={17} color="#2563EB" />
+                    </div>
+                    <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#0D1B3E' }}>New Playlist</span>
                   </div>
-                  <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#0D1B3E' }}>New Playlist</span>
+                  <div className="new-playlist-footer">
+                    <span style={{ fontSize: '11.5px', color: '#8B95A8' }}>Create one</span>
+                  </div>
                 </div>
               )}
 
