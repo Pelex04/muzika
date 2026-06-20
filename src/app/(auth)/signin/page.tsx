@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Mail, Lock, Music2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import AuthVisualPanel from '@/components/auth/AuthVisualPanel'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -69,7 +70,8 @@ export default function SignInPage() {
         .auth-left {
           width:42%; padding:44px;
           background:linear-gradient(160deg,#0D1B3E 0%,#152040 40%,#1a3570 100%);
-          display:flex; flex-direction:column; justify-content:space-between;
+          display:flex; flex-direction:column;
+          position:relative; overflow:hidden;
         }
         .auth-right {
           flex:1; background:#fff;
@@ -120,33 +122,22 @@ export default function SignInPage() {
 
         {/* LEFT */}
         <div className="auth-left">
-          <Link href="/" style={{ display:'flex', alignItems:'center', gap:'10px', textDecoration:'none' }}>
-            <div style={{ width:'36px', height:'36px', borderRadius:'10px', background:'linear-gradient(135deg,#3B82F6,#1d4ed8)', display:'grid', placeItems:'center', boxShadow:'0 2px 8px rgba(59,130,246,.4)' }}>
-              <Music2 size={18} color="white" />
-            </div>
-            <span style={{ fontSize:'20px', fontWeight:800, color:'#fff', letterSpacing:'-.4px' }}>
-              MUZI<span style={{ color:'#60A5FA' }}>KA</span>
-            </span>
-          </Link>
-
-          <div>
-            <h2 style={{ fontSize:'44px', fontWeight:900, color:'#fff', letterSpacing:'-1.8px', lineHeight:1.1, marginBottom:'16px' }}>
-              Welcome <span style={{ color:'#60A5FA' }}>back.</span>
-            </h2>
-            <p style={{ fontSize:'15px', color:'rgba(255,255,255,.55)', lineHeight:1.65, marginBottom:'28px' }}>
-              Sign in to continue your music journey. Your library and downloads are waiting.
-            </p>
-            <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-              <div style={{ display:'flex' }}>
-                {['#065f46','#1e3a8a','#7f1d1d','#134e4a','#78350f'].map((c, i) => (
-                  <div key={i} style={{ width:'30px', height:'30px', borderRadius:'50%', border:'2px solid rgba(255,255,255,.15)', marginRight:'-8px', background:`linear-gradient(135deg,${c},#0d1b3e)` }} />
-                ))}
+          <AuthVisualPanel
+            headline={<>Welcome <span style={{ color: '#60A5FA' }}>back.</span></>}
+            sub="Sign in to continue your music journey. Your library and downloads are waiting."
+            footer={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex' }}>
+                  {['#065f46', '#1e3a8a', '#7f1d1d', '#134e4a', '#78350f'].map((c, i) => (
+                    <div key={i} style={{ width: '30px', height: '30px', borderRadius: '50%', border: '2px solid rgba(255,255,255,.15)', marginRight: '-8px', background: `linear-gradient(135deg,${c},#0d1b3e)` }} />
+                  ))}
+                </div>
+                <span style={{ fontSize: '13px', color: 'rgba(255,255,255,.6)', marginLeft: '16px' }}>
+                  <strong style={{ color: '#fff' }}>+4,200</strong> joined this week
+                </span>
               </div>
-              <span style={{ fontSize:'13px', color:'rgba(255,255,255,.6)', marginLeft:'16px' }}>
-                <strong style={{ color:'#fff' }}>+4,200</strong> joined this week
-              </span>
-            </div>
-          </div>
+            }
+          />
         </div>
 
         {/* RIGHT */}

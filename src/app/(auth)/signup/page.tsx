@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Mail, Lock, User, Phone, Music2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import AuthVisualPanel from '@/components/auth/AuthVisualPanel'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Enter your full name'),
@@ -36,7 +37,8 @@ const S: Record<string, React.CSSProperties> = {
     padding: '44px',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    position: 'relative',
+    overflow: 'hidden',
   },
   right: {
     flex: 1,
@@ -170,47 +172,26 @@ export default function SignUpPage() {
 
         {/* LEFT */}
         <div style={S.left} className="auth-left-signup">
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <div style={S.logoMark}>
-              <Music2 size={18} color="white" />
-            </div>
-            <span style={{ fontSize: '20px', fontWeight: 800, color: '#fff', letterSpacing: '-0.4px' }}>
-              MUZI<span style={{ color: '#60A5FA' }}>KA</span>
-            </span>
-          </Link>
-
-          <div>
-            <h2 style={{ fontSize: '44px', fontWeight: 900, color: '#fff', letterSpacing: '-1.8px', lineHeight: 1.1, marginBottom: '16px' }}>
-              Your music,<br />your <span style={{ color: '#60A5FA' }}>earnings.</span>
-            </h2>
-            <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, marginBottom: '28px' }}>
-              Join thousands of Malawian music lovers and artists on the platform built for us.
-            </p>
-
-            {/* Testimonial */}
-            <div style={{
-              background: 'rgba(255,255,255,0.07)',
-              border: '1px solid rgba(255,255,255,0.10)',
-              borderRadius: '14px', padding: '18px',
-            }}>
-              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '14px' }}>
-                &ldquo;Muzika gave me my first MK50,000 from music. I uploaded on a Sunday and had sales by Monday.&rdquo;
-              </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{
-                  width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
-                  background: 'linear-gradient(135deg, #4c1d95, #6d28d9)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <span style={{ color: '#fff', fontWeight: 700, fontSize: '14px' }}>M</span>
-                </div>
-                <div>
-                  <p style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '2px' }}>Macelina</p>
-                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>RnB Artist · Mzuzu</p>
+          <AuthVisualPanel
+            headline={<>Your music,<br />your <span style={{ color: '#60A5FA' }}>earnings.</span></>}
+            sub="Join thousands of Malawian music lovers and artists on the platform built for us."
+            footer={
+              <div style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '14px', padding: '18px' }}>
+                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '14px' }}>
+                  &ldquo;Muzika gave me my first MK50,000 from music. I uploaded on a Sunday and had sales by Monday.&rdquo;
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #4c1d95, #6d28d9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '14px' }}>M</span>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '2px' }}>Macelina</p>
+                    <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>RnB Artist · Mzuzu</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            }
+          />
         </div>
 
         {/* RIGHT */}
