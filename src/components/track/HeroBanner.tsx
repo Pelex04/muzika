@@ -1,6 +1,6 @@
 'use client'
 
-import { Play, Download } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -54,19 +54,19 @@ export default function HeroBanner({ track }: { track: Track }) {
 
       {/* Content */}
       <div className="relative z-10">
-        <div className="inline-flex items-center gap-1.5 bg-white/13 border border-white/18 rounded-full px-3 py-1 text-[11px] font-bold text-white/90 mb-2.5">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-          Trending Now
-        </div>
+        <p className="text-[11px] font-bold text-blue-300/90 uppercase tracking-[0.12em] mb-2">
+          Most played this week
+        </p>
         <h2 className="text-[22px] font-black text-white tracking-tight leading-tight mb-1">
           {track.title}
         </h2>
-        <p className="text-[13px] text-white/65 mb-3">{track.artist?.stage_name}</p>
-        <div className="inline-flex items-center gap-1.5 bg-blue-500/30 border border-white/18 rounded-full px-3.5 py-1 text-[13px] font-bold text-white">
-          <Download className="w-3 h-3" />
-          Free
-        </div>
-        <div className="flex gap-1.5 mt-3.5">
+        <p className="text-[13px] text-white/65 mb-3">
+          {track.artist?.stage_name}
+          {typeof track.play_count === 'number' && track.play_count > 0 && (
+            <span className="text-white/40"> · {track.play_count.toLocaleString()} plays</span>
+          )}
+        </p>
+        <div className="flex gap-1.5 mt-1">
           <div className="w-[18px] h-1.5 rounded-full bg-white"/>
           <div className="w-1.5 h-1.5 rounded-full bg-white/35"/>
           <div className="w-1.5 h-1.5 rounded-full bg-white/35"/>
