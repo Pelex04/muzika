@@ -85,10 +85,13 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
         <div style={{ padding: '14px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px', borderRadius: '8px' }}>
             <Link href="/profile" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
-              <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#1C2E55', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', fontWeight: 700 }}>
-                  {profile?.full_name?.charAt(0)?.toUpperCase() ?? '?'}
-                </span>
+              <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: '#1C2E55', display: 'grid', placeItems: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                {profile?.avatar_url
+                  ? <img src={profile.avatar_url} alt={profile.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px', fontWeight: 700 }}>
+                      {profile?.full_name?.charAt(0)?.toUpperCase() ?? '?'}
+                    </span>
+                }
               </div>
               <div style={{ minWidth: 0 }}>
                 <p style={{ fontSize: '13px', fontWeight: 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Upload, ChevronRight, Mic, Play, Download, DollarSign, Music2, Heart, ShoppingBag, Trash2, LogOut } from 'lucide-react'
+import { Upload, ChevronRight, Mic, Play, Download, DollarSign, Music2, Heart, ShoppingBag, Trash2, LogOut, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatMWK, formatCount } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile, Artist, Track } from '@/types'
+import EditProfileModal from '@/components/profile/EditProfileModal'
 
 interface Props {
   profile: Profile
@@ -27,6 +28,7 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const isArtist = !!artist
+  const [editOpen, setEditOpen] = useState(false)
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -44,6 +46,7 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
 
   const displayName = isArtist ? artist.stage_name : profile?.full_name
   const initial = displayName?.charAt(0)?.toUpperCase() ?? '?'
+  const avatarUrl = isArtist ? artist?.avatar_url : profile?.avatar_url
 
   return (
     <>
@@ -242,7 +245,10 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
         <div className="prof-header">
           <div className="prof-top-row">
             <div className={`prof-avatar ${isArtist ? 'prof-avatar-artist' : ''}`}>
-              {initial}
+              {avatarUrl
+                ? <img src={avatarUrl} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : initial
+              }
             </div>
             <div className="prof-info">
               <div className="prof-name">{displayName}</div>
@@ -265,11 +271,23 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
               ? <Link href="/upload" className="btn-prof-primary"><Upload size={13}/> Upload Track</Link>
               : <Link href="/become-artist" className="btn-prof-blue"><Mic size={13}/> Become an Artist</Link>
             }
+            <button onClick={() => setEditOpen(true)} className="btn-prof-ghost">
+              <Pencil size={13}/> Edit Profile
+            </button>
             <button onClick={signOut} className="btn-prof-ghost">
               <LogOut size={13}/> Sign out
             </button>
           </div>
         </div>
+
+        {editOpen && (
+          <EditProfileModal
+            profile={profile}
+            artist={artist}
+            onClose={() => setEditOpen(false)}
+            onSaved={() => { setEditOpen(false); router.refresh() }}
+          />
+        )}
 
         {/* ── ARTIST STATS ── */}
         {isArtist && (
