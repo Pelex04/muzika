@@ -120,7 +120,7 @@ export default function UploadPage() {
       <div className="max-w-[640px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:block mb-7">
           <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Share your music</p>
-          <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Upload Track</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight">Upload Track</h1>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -128,8 +128,8 @@ export default function UploadPage() {
           <div
             {...getRootProps()}
             className={cn(
-              'border-[2.5px] border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all bg-white',
-              isDragActive ? 'border-blue-500 bg-blue-50' : 'border-[#CDD0DE] hover:border-blue-400 hover:bg-blue-50/50',
+              'border-[2.5px] border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all bg-[#181818]',
+              isDragActive ? 'border-blue-500 bg-blue-950/30' : 'border-[#3a3a3a] hover:border-blue-400 hover:bg-blue-950/20',
               audioFile && 'border-emerald-500 bg-emerald-50'
             )}
           >
@@ -143,10 +143,10 @@ export default function UploadPage() {
                 : <Upload className="w-7 h-7 text-blue-600" />
               }
             </div>
-            <p className="text-[15px] font-bold text-[#0D1B3E] mb-1">
+            <p className="text-[15px] font-bold text-white mb-1">
               {audioFile ? audioFile.name : 'Drop your track here'}
             </p>
-            <p className="text-sm text-[#5C677D]">
+            <p className="text-sm text-[#b3b3b3]">
               {audioFile
                 ? `${(audioFile.size / 1024 / 1024).toFixed(1)} MB`
                 : <>MP3, WAV, FLAC · or <span className="text-blue-600 font-semibold">browse files</span></>
@@ -156,21 +156,21 @@ export default function UploadPage() {
 
           {/* Cover Art */}
           <div>
-            <label className="block text-[11px] font-bold text-[#5C677D] uppercase tracking-[.7px] mb-2">
+            <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">
               Cover Art (Optional)
             </label>
-            <label className="flex items-center gap-3 bg-white border-[1.5px] border-[#E2E5F0] rounded-xl p-3 cursor-pointer hover:border-blue-400 transition-all">
-              <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#F4F6FB] flex-shrink-0 grid place-items-center">
+            <label className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl p-3 cursor-pointer hover:border-blue-400 transition-all">
+              <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#282828] flex-shrink-0 grid place-items-center">
                 {coverPreview
                   ? <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
-                  : <Image className="w-5 h-5 text-[#8B95A8]" />
+                  : <Image className="w-5 h-5 text-[#717171]" />
                 }
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#0D1B3E]">
+                <p className="text-sm font-semibold text-white">
                   {coverFile ? coverFile.name : 'Upload cover image'}
                 </p>
-                <p className="text-xs text-[#5C677D]">JPG, PNG, WebP · Max 5MB</p>
+                <p className="text-xs text-[#717171]">JPG, PNG, WebP · Max 5MB</p>
               </div>
               <input type="file" accept="image/*" onChange={onCoverChange} className="hidden" />
             </label>
@@ -178,12 +178,12 @@ export default function UploadPage() {
 
           {/* Title */}
           <div>
-            <label className="block text-[11px] font-bold text-[#5C677D] uppercase tracking-[.7px] mb-2">
+            <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">
               Track Title
             </label>
             <input
               {...register('title')}
-              className="w-full px-4 py-3 border-[1.5px] border-[#E2E5F0] rounded-xl text-sm text-[#0D1B3E] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all"
+              className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#181818] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 transition-all"
               placeholder="Track name…"
             />
             {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
@@ -191,7 +191,7 @@ export default function UploadPage() {
 
           {/* Genre */}
           <div>
-            <label className="block text-[11px] font-bold text-[#5C677D] uppercase tracking-[.7px] mb-2">
+            <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">
               Genre
             </label>
             <div className="flex flex-wrap gap-2">
@@ -205,8 +205,8 @@ export default function UploadPage() {
                     className={cn(
                       'px-4 py-1.5 rounded-full border-[1.5px] text-sm font-semibold transition-all',
                       active
-                        ? 'bg-[#0D1B3E] border-[#0D1B3E] text-white'
-                        : 'bg-white border-[#E2E5F0] text-[#5C677D] hover:border-blue-400'
+                        ? 'bg-white border-white text-black'
+                        : 'bg-transparent border-[#3a3a3a] text-[#b3b3b3] hover:border-blue-400'
                     )}
                   >
                     {g}
@@ -219,11 +219,11 @@ export default function UploadPage() {
           {/* Upload progress */}
           {uploading && (
             <div>
-              <div className="flex justify-between text-xs text-[#5C677D] mb-1">
+              <div className="flex justify-between text-xs text-[#b3b3b3] mb-1">
                 <span>Uploading…</span>
                 <span>{uploadProgress}%</span>
               </div>
-              <div className="w-full h-2 bg-[#E2E5F0] rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-[#2a2a2a] rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 rounded-full transition-all duration-500"
                   style={{ width: `${uploadProgress}%` }}
@@ -236,7 +236,7 @@ export default function UploadPage() {
           <button
             type="submit"
             disabled={uploading}
-            className="w-full py-4 bg-[#0D1B3E] text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#152f6e] transition-colors disabled:opacity-60"
+            className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-60"
           >
             {uploading
               ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</>

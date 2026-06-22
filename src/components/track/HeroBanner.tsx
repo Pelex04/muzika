@@ -1,15 +1,39 @@
 'use client'
 
+import { useState, useEffect, useRef } from 'react'
 import { Play } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-
 import type { Track } from '@/types'
 
-export default function HeroBanner({ track }: { track: Track }) {
+const ROTATE_MS = 6000
+
+// Distinct gradient + sunburst tint per slide so the rotation is visually
+// obvious even before the title changes — addresses "dots imply changing
+// background" by actually changing the background.
+const SLIDE_THEMES = [
+  { from: '#0D1B3E', mid: '#152b6e', to: '#1e4a9e', ray: '#d4af37', glow: 'rgba(59,130,246,0.18)' },
+  { from: '#1b1033', mid: '#3a1d6e', to: '#5b2a9e', ray: '#c9a8ff', glow: 'rgba(139,92,246,0.20)' },
+  { from: '#062018', mid: '#0d4a35', to: '#127a52', ray: '#6ee7b7', glow: 'rgba(16,185,129,0.18)' },
+]
+
+export default function HeroBanner({ tracks }: { tracks: Track[] }) {
   const { play } = usePlayerStore()
   const router = useRouter()
+  const [active, setActive] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
+
+  useEffect(() => {
+    if (tracks.length <= 1) return
+    timerRef.current = setInterval(() => {
+      setActive(i => (i + 1) % tracks.length)
+    }, ROTATE_MS)
+    return () => clearInterval(timerRef.current)
+  }, [tracks.length])
+
+  const track = tracks[active]
+  const theme = SLIDE_THEMES[active % SLIDE_THEMES.length]
 
   const handlePlay = async () => {
     const res = await fetch(`/api/tracks/${track.id}/stream`)
@@ -19,29 +43,41 @@ export default function HeroBanner({ track }: { track: Track }) {
     router.push('/now-playing')
   }
 
+  const goTo = (i: number, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setActive(i)
+    clearInterval(timerRef.current)
+    if (tracks.length > 1) {
+      timerRef.current = setInterval(() => setActive(p => (p + 1) % tracks.length), ROTATE_MS)
+    }
+  }
+
   return (
     <div
       className="relative rounded-2xl overflow-hidden mb-7 min-h-[164px] flex items-end justify-between p-7 cursor-pointer group"
-      style={{ background: 'linear-gradient(130deg, #0D1B3E 0%, #152b6e 55%, #1e4a9e 100%)' }}
+      style={{
+        background: `linear-gradient(130deg, ${theme.from} 0%, ${theme.mid} 55%, ${theme.to} 100%)`,
+        transition: 'background 0.6s ease',
+      }}
       onClick={handlePlay}
     >
-      {/* Decorative art */}
-      <div className="absolute inset-0 pointer-events-none opacity-50">
+      {/* Decorative art — re-tinted per slide */}
+      <div className="absolute inset-0 pointer-events-none opacity-50" style={{ transition: 'opacity 0.6s ease' }}>
         <svg viewBox="0 0 600 200" className="absolute right-0 top-0 h-full w-1/2" preserveAspectRatio="xMidYMid slice">
           <defs>
-            <radialGradient id="hg" cx="50%" cy="0%" r="100%">
-              <stop offset="0%" stopColor="#3B82F6" stopOpacity=".3"/>
-              <stop offset="100%" stopColor="#0D1B3E" stopOpacity="0"/>
+            <radialGradient id={`hg-${active}`} cx="50%" cy="0%" r="100%">
+              <stop offset="0%" stopColor={theme.to} stopOpacity=".35"/>
+              <stop offset="100%" stopColor={theme.from} stopOpacity="0"/>
             </radialGradient>
           </defs>
-          <rect width="600" height="200" fill="url(#hg)"/>
-          <g stroke="#d4af37" strokeWidth="1.5" opacity=".7">
+          <rect width="600" height="200" fill={`url(#hg-${active})`}/>
+          <g stroke={theme.ray} strokeWidth="1.5" opacity=".6">
             {[30, 90, 150, 200, 260, 310, 370].map((x, i) => (
               <line key={i} x1="200" y1="0" x2={x} y2="200"/>
             ))}
           </g>
-          <circle cx="200" cy="80" r="55" fill="rgba(59,130,246,0.18)"/>
-          <circle cx="200" cy="80" r="32" fill="rgba(59,130,246,0.12)"/>
+          <circle cx="200" cy="80" r="55" fill={theme.glow}/>
+          <circle cx="200" cy="80" r="32" fill={theme.glow}/>
         </svg>
       </div>
 
@@ -66,11 +102,27 @@ export default function HeroBanner({ track }: { track: Track }) {
             <span className="text-white/40"> · {track.play_count.toLocaleString()} plays</span>
           )}
         </p>
-        <div className="flex gap-1.5 mt-1">
-          <div className="w-[18px] h-1.5 rounded-full bg-white"/>
-          <div className="w-1.5 h-1.5 rounded-full bg-white/35"/>
-          <div className="w-1.5 h-1.5 rounded-full bg-white/35"/>
-        </div>
+        {tracks.length > 1 && (
+          <div className="flex gap-1.5 mt-1">
+            {tracks.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => goTo(i, e)}
+                aria-label={`Show track ${i + 1}`}
+                className="transition-all"
+                style={{
+                  width: i === active ? '18px' : '6px',
+                  height: '6px',
+                  borderRadius: '3px',
+                  background: i === active ? '#fff' : 'rgba(255,255,255,0.35)',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Play button */}
@@ -78,7 +130,7 @@ export default function HeroBanner({ track }: { track: Track }) {
         className="relative z-10 w-[52px] h-[52px] rounded-full bg-white flex-shrink-0 grid place-items-center shadow-xl group-hover:scale-105 transition-transform"
         onClick={(e) => { e.stopPropagation(); handlePlay() }}
       >
-        <Play className="w-5 h-5 text-[#0D1B3E] ml-0.5" fill="#0D1B3E" />
+        <Play className="w-5 h-5 text-black ml-0.5" fill="black" />
       </button>
     </div>
   )

@@ -16,7 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .single()
 
   return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#F4F6FB' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#121212' }}>
       <Sidebar profile={profile} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
         <main style={{ flex: 1, overflowY: 'auto', paddingBottom: '76px' }}>

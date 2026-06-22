@@ -67,19 +67,19 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
     <>
       <style>{`
         .lib-wrap { max-width: 1080px; margin: 0 auto; padding: 20px 16px 100px; }
-        .lib-tabs { display: flex; gap: 4px; background: #fff; border-radius: 10px; padding: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(13,27,62,.06); }
-        .lib-tab { flex: 1; padding: 9px 0; border-radius: 7px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #5C677D; cursor: pointer; font-family: inherit; transition: all .15s; }
-        .lib-tab.on { background: #0D1B3E; color: #fff; }
+        .lib-tabs { display: flex; gap: 4px; background: #181818; border-radius: 10px; padding: 4px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+        .lib-tab { flex: 1; padding: 9px 0; border-radius: 7px; border: none; background: transparent; font-size: 13px; font-weight: 700; color: #b3b3b3; cursor: pointer; font-family: inherit; transition: all .15s; }
+        .lib-tab.on { background: #ffffff; color: #000000; }
         .lib-track-row { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: background .12s; }
-        .lib-track-row:hover { background: #F4F6FB; }
+        .lib-track-row:hover { background: #282828; }
         .lib-track-art { width: 46px; height: 46px; border-radius: 8px; flex-shrink: 0; overflow: hidden; }
 
         .lib-empty {
           text-align: center; padding: 56px 24px;
-          background: #fff; border-radius: 14px;
-          box-shadow: 0 1px 3px rgba(13,27,62,.06);
+          background: #181818; border-radius: 14px;
+          box-shadow: 0 1px 3px rgba(0,0,0,.3);
         }
-        .lib-empty-icon { width: 60px; height: 60px; border-radius: 16px; background: #F4F6FB; display: grid; place-items: center; margin: 0 auto 16px; }
+        .lib-empty-icon { width: 60px; height: 60px; border-radius: 16px; background: #282828; display: grid; place-items: center; margin: 0 auto 16px; }
 
         /* Fixed-width cards, left-aligned, never stretch to fill the row */
         .playlist-grid {
@@ -90,13 +90,13 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         }
         .playlist-card {
           width: 148px;
-          background: #fff; border-radius: 12px; overflow: hidden;
+          background: #181818; border-radius: 12px; overflow: hidden;
           cursor: pointer;
-          box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08);
+          box-shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.4);
           transition: transform .15s, box-shadow .15s;
           text-decoration: none; display: block;
         }
-        .playlist-card:hover { transform: translateY(-3px); box-shadow: 0 4px 6px rgba(13,27,62,.04), 0 12px 30px rgba(13,27,62,.14); }
+        .playlist-card:hover { transform: translateY(-3px); box-shadow: 0 4px 6px rgba(0,0,0,.4), 0 12px 30px rgba(0,0,0,.5); }
         .playlist-cover {
           aspect-ratio: 1;
           background: linear-gradient(135deg,#1e3a8a,#0d1b3e);
@@ -107,12 +107,12 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
 
         .new-playlist-card {
           width: 148px;
-          background: #fff; border: 1.5px dashed #CDD0DE; border-radius: 12px;
+          background: transparent; border: 1.5px dashed #3a3a3a; border-radius: 12px;
           overflow: hidden;
           cursor: pointer; transition: all .15s;
           display: flex; flex-direction: column;
         }
-        .new-playlist-card:hover { border-color: #2563EB; background: #EBF1FF; }
+        .new-playlist-card:hover { border-color: #2563EB; background: #1a2332; }
         .new-playlist-top {
           aspect-ratio: 1;
           display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -125,8 +125,8 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
 
         .create-form-card {
           width: 148px;
-          background: #fff; border-radius: 12px;
-          box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08);
+          background: #181818; border-radius: 12px;
+          box-shadow: 0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.4);
           overflow: hidden;
           display: flex; flex-direction: column;
         }
@@ -137,7 +137,7 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         }
         .create-form-footer {
           padding: 10px 12px;
-          font-size: 11.5px; color: #8B95A8; text-align: center;
+          font-size: 11.5px; color: #717171; text-align: center;
         }
 
         @media (max-width: 480px) {
@@ -150,8 +150,8 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
 
       <div className="lib-wrap">
         <div className="hidden md:block mb-6">
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '.7px', marginBottom: '4px' }}>Your music</p>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#0D1B3E', letterSpacing: '-0.6px' }}>Library</h1>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#60a5fa', textTransform: 'uppercase', letterSpacing: '.7px', marginBottom: '4px' }}>Your music</p>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.6px' }}>Library</h1>
         </div>
 
         <div className="lib-tabs">
@@ -166,22 +166,22 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         {activeTab === 'saved' && (
           savedTracks.length === 0 ? (
             <div className="lib-empty">
-              <div className="lib-empty-icon"><Heart size={24} color="#8B95A8" /></div>
-              <p style={{ fontSize: '16px', fontWeight: 800, color: '#0D1B3E', marginBottom: '6px' }}>No saved tracks yet</p>
-              <p style={{ fontSize: '13.5px', color: '#8B95A8' }}>Tap the bookmark icon on any track to save it here.</p>
+              <div className="lib-empty-icon"><Heart size={24} color="#717171" /></div>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff', marginBottom: '6px' }}>No saved tracks yet</p>
+              <p style={{ fontSize: '13.5px', color: '#717171' }}>Tap the bookmark icon on any track to save it here.</p>
             </div>
           ) : (
-            <div style={{ background: '#fff', borderRadius: '12px', padding: '12px', boxShadow: '0 1px 3px rgba(13,27,62,.06)' }}>
+            <div style={{ background: '#181818', borderRadius: '12px', padding: '12px', boxShadow: '0 1px 3px rgba(0,0,0,.3)' }}>
               {savedTracks.map(track => (
                 <div key={track.id} className="lib-track-row" onClick={() => handlePlay(track)}>
                   <div className="lib-track-art" style={{ background: artBg(track.genre) }}>
                     {track.cover_url && <img src={track.cover_url} alt={track.title} style={{ width:'100%',height:'100%',objectFit:'cover' }} />}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0D1B3E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{track.title}</p>
-                    <p style={{ fontSize: '12px', color: '#8B95A8', marginTop: '1px' }}>{track.artist?.stage_name} · {track.genre}</p>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{track.title}</p>
+                    <p style={{ fontSize: '12px', color: '#717171', marginTop: '1px' }}>{track.artist?.stage_name} · {track.genre}</p>
                   </div>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#8B95A8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#717171"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                 </div>
               ))}
             </div>
@@ -191,14 +191,14 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         {activeTab === 'playlists' && (
           playlists.length === 0 && !showCreate ? (
             <div className="lib-empty">
-              <div className="lib-empty-icon"><ListMusic size={24} color="#8B95A8" /></div>
-              <p style={{ fontSize: '16px', fontWeight: 800, color: '#0D1B3E', marginBottom: '6px' }}>No playlists yet</p>
-              <p style={{ fontSize: '13.5px', color: '#8B95A8', marginBottom: '20px' }}>Create your first playlist to start organizing tracks.</p>
+              <div className="lib-empty-icon"><ListMusic size={24} color="#717171" /></div>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff', marginBottom: '6px' }}>No playlists yet</p>
+              <p style={{ fontSize: '13.5px', color: '#717171', marginBottom: '20px' }}>Create your first playlist to start organizing tracks.</p>
               <button
                 onClick={() => setShowCreate(true)}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: '7px',
-                  padding: '10px 20px', background: '#0D1B3E', color: '#fff',
+                  padding: '10px 20px', background: '#ffffff', color: '#000000',
                   border: 'none', borderRadius: '9px', fontSize: '13.5px', fontWeight: 700,
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}
@@ -217,13 +217,13 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
                       onChange={e => setNewName(e.target.value)}
                       placeholder="Playlist name…"
                       onKeyDown={e => e.key === 'Enter' && createPlaylist()}
-                      style={{ padding: '8px 10px', border: '1.5px solid #E2E5F0', borderRadius: '6px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' }}
+                      style={{ padding: '8px 10px', border: '1.5px solid #3a3a3a', borderRadius: '6px', fontSize: '13px', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box', background: '#121212', color: '#ffffff' }}
                     />
                     <div style={{ display: 'flex', gap: '6px' }}>
-                      <button onClick={createPlaylist} disabled={creating} style={{ flex: 1, padding: '7px', background: '#0D1B3E', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <button onClick={createPlaylist} disabled={creating} style={{ flex: 1, padding: '7px', background: '#ffffff', color: '#000000', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {creating ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : 'Create'}
                       </button>
-                      <button onClick={() => setShowCreate(false)} style={{ padding: '7px 10px', background: '#F4F6FB', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#5C677D', cursor: 'pointer', fontFamily: 'inherit' }}>
+                      <button onClick={() => setShowCreate(false)} style={{ padding: '7px 10px', background: '#282828', border: 'none', borderRadius: '6px', fontSize: '12px', fontWeight: 600, color: '#b3b3b3', cursor: 'pointer', fontFamily: 'inherit' }}>
                         Cancel
                       </button>
                     </div>
@@ -233,13 +233,13 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
               ) : (
                 <div className="new-playlist-card" onClick={() => setShowCreate(true)}>
                   <div className="new-playlist-top">
-                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center' }}>
-                      <Plus size={17} color="#2563EB" />
+                    <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#282828', display: 'grid', placeItems: 'center' }}>
+                      <Plus size={17} color="#60a5fa" />
                     </div>
-                    <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#0D1B3E' }}>New Playlist</span>
+                    <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#ffffff' }}>New Playlist</span>
                   </div>
                   <div className="new-playlist-footer">
-                    <span style={{ fontSize: '11.5px', color: '#8B95A8' }}>Create one</span>
+                    <span style={{ fontSize: '11.5px', color: '#717171' }}>Create one</span>
                   </div>
                 </div>
               )}
@@ -257,8 +257,8 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
                     <Music2 size={30} color="rgba(255,255,255,0.4)" style={{ position: 'relative', zIndex: 1 }} />
                   </div>
                   <div style={{ padding: '10px 12px' }}>
-                    <p style={{ fontSize: '13px', fontWeight: 700, color: '#0D1B3E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</p>
-                    <p style={{ fontSize: '11.5px', color: '#8B95A8', marginTop: '2px' }}>{p.track_count ?? 0} track{p.track_count === 1 ? '' : 's'}</p>
+                    <p style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</p>
+                    <p style={{ fontSize: '11.5px', color: '#717171', marginTop: '2px' }}>{p.track_count ?? 0} track{p.track_count === 1 ? '' : 's'}</p>
                   </div>
                 </Link>
               ))}

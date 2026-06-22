@@ -9,7 +9,7 @@ import HeroBanner from '@/components/track/HeroBanner'
 import QuickNav from '@/components/layout/QuickNav'
 
 interface Props {
-  trendingTrack: Track | null
+  trendingTracks: Track[]
   tracks: Track[]
   artists: Artist[]
   userId: string | null
@@ -23,7 +23,7 @@ function getGreeting(): string {
   return 'Good night'
 }
 
-export default function DiscoverClient({ trendingTrack, tracks, artists, userId }: Props) {
+export default function DiscoverClient({ trendingTracks, tracks, artists, userId }: Props) {
   const greeting = getGreeting()
   return (
     <div>
@@ -35,30 +35,30 @@ export default function DiscoverClient({ trendingTrack, tracks, artists, userId 
         <div className="hidden md:flex items-center justify-between mb-7">
           <div>
             <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">{greeting}</p>
-            <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Discover</h1>
+            <h1 className="text-3xl font-black text-white tracking-tight">Discover</h1>
           </div>
           <div className="flex gap-2">
-            <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D] hover:bg-[#ECEEF5]"><Bell className="w-4 h-4" /></button>
-            <button className="w-9 h-9 rounded-[9px] bg-[#F4F6FB] grid place-items-center text-[#5C677D] hover:bg-[#ECEEF5]"><User className="w-4 h-4" /></button>
+            <button className="w-9 h-9 rounded-[9px] bg-[#282828] grid place-items-center text-[#b3b3b3] hover:bg-[#3a3a3a]"><Bell className="w-4 h-4" /></button>
+            <button className="w-9 h-9 rounded-[9px] bg-[#282828] grid place-items-center text-[#b3b3b3] hover:bg-[#3a3a3a]"><User className="w-4 h-4" /></button>
           </div>
         </div>
 
         {/* Search */}
-        <div className="flex items-center gap-3 bg-white border-[1.5px] border-[#E2E5F0] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-          <Search className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
-          <input className="flex-1 bg-transparent text-sm text-[#0D1B3E] outline-none placeholder:text-[#8B95A8]" placeholder="Artists, songs, albums, videos…" />
-          <Mic className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
+        <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+          <Search className="w-4 h-4 text-[#717171] flex-shrink-0" />
+          <input className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#717171]" placeholder="Artists, songs, albums, videos…" />
+          <Mic className="w-4 h-4 text-[#717171] flex-shrink-0" />
         </div>
 
         {/* Hero Banner */}
-        {trendingTrack && <HeroBanner track={trendingTrack} />}
+        {trendingTracks.length > 0 && <HeroBanner tracks={trendingTracks} />}
 
         {/* Quick Nav */}
         <QuickNav active="home" />
 
         {/* New Releases */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[17px] font-black text-[#0D1B3E] tracking-tight">New Releases</h2>
+          <h2 className="text-[17px] font-black text-white tracking-tight">New Releases</h2>
           <a href="/songs" className="text-sm font-bold text-blue-600 hover:underline">See all</a>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 mb-8">
@@ -69,7 +69,7 @@ export default function DiscoverClient({ trendingTrack, tracks, artists, userId 
 
         {/* Featured Artists */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[17px] font-black text-[#0D1B3E] tracking-tight">Featured Artists</h2>
+          <h2 className="text-[17px] font-black text-white tracking-tight">Featured Artists</h2>
           <a href="/artists" className="text-sm font-bold text-blue-600 hover:underline">See all</a>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 mb-8">

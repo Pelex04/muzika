@@ -57,7 +57,7 @@ export default function BlogClient({ posts }: Props) {
         eyebrow="Stories from the scene"
         title="Blog & News"
         rightSlot={
-          <Link href="/blog/new" style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', background:'#0D1B3E', color:'#fff', borderRadius:'8px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
+          <Link href="/blog/new" style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', background:'#ffffff', color:'#000000', borderRadius:'8px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
             <PenSquare size={13} /> Write
           </Link>
         }
@@ -67,17 +67,17 @@ export default function BlogClient({ posts }: Props) {
         <div className="hidden md:flex items-center justify-between mb-7">
           <div>
             <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Stories from the scene</p>
-            <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Blog &amp; News</h1>
+            <h1 className="text-3xl font-black text-white tracking-tight">Blog &amp; News</h1>
           </div>
-          <Link href="/blog/new" className="flex items-center gap-2 px-4 py-2.5 bg-[#0D1B3E] text-white rounded-lg text-sm font-bold hover:bg-[#152f6e] transition-colors">
+          <Link href="/blog/new" className="flex items-center gap-2 px-4 py-2.5 bg-white text-black rounded-lg text-sm font-bold hover:bg-gray-200 transition-colors">
             <PenSquare className="w-4 h-4" /> Write
           </Link>
         </div>
 
-        <div className="flex items-center gap-3 bg-white border-[1.5px] border-[#E2E5F0] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-          <Search className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
-          <input className="flex-1 bg-transparent text-sm text-[#0D1B3E] outline-none placeholder:text-[#8B95A8]" placeholder="Search articles…" value={search} onChange={e => setSearch(e.target.value)} />
-          <Mic className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
+        <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+          <Search className="w-4 h-4 text-[#717171] flex-shrink-0" />
+          <input className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#717171]" placeholder="Search articles…" value={search} onChange={e => setSearch(e.target.value)} />
+          <Mic className="w-4 h-4 text-[#717171] flex-shrink-0" />
         </div>
 
         <div className="flex gap-2 mb-5 overflow-x-auto pb-1 scrollbar-none">
@@ -86,8 +86,8 @@ export default function BlogClient({ posts }: Props) {
               className={cn(
                 'px-4 py-1.5 rounded-full border-[1.5px] text-[13px] font-semibold whitespace-nowrap transition-all flex-shrink-0',
                 activeCat === c
-                  ? 'bg-[#0D1B3E] border-[#0D1B3E] text-white'
-                  : 'bg-white border-[#E2E5F0] text-[#5C677D] hover:border-blue-500'
+                  ? 'bg-white border-white text-black'
+                  : 'bg-transparent border-[#3a3a3a] text-[#b3b3b3] hover:border-blue-500'
               )}>
               {c}
             </button>
@@ -95,7 +95,7 @@ export default function BlogClient({ posts }: Props) {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="text-center py-16 text-[#8B95A8]">
+          <div className="text-center py-16 text-[#717171]">
             <p className="text-lg font-semibold">No posts yet</p>
             <p className="text-sm mt-1">Be the first to write something!</p>
           </div>
@@ -121,12 +121,12 @@ export default function BlogClient({ posts }: Props) {
                     )
                   }
                 </div>
-                <div className="bg-white p-4">
+                <div className="bg-[#181818] p-4">
                   <p className={cn('flex items-center gap-1.5 text-[10px] font-black tracking-[.9px] uppercase mb-1.5', CAT_COLORS[hero.category])}>
                     <CatIcon category={hero.category} /> {CAT_TEXT[hero.category]}
                   </p>
-                  <h3 className="text-base font-bold text-[#0D1B3E] leading-snug">{hero.title}</h3>
-                  {hero.excerpt && <p className="text-sm text-[#5C677D] mt-1 line-clamp-2">{hero.excerpt}</p>}
+                  <h3 className="text-base font-bold text-white leading-snug">{hero.title}</h3>
+                  {hero.excerpt && <p className="text-sm text-[#b3b3b3] mt-1 line-clamp-2">{hero.excerpt}</p>}
                 </div>
               </div>
             )}
@@ -134,7 +134,7 @@ export default function BlogClient({ posts }: Props) {
             {/* Rest of posts */}
             <div className="flex flex-col gap-2.5">
               {rest.map(post => (
-                <div key={post.id} className="bg-white rounded-xl p-3.5 flex gap-3.5 cursor-pointer shadow-[0_1px_3px_rgba(13,27,62,.06),0_4px_16px_rgba(13,27,62,.08)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(13,27,62,.04),0_12px_40px_rgba(13,27,62,.14)] transition-all">
+                <div key={post.id} className="bg-[#181818] rounded-xl p-3.5 flex gap-3.5 cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,.3),0_4px_16px_rgba(0,0,0,.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(0,0,0,.4),0_12px_40px_rgba(0,0,0,.5)] transition-all">
                   <div className="w-20 h-20 rounded-[9px] overflow-hidden flex-shrink-0 bg-[#0D1B3E]">
                     {post.cover_url
                       ? <img src={post.cover_url} alt={post.title} className="w-full h-full object-cover" />
@@ -145,8 +145,8 @@ export default function BlogClient({ posts }: Props) {
                     <p className={cn('flex items-center gap-1.5 text-[10px] font-black tracking-[.9px] uppercase mb-1', CAT_COLORS[post.category])}>
                       <CatIcon category={post.category} size={10} /> {CAT_TEXT[post.category]}
                     </p>
-                    <h3 className="text-sm font-bold text-[#0D1B3E] leading-snug line-clamp-2">{post.title}</h3>
-                    <p className="text-xs text-[#8B95A8] mt-1">
+                    <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">{post.title}</h3>
+                    <p className="text-xs text-[#717171] mt-1">
                       {post.author?.full_name} · {format(new Date(post.created_at), 'MMM d, yyyy')}
                     </p>
                   </div>

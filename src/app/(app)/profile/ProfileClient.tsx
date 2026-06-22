@@ -52,7 +52,7 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
 
         /* ── HEADER ── */
         .prof-header {
-          background: #fff;
+          background: #181818;
           border-radius: 16px;
           padding: 20px;
           margin-bottom: 12px;
@@ -80,11 +80,11 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
         .prof-info { flex: 1; min-width: 0; }
         .prof-name {
           font-size: 18px; font-weight: 800;
-          color: #0D1B3E; letter-spacing: -0.3px;
+          color: #ffffff; letter-spacing: -0.3px;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .prof-email { font-size: 13px; color: #8B95A8; margin-top: 2px; }
-        .prof-genre { font-size: 13px; color: #5C677D; margin-top: 1px; }
+        .prof-email { font-size: 13px; color: #717171; margin-top: 2px; }
+        .prof-genre { font-size: 13px; color: #b3b3b3; margin-top: 1px; }
         .prof-badge {
           display: inline-flex; align-items: center; gap: 3px;
           background: #DBEAFE; color: #1d4ed8;
@@ -97,12 +97,12 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
         .prof-actions {
           display: flex; gap: 8px; flex-wrap: wrap;
           padding-top: 4px;
-          border-top: 1px solid #F4F6FB;
+          border-top: 1px solid #2a2a2a;
         }
         .btn-prof-primary {
           display: inline-flex; align-items: center; gap: 6px;
           padding: 9px 16px; border-radius: 8px;
-          background: #0D1B3E; color: #fff;
+          background: #ffffff; color: #000000;
           font-size: 13px; font-weight: 700;
           text-decoration: none; border: none; cursor: pointer;
           font-family: inherit;
@@ -118,12 +118,12 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
         .btn-prof-ghost {
           display: inline-flex; align-items: center; gap: 5px;
           padding: 9px 14px; border-radius: 8px;
-          background: #F4F6FB; border: 1.5px solid #E2E5F0;
-          color: #5C677D; font-size: 13px; font-weight: 600;
+          background: #121212; border: 1.5px solid #2a2a2a;
+          color: #b3b3b3; font-size: 13px; font-weight: 600;
           cursor: pointer; font-family: inherit;
         }
         .prof-bio {
-          font-size: 13.5px; color: #5C677D;
+          font-size: 13.5px; color: #b3b3b3;
           line-height: 1.6; margin-top: 10px;
         }
 
@@ -135,18 +135,18 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
           margin-bottom: 12px;
         }
         .stat-box {
-          background: #fff; border-radius: 12px;
+          background: #181818; border-radius: 12px;
           padding: 14px 12px;
           box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08);
           text-align: center;
         }
         .stat-box-icon { font-size: 18px; margin-bottom: 6px; }
-        .stat-box-val { font-size: 20px; font-weight: 900; color: #0D1B3E; letter-spacing: -0.5px; }
-        .stat-box-label { font-size: 11px; color: #8B95A8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .stat-box-val { font-size: 20px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px; }
+        .stat-box-label { font-size: 11px; color: #717171; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
         /* ── TABS ── */
         .tabs-wrap {
-          background: #fff; border-radius: 10px;
+          background: #181818; border-radius: 10px;
           padding: 4px; margin-bottom: 12px;
           box-shadow: 0 1px 3px rgba(13,27,62,.06);
           display: flex; gap: 2px; overflow-x: auto;
@@ -156,15 +156,15 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
           padding: 8px 14px; border-radius: 7px;
           border: none; background: transparent;
           font-size: 13px; font-weight: 600;
-          color: #5C677D; cursor: pointer;
+          color: #b3b3b3; cursor: pointer;
           font-family: inherit; white-space: nowrap;
           transition: all .12s; flex-shrink: 0;
         }
-        .tab-btn.on { background: #0D1B3E; color: #fff; }
+        .tab-btn.on { background: #ffffff; color: #000000; }
 
         /* ── CARDS ── */
         .tab-card {
-          background: #fff; border-radius: 12px;
+          background: #181818; border-radius: 12px;
           padding: 18px 16px;
           box-shadow: 0 1px 3px rgba(13,27,62,.06), 0 4px 16px rgba(13,27,62,.08);
         }
@@ -172,7 +172,7 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
           display: flex; align-items: center;
           justify-content: space-between; margin-bottom: 14px;
         }
-        .tab-card-title { font-size: 15px; font-weight: 800; color: #0D1B3E; }
+        .tab-card-title { font-size: 15px; font-weight: 800; color: #ffffff; }
         .tab-card-action {
           font-size: 13px; font-weight: 600; color: #2563EB;
           background: none; border: none; cursor: pointer; font-family: inherit;
@@ -193,7 +193,7 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
         .become-sub { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.6; }
         .btn-become {
           display: inline-flex; align-items: center; gap: 7px;
-          padding: 11px 18px; background: #fff; color: #0D1B3E;
+          padding: 11px 18px; background: #ffffff; color: #000000;
           border-radius: 9px; font-size: 13.5px; font-weight: 800;
           text-decoration: none; align-self: flex-start;
         }
@@ -201,7 +201,7 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
         /* ── TRACK ROWS ── */
         .track-row {
           display: flex; align-items: center; gap: 12px;
-          padding: 9px 0; border-bottom: 1px solid #F4F6FB;
+          padding: 9px 0; border-bottom: 1px solid #121212;
         }
         .track-row:last-child { border-bottom: none; }
         .track-thumb {
@@ -209,22 +209,22 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
           flex-shrink: 0; overflow: hidden;
         }
         .track-row-info { flex: 1; min-width: 0; }
-        .track-row-name { font-size: 13.5px; font-weight: 700; color: #0D1B3E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .track-row-sub { font-size: 12px; color: #8B95A8; margin-top: 1px; }
+        .track-row-name { font-size: 13.5px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .track-row-sub { font-size: 12px; color: #717171; margin-top: 1px; }
         .track-row-stats { display: flex; gap: 12px; flex-shrink: 0; }
         .tstat { text-align: right; }
-        .tstat-val { font-size: 12px; font-weight: 700; color: #0D1B3E; }
-        .tstat-label { font-size: 10px; color: #8B95A8; text-transform: uppercase; letter-spacing: 0.4px; }
+        .tstat-val { font-size: 12px; font-weight: 700; color: #ffffff; }
+        .tstat-label { font-size: 10px; color: #717171; text-transform: uppercase; letter-spacing: 0.4px; }
         .btn-del { width: 28px; height: 28px; border-radius: 6px; border: none; background: #FEF2F2; cursor: pointer; display: grid; place-items: center; flex-shrink: 0; }
 
         /* ── EMPTY STATES ── */
         .empty { text-align: center; padding: 36px 16px; }
         .empty-icon { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; margin: 0 auto 12px; }
-        .empty-title { font-size: 15px; font-weight: 800; color: #0D1B3E; margin-bottom: 4px; }
-        .empty-sub { font-size: 13px; color: #8B95A8; line-height: 1.6; margin-bottom: 16px; }
+        .empty-title { font-size: 15px; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
+        .empty-sub { font-size: 13px; color: #717171; line-height: 1.6; margin-bottom: 16px; }
         .btn-empty {
           display: inline-flex; align-items: center; gap: 6px;
-          padding: 10px 20px; background: #0D1B3E; color: #fff;
+          padding: 10px 20px; background: #ffffff; color: #000000;
           border-radius: 8px; font-size: 13.5px; font-weight: 700;
           text-decoration: none;
         }
@@ -347,12 +347,12 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
           <div className="tab-card">
             <div className="tab-card-header">
               <span className="tab-card-title">All Tracks</span>
-              <Link href="/upload" style={{ display:'inline-flex', alignItems:'center', gap:'5px', padding:'7px 13px', background:'#0D1B3E', color:'#fff', borderRadius:'7px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
+              <Link href="/upload" style={{ display:'inline-flex', alignItems:'center', gap:'5px', padding:'7px 13px', background:'#ffffff', color:'#000000', borderRadius:'7px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
                 <Upload size={11}/> Upload
               </Link>
             </div>
             {tracks.length === 0
-              ? <p style={{ textAlign:'center', padding:'28px 0', color:'#8B95A8', fontSize:'14px' }}>No tracks yet.</p>
+              ? <p style={{ textAlign:'center', padding:'28px 0', color:'#717171', fontSize:'14px' }}>No tracks yet.</p>
               : tracks.map(t => <TrackRow key={t.id} track={t} onDelete={deleteTrack} deleting={deletingId === t.id} showStats />)
             }
           </div>
@@ -431,7 +431,7 @@ function TrackRow({ track, onDelete, deleting, showStats }: {
         </div>
       )}
       <button className="btn-del" onClick={() => onDelete(track.id)} disabled={deleting}>
-        {deleting ? <span style={{fontSize:'11px',color:'#8B95A8'}}>…</span> : <Trash2 size={13} color="#EF4444"/>}
+        {deleting ? <span style={{fontSize:'11px',color:'#717171'}}>…</span> : <Trash2 size={13} color="#EF4444"/>}
       </button>
     </div>
   )

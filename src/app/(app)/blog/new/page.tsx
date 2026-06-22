@@ -37,7 +37,7 @@ export default function NewBlogPostPage() {
     e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)'
   }
   const blur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    e.target.style.borderColor = '#E2E5F0'
+    e.target.style.borderColor = '#2a2a2a'
     e.target.style.boxShadow = 'none'
   }
 
@@ -75,14 +75,14 @@ export default function NewBlogPostPage() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '12px 14px',
-    border: '1.5px solid #E2E5F0', borderRadius: '8px',
-    fontSize: '14px', color: '#0D1B3E', outline: 'none',
+    border: '1.5px solid #2a2a2a', borderRadius: '8px',
+    fontSize: '14px', color: '#ffffff', outline: 'none',
     boxSizing: 'border-box', fontFamily: 'inherit',
-    transition: 'border-color .2s, box-shadow .2s', background: '#fff',
+    transition: 'border-color .2s, box-shadow .2s', background: '#181818',
   }
   const labelStyle: React.CSSProperties = {
     display: 'block', fontSize: '11px', fontWeight: 700,
-    color: '#5C677D', textTransform: 'uppercase',
+    color: '#b3b3b3', textTransform: 'uppercase',
     letterSpacing: '0.7px', marginBottom: '7px',
   }
 
@@ -94,12 +94,12 @@ export default function NewBlogPostPage() {
         @media (min-width: 768px) { .desktop-header { display: flex; } }
         .cat-pill {
           padding: 8px 16px; border-radius: 20px; cursor: pointer;
-          font-size: 13px; font-weight: 600; border: 1.5px solid #E2E5F0;
-          background: #fff; color: #5C677D; transition: all .15s;
+          font-size: 13px; font-weight: 600; border: 1.5px solid #2a2a2a;
+          background: transparent; color: #b3b3b3; transition: all .15s;
         }
-        .cat-pill.on { background: #0D1B3E; border-color: #0D1B3E; color: #fff; }
+        .cat-pill.on { background: #ffffff; border-color: #ffffff; color: #000000; }
         .drop-zone-mini {
-          border: 2px dashed #CDD0DE; border-radius: 12px;
+          border: 2px dashed #3a3a3a; border-radius: 12px;
           padding: 24px; text-align: center; cursor: pointer;
           transition: all .2s; background: #fff;
         }
@@ -110,15 +110,15 @@ export default function NewBlogPostPage() {
 
       <div className="new-post-wrap">
         <div className="desktop-header" style={{ alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <Link href="/blog" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#5C677D', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>
+          <Link href="/blog" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#b3b3b3', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>
             <ChevronLeft size={18} /> Back to Blog
           </Link>
         </div>
 
-        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0D1B3E', letterSpacing: '-0.5px', marginBottom: '4px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: '4px' }}>
           Write a new post
         </h1>
-        <p style={{ fontSize: '14px', color: '#8B95A8', marginBottom: '24px' }}>
+        <p style={{ fontSize: '14px', color: '#717171', marginBottom: '24px' }}>
           Share news, an artist update, or an interview with the Muzika community.
         </p>
 
@@ -153,8 +153,8 @@ export default function NewBlogPostPage() {
                   <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center', margin: '0 auto 10px' }}>
                     <ImageIcon size={20} color="#2563EB" />
                   </div>
-                  <p style={{ fontSize: '13px', fontWeight: 600, color: '#0D1B3E' }}>Click to upload a cover image</p>
-                  <p style={{ fontSize: '12px', color: '#8B95A8', marginTop: '2px' }}>JPG, PNG · Max 5MB</p>
+                  <p style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff' }}>Click to upload a cover image</p>
+                  <p style={{ fontSize: '12px', color: '#717171', marginTop: '2px' }}>JPG, PNG · Max 5MB</p>
                 </>
               )}
               <input type="file" accept="image/*" onChange={onCoverChange} style={{ display: 'none' }} />
@@ -200,8 +200,8 @@ export default function NewBlogPostPage() {
             disabled={submitting}
             style={{
               width: '100%', padding: '14px',
-              background: submitting ? '#8B95A8' : '#0D1B3E',
-              color: '#fff', border: 'none', borderRadius: '10px',
+              background: submitting ? '#717171' : '#ffffff',
+              color: '#000000', border: 'none', borderRadius: '10px',
               fontSize: '15px', fontWeight: 700,
               cursor: submitting ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',

@@ -72,7 +72,7 @@ export default function SignInPage() {
           position:relative; overflow:hidden;
         }
         .auth-right {
-          flex:1; background:#fff;
+          flex:1; background:#000000;
           display:flex; align-items:center; justify-content:center;
           padding:48px 72px; overflow-y:auto;
         }
@@ -83,30 +83,30 @@ export default function SignInPage() {
         .field-icon-r { position:absolute; right:13px; display:flex; align-items:center; background:none; border:none; cursor:pointer; padding:0; }
         .field-input {
           width:100%; padding:12px 14px 12px 40px;
-          border:1.5px solid #E2E5F0; border-radius:8px;
-          font-size:14px; color:#0D1B3E; outline:none;
+          border:1.5px solid #2a2a2a; border-radius:8px;
+          font-size:14px; color:#ffffff; outline:none;
           box-sizing:border-box; font-family:inherit;
           transition:border-color .2s, box-shadow .2s;
         }
         .field-input:focus { border-color:#2563EB; box-shadow:0 0 0 3px rgba(59,130,246,0.12); }
         .field-input-pr { padding-right:40px; }
         .btn-primary {
-          width:100%; padding:14px; background:#0D1B3E; color:#fff;
+          width:100%; padding:14px; background:#ffffff; color:#000000;
           border:none; border-radius:8px; font-size:15px; font-weight:700;
           cursor:pointer; display:flex; align-items:center; justify-content:center;
           gap:8px; margin-bottom:16px; font-family:inherit; transition:background .15s;
         }
-        .btn-primary:hover { background:#152f6e; }
+        .btn-primary:hover { background:#e5e5e5; }
         .btn-primary:disabled { opacity:.6; cursor:not-allowed; }
         .btn-social {
-          padding:11px; border:1.5px solid #E2E5F0; border-radius:8px;
-          background:#fff; font-size:13px; font-weight:600; cursor:pointer;
+          padding:11px; border:1.5px solid #2a2a2a; border-radius:8px;
+          background:transparent; font-size:13px; font-weight:600; cursor:pointer;
           display:flex; align-items:center; justify-content:center;
-          gap:7px; color:#0D1B3E; font-family:inherit; transition:all .15s;
+          gap:7px; color:#ffffff; font-family:inherit; transition:all .15s;
         }
-        .btn-social:hover { border-color:#2563EB; background:#F4F6FB; }
+        .btn-social:hover { border-color:#2563EB; background:#181818; }
         .form-label {
-          display:block; font-size:11px; font-weight:700; color:#5C677D;
+          display:block; font-size:11px; font-weight:700; color:#b3b3b3;
           text-transform:uppercase; letter-spacing:.7px; margin-bottom:7px;
         }
         @media (max-width:768px) {
@@ -151,13 +151,13 @@ export default function SignInPage() {
             </div>
 
             <h2 style={{ fontSize:'26px', fontWeight:800, color:'#0D1B3E', letterSpacing:'-.5px', marginBottom:'4px' }}>Welcome back</h2>
-            <p style={{ fontSize:'14px', color:'#5C677D', marginBottom:'28px' }}>Sign in to continue your music journey.</p>
+            <p style={{ fontSize:'14px', color:'#b3b3b3', marginBottom:'28px' }}>Sign in to continue your music journey.</p>
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div style={{ marginBottom:'16px' }}>
                 <label className="form-label">Email or Phone</label>
                 <div className="field-wrap">
-                  <span className="field-icon"><Mail size={16} color="#8B95A8" /></span>
+                  <span className="field-icon"><Mail size={16} color="#717171" /></span>
                   <input {...register('email')} type="text" placeholder="thandizo@gmail.com" className="field-input" />
                 </div>
                 {errors.email && <p style={{ color:'#EF4444', fontSize:'12px', marginTop:'4px' }}>{errors.email.message}</p>}
@@ -166,10 +166,10 @@ export default function SignInPage() {
               <div style={{ marginBottom:'8px' }}>
                 <label className="form-label">Password</label>
                 <div className="field-wrap">
-                  <span className="field-icon"><Lock size={16} color="#8B95A8" /></span>
+                  <span className="field-icon"><Lock size={16} color="#717171" /></span>
                   <input {...register('password')} type={showPassword ? 'text' : 'password'} placeholder="••••••••" className="field-input field-input-pr" />
                   <button type="button" className="field-icon-r" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff size={16} color="#8B95A8" /> : <Eye size={16} color="#8B95A8" />}
+                    {showPassword ? <EyeOff size={16} color="#717171" /> : <Eye size={16} color="#717171" />}
                   </button>
                 </div>
                 {errors.password && <p style={{ color:'#EF4444', fontSize:'12px', marginTop:'4px' }}>{errors.password.message}</p>}
@@ -185,9 +185,9 @@ export default function SignInPage() {
             </form>
 
             <div style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'16px' }}>
-              <div style={{ flex:1, height:'1px', background:'#E2E5F0' }} />
-              <span style={{ fontSize:'12px', color:'#8B95A8' }}>or sign in with</span>
-              <div style={{ flex:1, height:'1px', background:'#E2E5F0' }} />
+              <div style={{ flex:1, height:'1px', background:'#2a2a2a' }} />
+              <span style={{ fontSize:'12px', color:'#717171' }}>or sign in with</span>
+              <div style={{ flex:1, height:'1px', background:'#2a2a2a' }} />
             </div>
 
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'8px', marginBottom:'24px' }}>
@@ -205,7 +205,7 @@ export default function SignInPage() {
               </button>
             </div>
 
-            <p style={{ textAlign:'center', fontSize:'13px', color:'#5C677D' }}>
+            <p style={{ textAlign:'center', fontSize:'13px', color:'#717171' }}>
               Don&apos;t have an account?{' '}
               <Link href="/signup" style={{ color:'#2563EB', fontWeight:700 }}>Sign up free</Link>
             </p>

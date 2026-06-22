@@ -73,10 +73,10 @@ export default function SearchPage() {
         .search-wrap { max-width: 860px; margin: 0 auto; padding: 20px 16px 100px; }
         .search-bar-wrap {
           display: flex; align-items: center; gap: 10px;
-          background: #fff; border: 1.5px solid #E2E5F0;
+          background: #181818; border: 1.5px solid #2a2a2a;
           border-radius: 12px; padding: 12px 16px;
           margin-bottom: 20px;
-          box-shadow: 0 1px 3px rgba(13,27,62,.06);
+          box-shadow: 0 1px 3px rgba(0,0,0,.3);
           transition: border-color .2s, box-shadow .2s;
         }
         .search-bar-wrap:focus-within {
@@ -85,21 +85,21 @@ export default function SearchPage() {
         }
         .search-input {
           flex: 1; border: none; background: transparent;
-          font-size: 15px; color: #0D1B3E; outline: none;
+          font-size: 15px; color: #ffffff; outline: none;
           font-family: inherit;
         }
-        .search-input::placeholder { color: #8B95A8; }
-        .section-title { font-size: 13px; font-weight: 700; color: #8B95A8; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; margin-top: 20px; }
+        .search-input::placeholder { color: #717171; }
+        .section-title { font-size: 13px; font-weight: 700; color: #717171; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; margin-top: 20px; }
         .result-row { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 10px; cursor: pointer; transition: background .12s; }
-        .result-row:hover { background: #F4F6FB; }
+        .result-row:hover { background: #282828; }
         .result-art { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; overflow: hidden; }
-        .result-name { font-size: 14px; font-weight: 700; color: #0D1B3E; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .result-sub { font-size: 12px; color: #8B95A8; margin-top: 1px; }
+        .result-name { font-size: 14px; font-weight: 700; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .result-sub { font-size: 12px; color: #717171; margin-top: 1px; }
         .empty-search { text-align: center; padding: 60px 20px; }
-        .empty-search-icon { width: 64px; height: 64px; border-radius: 20px; background: #F4F6FB; display: grid; place-items: center; margin: 0 auto 16px; }
-        .empty-search-title { font-size: 18px; font-weight: 800; color: '#0D1B3E'; margin-bottom: 8px; }
-        .empty-search-sub { font-size: 14px; color: #8B95A8; line-height: 1.6; }
-        .no-results { text-align: center; padding: 40px 20px; color: #8B95A8; font-size: 14px; }
+        .empty-search-icon { width: 64px; height: 64px; border-radius: 20px; background: #282828; display: grid; place-items: center; margin: 0 auto 16px; }
+        .empty-search-title { font-size: 18px; font-weight: 800; color: #ffffff; margin-bottom: 8px; }
+        .empty-search-sub { font-size: 14px; color: #717171; line-height: 1.6; }
+        .no-results { text-align: center; padding: 40px 20px; color: #717171; font-size: 14px; }
         .artist-result-av { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.85); }
       `}</style>
 
@@ -109,13 +109,13 @@ export default function SearchPage() {
       <div className="search-wrap">
         {/* Desktop header */}
         <div className="pg-hdr" style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize:'11px', fontWeight:700, color:'#2563EB', textTransform:'uppercase', letterSpacing:'.7px', marginBottom:'4px' }}>Discover</p>
-          <h1 style={{ fontSize:'28px', fontWeight:800, color:'#0D1B3E', letterSpacing:'-0.6px' }}>Search</h1>
+          <p style={{ fontSize:'11px', fontWeight:700, color:'#60a5fa', textTransform:'uppercase', letterSpacing:'.7px', marginBottom:'4px' }}>Discover</p>
+          <h1 style={{ fontSize:'28px', fontWeight:800, color:'#ffffff', letterSpacing:'-0.6px' }}>Search</h1>
         </div>
 
         {/* Search bar */}
         <div className="search-bar-wrap">
-          <Search size={18} color="#8B95A8" style={{ flexShrink: 0 }} />
+          <Search size={18} color="#717171" style={{ flexShrink: 0 }} />
           <input
             ref={inputRef}
             className="search-input"
@@ -123,10 +123,10 @@ export default function SearchPage() {
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
-          {loading && <Loader2 size={17} color="#8B95A8" style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }} />}
+          {loading && <Loader2 size={17} color="#717171" style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }} />}
           {query && !loading && (
             <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 0 }}>
-              <X size={17} color="#8B95A8" />
+              <X size={17} color="#717171" />
             </button>
           )}
         </div>
@@ -134,16 +134,16 @@ export default function SearchPage() {
         {/* Empty state */}
         {!query && (
           <div className="empty-search">
-            <div className="empty-search-icon"><Search size={28} color="#8B95A8" /></div>
-            <p style={{ fontSize:'18px', fontWeight:800, color:'#0D1B3E', marginBottom:'8px' }}>Find your music</p>
-            <p style={{ fontSize:'14px', color:'#8B95A8', lineHeight:1.6 }}>Search for songs, artists, genres and more.</p>
+            <div className="empty-search-icon"><Search size={28} color="#717171" /></div>
+            <p style={{ fontSize:'18px', fontWeight:800, color:'#ffffff', marginBottom:'8px' }}>Find your music</p>
+            <p style={{ fontSize:'14px', color:'#717171', lineHeight:1.6 }}>Search for songs, artists, genres and more.</p>
           </div>
         )}
 
         {/* No results */}
         {searched && !loading && !hasResults && query && (
           <div className="no-results">
-            <p style={{ fontSize:'16px', fontWeight:700, color:'#0D1B3E', marginBottom:'6px' }}>No results for &ldquo;{query}&rdquo;</p>
+            <p style={{ fontSize:'16px', fontWeight:700, color:'#ffffff', marginBottom:'6px' }}>No results for &ldquo;{query}&rdquo;</p>
             <p>Try a different search term or artist name.</p>
           </div>
         )}
@@ -166,7 +166,7 @@ export default function SearchPage() {
                       <div className="result-name">{track.title}</div>
                       <div className="result-sub">{track.artist?.stage_name ?? 'Unknown'} · {track.genre}</div>
                     </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#8B95A8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#717171"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                   </div>
                 ))}
               </>
@@ -197,7 +197,7 @@ export default function SearchPage() {
                           <div className="result-name">{artist.stage_name}</div>
                           <div className="result-sub">{artist.genre} · {artist.location}</div>
                         </div>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8B95A8" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#717171" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
                       </div>
                     </Link>
                   )

@@ -98,7 +98,7 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: '#fff', borderRadius: '20px 20px 0 0',
+          background: '#181818', borderRadius: '20px 20px 0 0',
           width: '100%', maxWidth: '480px',
           maxHeight: '70vh', overflowY: 'auto',
           padding: '20px',
@@ -107,9 +107,9 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
         className="md:rounded-2xl md:mb-[10vh]"
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#0D1B3E' }}>Add to Playlist</h3>
-          <button onClick={onClose} style={{ background: '#F4F6FB', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
-            <X size={16} color="#5C677D" />
+          <h3 style={{ fontSize: '17px', fontWeight: 800, color: '#ffffff' }}>Add to Playlist</h3>
+          <button onClick={onClose} style={{ background: '#2a2a2a', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'grid', placeItems: 'center', cursor: 'pointer' }}>
+            <X size={16} color="#b3b3b3" />
           </button>
         </div>
 
@@ -122,12 +122,12 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
               onChange={e => setNewName(e.target.value)}
               placeholder="Playlist name…"
               onKeyDown={e => e.key === 'Enter' && createPlaylist()}
-              style={{ flex: 1, padding: '10px 14px', border: '1.5px solid #E2E5F0', borderRadius: '8px', fontSize: '14px', outline: 'none', fontFamily: 'inherit' }}
+              style={{ flex: 1, padding: '10px 14px', border: '1.5px solid #3a3a3a', borderRadius: '8px', fontSize: '14px', outline: 'none', fontFamily: 'inherit', background: '#121212', color: '#ffffff' }}
             />
             <button
               onClick={createPlaylist}
               disabled={creating}
-              style={{ padding: '10px 16px', background: '#0D1B3E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+              style={{ padding: '10px 16px', background: '#ffffff', color: '#000000', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
             >
               {creating ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : 'Create'}
             </button>
@@ -137,24 +137,24 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
             onClick={() => setShowCreate(true)}
             style={{
               display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-              padding: '12px 14px', borderRadius: '10px', border: '1.5px dashed #CDD0DE',
-              background: '#fff', cursor: 'pointer', marginBottom: '16px', fontFamily: 'inherit',
+              padding: '12px 14px', borderRadius: '10px', border: '1.5px dashed #3a3a3a',
+              background: 'transparent', cursor: 'pointer', marginBottom: '16px', fontFamily: 'inherit',
             }}
           >
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#DBEAFE', display: 'grid', placeItems: 'center' }}>
-              <Plus size={16} color="#2563EB" />
+            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#282828', display: 'grid', placeItems: 'center' }}>
+              <Plus size={16} color="#60a5fa" />
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: '#0D1B3E' }}>New Playlist</span>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#ffffff' }}>New Playlist</span>
           </button>
         )}
 
         {/* Playlist list */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '24px', color: '#8B95A8' }}>
+          <div style={{ textAlign: 'center', padding: '24px', color: '#717171' }}>
             <Loader2 size={20} style={{ animation: 'spin 1s linear infinite', margin: '0 auto' }} />
           </div>
         ) : playlists.length === 0 ? (
-          <p style={{ textAlign: 'center', padding: '20px', color: '#8B95A8', fontSize: '14px' }}>
+          <p style={{ textAlign: 'center', padding: '20px', color: '#717171', fontSize: '14px' }}>
             No playlists yet. Create your first one above.
           </p>
         ) : (
@@ -177,17 +177,17 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
                     <Music2 size={16} color="rgba(255,255,255,0.7)" />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#0D1B3E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</p>
-                    <p style={{ fontSize: '12px', color: '#8B95A8' }}>{p.track_count ?? 0} tracks</p>
+                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</p>
+                    <p style={{ fontSize: '12px', color: '#717171' }}>{p.track_count ?? 0} tracks</p>
                   </div>
                   {addingId === p.id ? (
-                    <Loader2 size={16} color="#8B95A8" style={{ animation: 'spin 1s linear infinite' }} />
+                    <Loader2 size={16} color="#717171" style={{ animation: 'spin 1s linear infinite' }} />
                   ) : added ? (
                     <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#D1FAE5', display: 'grid', placeItems: 'center' }}>
                       <Check size={13} color="#10B981" />
                     </div>
                   ) : (
-                    <Plus size={18} color="#8B95A8" />
+                    <Plus size={18} color="#717171" />
                   )}
                 </button>
               )

@@ -14,8 +14,8 @@ export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
       className="md:hidden"
       style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '14px 18px', background: '#fff',
-        borderBottom: '1px solid #E2E5F0',
+        padding: '14px 18px', background: '#121212',
+        borderBottom: '1px solid #2a2a2a',
         position: 'sticky', top: 0, zIndex: 50,
       }}
     >
@@ -23,7 +23,7 @@ export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
         <p style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '.7px' }}>
           {eyebrow}
         </p>
-        <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#0D1B3E', letterSpacing: '-0.4px' }}>
+        <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px' }}>
           {title}
         </h1>
       </div>

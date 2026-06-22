@@ -12,9 +12,8 @@ export default async function DiscoverPage() {
     getArtists({ limit: 8 }),
   ])
 
-  // Get trending (most played)
-  const trending = await getTracks({ limit: 1, orderBy: 'play_count' })
-  const trendingTrack = trending[0] ?? null
+  // Get top 3 trending tracks for the rotating hero banner
+  const trendingTracks = await getTracks({ limit: 3, orderBy: 'play_count' })
 
   // Get purchased track IDs for this user
   let purchasedIds: string[] = []
@@ -36,7 +35,7 @@ export default async function DiscoverPage() {
 
   return (
     <DiscoverClient
-      trendingTrack={trendingTrack}
+      trendingTracks={trendingTracks}
       tracks={tracksWithState}
       artists={artists}
       userId={user?.id ?? null}

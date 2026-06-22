@@ -39,7 +39,7 @@ export default function BecomeArtistPage() {
     e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)'
   }
   const blur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    e.target.style.borderColor = '#E2E5F0'
+    e.target.style.borderColor = '#2a2a2a'
     e.target.style.boxShadow = 'none'
   }
 
@@ -68,26 +68,26 @@ export default function BecomeArtistPage() {
 
   const S = {
     page: {
-      minHeight: '100vh', background: '#F4F6FB',
+      minHeight: '100vh', background: '#121212',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '40px 20px',
     } as React.CSSProperties,
     card: {
-      background: '#fff', borderRadius: '20px', padding: '48px 44px',
+      background: '#181818', borderRadius: '20px', padding: '48px 44px',
       width: '100%', maxWidth: '520px',
-      boxShadow: '0 4px 6px rgba(13,27,62,.04), 0 12px 40px rgba(13,27,62,.10)',
+      boxShadow: '0 4px 6px rgba(0,0,0,.3), 0 12px 40px rgba(0,0,0,.4)',
     } as React.CSSProperties,
     label: {
       display: 'block', fontSize: '11px', fontWeight: 700,
-      color: '#5C677D', textTransform: 'uppercase' as const,
+      color: '#b3b3b3', textTransform: 'uppercase' as const,
       letterSpacing: '0.7px', marginBottom: '7px',
     },
     input: {
       width: '100%', padding: '12px 14px 12px 40px',
-      border: '1.5px solid #E2E5F0', borderRadius: '8px',
-      fontSize: '14px', color: '#0D1B3E', outline: 'none',
+      border: '1.5px solid #2a2a2a', borderRadius: '8px',
+      fontSize: '14px', color: '#ffffff', outline: 'none',
       boxSizing: 'border-box' as const, fontFamily: 'inherit',
-      transition: 'border-color .2s, box-shadow .2s', background: '#fff',
+      transition: 'border-color .2s, box-shadow .2s', background: '#121212',
     },
     iconWrap: {
       position: 'absolute' as const, left: '13px',
@@ -103,17 +103,17 @@ export default function BecomeArtistPage() {
           <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'grid', placeItems: 'center', margin: '0 auto 16px' }}>
             <Mic size={26} color="white" />
           </div>
-          <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0D1B3E', letterSpacing: '-0.5px', marginBottom: '6px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: '6px' }}>
             Become an Artist
           </h1>
-          <p style={{ fontSize: '14px', color: '#5C677D', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '14px', color: '#b3b3b3', lineHeight: 1.6 }}>
             Set up your artist profile to start uploading and selling your music on Muzika.
           </p>
         </div>
 
         {/* What you get */}
-        <div style={{ background: '#F4F6FB', borderRadius: '12px', padding: '16px 18px', marginBottom: '28px' }}>
-          <p style={{ fontSize: '12px', fontWeight: 700, color: '#0D1B3E', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>What you unlock</p>
+        <div style={{ background: '#121212', borderRadius: '12px', padding: '16px 18px', marginBottom: '28px' }}>
+          <p style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>What you unlock</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[
               'Upload unlimited tracks',
@@ -122,7 +122,7 @@ export default function BecomeArtistPage() {
               'Artist profile page with stats',
               'Write blog posts & artist updates',
             ].map((item) => (
-              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#5C677D' }}>
+              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#b3b3b3' }}>
                 <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="3">
                     <polyline points="20 6 9 17 4 12"/>
@@ -139,7 +139,7 @@ export default function BecomeArtistPage() {
           <div style={{ marginBottom: '18px' }}>
             <label style={S.label}>Stage Name</label>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <span style={S.iconWrap}><Mic size={15} color="#8B95A8" /></span>
+              <span style={S.iconWrap}><Mic size={15} color="#717171" /></span>
               <input {...register('stage_name')} type="text" placeholder="Your artist name" style={S.input} onFocus={focus} onBlur={blur} />
             </div>
             {errors.stage_name && <p style={{ color: '#EF4444', fontSize: '12px', marginTop: '4px' }}>{errors.stage_name.message}</p>}
@@ -157,9 +157,9 @@ export default function BecomeArtistPage() {
                     padding: '7px 14px', borderRadius: '20px', cursor: 'pointer',
                     fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
                     border: '1.5px solid',
-                    borderColor: selectedGenre === g ? '#0D1B3E' : '#E2E5F0',
-                    background: selectedGenre === g ? '#0D1B3E' : '#fff',
-                    color: selectedGenre === g ? '#fff' : '#5C677D',
+                    borderColor: selectedGenre === g ? '#ffffff' : '#2a2a2a',
+                    background: selectedGenre === g ? '#ffffff' : 'transparent',
+                    color: selectedGenre === g ? '#000000' : '#b3b3b3',
                     transition: 'all .15s',
                   }}
                 >
@@ -182,9 +182,9 @@ export default function BecomeArtistPage() {
                     padding: '7px 14px', borderRadius: '20px', cursor: 'pointer',
                     fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
                     border: '1.5px solid',
-                    borderColor: selectedLocation === city ? '#0D1B3E' : '#E2E5F0',
-                    background: selectedLocation === city ? '#0D1B3E' : '#fff',
-                    color: selectedLocation === city ? '#fff' : '#5C677D',
+                    borderColor: selectedLocation === city ? '#ffffff' : '#2a2a2a',
+                    background: selectedLocation === city ? '#ffffff' : 'transparent',
+                    color: selectedLocation === city ? '#000000' : '#b3b3b3',
                     transition: 'all .15s',
                   }}
                 >
@@ -215,7 +215,7 @@ export default function BecomeArtistPage() {
                 onFocus={focus}
                 onBlur={blur}
               />
-              <span style={{ position: 'absolute', bottom: '8px', right: '12px', fontSize: '11px', color: bio.length > 270 ? '#EF4444' : '#8B95A8' }}>
+              <span style={{ position: 'absolute', bottom: '8px', right: '12px', fontSize: '11px', color: bio.length > 270 ? '#EF4444' : '#717171' }}>
                 {bio.length}/300
               </span>
             </div>
@@ -226,8 +226,8 @@ export default function BecomeArtistPage() {
             disabled={loading}
             style={{
               width: '100%', padding: '14px',
-              background: loading ? '#8B95A8' : '#0D1B3E',
-              color: '#fff', border: 'none', borderRadius: '8px',
+              background: loading ? '#717171' : '#ffffff',
+              color: '#000000', border: 'none', borderRadius: '8px',
               fontSize: '15px', fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
               fontFamily: 'inherit', transition: 'background .15s', marginBottom: '14px',
@@ -239,7 +239,7 @@ export default function BecomeArtistPage() {
             }
           </button>
 
-          <Link href="/discover" style={{ display: 'block', textAlign: 'center', fontSize: '13px', color: '#8B95A8', textDecoration: 'none' }}>
+          <Link href="/discover" style={{ display: 'block', textAlign: 'center', fontSize: '13px', color: '#717171', textDecoration: 'none' }}>
             Not now — continue as listener
           </Link>
         </form>

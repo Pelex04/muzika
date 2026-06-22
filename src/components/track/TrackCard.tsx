@@ -66,7 +66,7 @@ export default function TrackCard({ track, userId, queue }: Props) {
   }
 
   return (
-    <div className="relative bg-white rounded-xl overflow-hidden cursor-pointer shadow-[0_1px_3px_rgba(13,27,62,.06),0_4px_16px_rgba(13,27,62,.08)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(13,27,62,.04),0_12px_40px_rgba(13,27,62,.14)] transition-all group">
+    <div className="relative bg-[#181818] rounded-xl overflow-hidden cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,.3),0_4px_16px_rgba(0,0,0,.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(0,0,0,.4),0_12px_40px_rgba(0,0,0,.5)] transition-all group">
       {/* Art */}
       <div className="relative aspect-square" onClick={handlePlay}>
         {track.cover_url
@@ -92,7 +92,7 @@ export default function TrackCard({ track, userId, queue }: Props) {
         {/* Play overlay */}
         <div className={`absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ${isActive ? 'opacity-100' : ''}`}>
           <div className="w-12 h-12 rounded-full bg-white grid place-items-center shadow-lg">
-            <Play className="w-5 h-5 text-[#0D1B3E] ml-0.5" fill="#0D1B3E" />
+            <Play className="w-5 h-5 text-black ml-0.5" fill="black" />
           </div>
         </div>
 
@@ -104,20 +104,20 @@ export default function TrackCard({ track, userId, queue }: Props) {
               onClick={e => e.stopPropagation()}
               style={{
                 position: 'absolute', top: '38px', right: '8px', zIndex: 100,
-                background: '#fff', borderRadius: '12px',
-                boxShadow: '0 8px 24px rgba(13,27,62,.18)',
-                border: '1px solid #E2E5F0',
+                background: '#282828', borderRadius: '12px',
+                boxShadow: '0 8px 24px rgba(0,0,0,.5)',
+                border: '1px solid #3a3a3a',
                 minWidth: '170px', padding: '6px',
               }}
             >
               <button onClick={handleSave} style={menuItemStyle}>
-                <Bookmark size={14} color="#5C677D" /> {saved ? 'Unsave' : 'Save'}
+                <Bookmark size={14} color="#b3b3b3" /> {saved ? 'Unsave' : 'Save'}
               </button>
               <button onClick={e => { e.stopPropagation(); setMenuOpen(false); setPlaylistModalOpen(true) }} style={menuItemStyle}>
-                <ListPlus size={14} color="#5C677D" /> Add to Playlist
+                <ListPlus size={14} color="#b3b3b3" /> Add to Playlist
               </button>
               <button onClick={handleShare} style={menuItemStyle}>
-                <Share2 size={14} color="#5C677D" /> Share
+                <Share2 size={14} color="#b3b3b3" /> Share
               </button>
               <button onClick={handleDownload} style={menuItemStyle}>
                 <Download size={14} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
@@ -129,8 +129,8 @@ export default function TrackCard({ track, userId, queue }: Props) {
 
       {/* Info */}
       <div className="px-3 py-2.5">
-        <p className="text-[13px] font-bold text-[#0D1B3E] truncate">{track.title}</p>
-        <p className="text-[12px] text-[#5C677D] mt-0.5 truncate">{track.artist?.stage_name}</p>
+        <p className="text-[13px] font-bold text-white truncate">{track.title}</p>
+        <p className="text-[12px] text-[#b3b3b3] mt-0.5 truncate">{track.artist?.stage_name}</p>
       </div>
 
       {playlistModalOpen && (
@@ -146,7 +146,7 @@ const menuItemStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: '10px',
   width: '100%', padding: '9px 12px', borderRadius: '8px',
   border: 'none', background: 'transparent', cursor: 'pointer',
-  fontSize: '13px', fontWeight: 600, color: '#0D1B3E',
+  fontSize: '13px', fontWeight: 600, color: '#ffffff',
   textAlign: 'left', fontFamily: 'inherit',
 }
 

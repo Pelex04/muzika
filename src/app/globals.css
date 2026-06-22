@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+:root {
+  /* Spotify-style dark theme tokens */
+  --bg-page: #121212;
+  --bg-surface: #181818;
+  --bg-surface-2: #282828;
+  --bg-surface-hover: #2a2a2a;
+  --border: #2a2a2a;
+  --border-strong: #3a3a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-tertiary: #717171;
+  --accent: #2563eb;
+  --accent-light: #60a5fa;
+  --brand-navy: #0d1b3e;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+}
+
 @layer utilities {
   .scrollbar-none {
     -ms-overflow-style: none;

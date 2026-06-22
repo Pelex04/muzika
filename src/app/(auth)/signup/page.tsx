@@ -38,7 +38,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   right: {
     flex: 1,
-    background: '#fff',
+    background: '#000000',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -60,7 +60,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   label: {
     display: 'block', fontSize: '11px', fontWeight: 700,
-    color: '#5C677D', textTransform: 'uppercase' as const,
+    color: '#b3b3b3', textTransform: 'uppercase' as const,
     letterSpacing: '0.7px', marginBottom: '7px',
   },
   fieldWrap: { position: 'relative' as const, display: 'flex', alignItems: 'center' },
@@ -76,11 +76,11 @@ const S: Record<string, React.CSSProperties> = {
   input: {
     width: '100%', paddingTop: '12px', paddingBottom: '12px',
     paddingLeft: '40px', paddingRight: '14px',
-    border: '1.5px solid #E2E5F0', borderRadius: '8px',
-    fontSize: '14px', color: '#0D1B3E',
+    border: '1.5px solid #2a2a2a', borderRadius: '8px',
+    fontSize: '14px', color: '#ffffff',
     outline: 'none', boxSizing: 'border-box' as const,
     fontFamily: 'inherit', transition: 'border-color .2s, box-shadow .2s',
-    background: '#fff',
+    background: '#000000',
   },
   inputPr: { paddingRight: '40px' },
   errText: { color: '#EF4444', fontSize: '12px', marginTop: '4px' },
@@ -93,14 +93,14 @@ const S: Record<string, React.CSSProperties> = {
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
     marginBottom: '16px', transition: 'background .15s',
   },
-  dividerLine: { flex: 1, height: '1px', background: '#E2E5F0' },
+  dividerLine: { flex: 1, height: '1px', background: '#2a2a2a' },
   socialBtn: {
     flex: 1, padding: '11px',
-    border: '1.5px solid #E2E5F0', borderRadius: '8px',
-    background: '#fff', fontSize: '13px', fontWeight: 600,
+    border: '1.5px solid #2a2a2a', borderRadius: '8px',
+    background: 'transparent', fontSize: '13px', fontWeight: 600,
     cursor: 'pointer', fontFamily: 'inherit',
     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
-    color: '#0D1B3E',
+    color: '#ffffff',
   },
 }
 
@@ -116,7 +116,7 @@ export default function SignUpPage() {
   })
 
   const strength = getStrength(password)
-  const strengthColors = ['#E2E5F0', '#EF4444', '#F59E0B', '#F59E0B', '#10B981']
+  const strengthColors = ['#2a2a2a', '#EF4444', '#F59E0B', '#F59E0B', '#10B981']
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
@@ -149,7 +149,7 @@ export default function SignUpPage() {
     e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)'
   }
   const blur = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = '#E2E5F0'
+    e.target.style.borderColor = '#2a2a2a'
     e.target.style.boxShadow = 'none'
   }
 
@@ -197,7 +197,7 @@ export default function SignUpPage() {
             {/* Mobile logo */}
             <div className="auth-mobile-logo-signup" style={{ display: 'none', alignItems: 'center', gap: '9px', marginBottom: '32px' }}>
               <div style={S.logoMarkSm}><Music2 size={18} color="white" /></div>
-              <span style={{ fontSize: '18px', fontWeight: 800, color: '#0D1B3E' }}>
+              <span style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff' }}>
                 MUZI<span style={{ color: '#2563EB' }}>KA</span>
               </span>
             </div>
@@ -206,16 +206,16 @@ export default function SignUpPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <span style={{
                 display: 'inline-flex', padding: '4px 12px',
-                border: '1.5px solid #E2E5F0', borderRadius: '20px',
-                fontSize: '11px', fontWeight: 700, color: '#5C677D',
+                border: '1.5px solid #2a2a2a', borderRadius: '20px',
+                fontSize: '11px', fontWeight: 700, color: '#b3b3b3',
               }}>STEP 1 OF 2</span>
               <a href="/landing" style={{ fontSize: '13px', fontWeight: 600, color: '#2563EB', cursor: 'pointer', textDecoration: 'none' }}>Skip for now</a>
             </div>
 
-            <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#0D1B3E', letterSpacing: '-0.5px', marginBottom: '4px' }}>
+            <h2 style={{ fontSize: '26px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: '4px' }}>
               Create your account
             </h2>
-            <p style={{ fontSize: '14px', color: '#5C677D', marginBottom: '28px' }}>
+            <p style={{ fontSize: '14px', color: '#b3b3b3', marginBottom: '28px' }}>
               Join thousands of Malawians already on Muzika.
             </p>
 
@@ -225,7 +225,7 @@ export default function SignUpPage() {
               <div style={{ marginBottom: '16px' }}>
                 <label style={S.label}>Full Name</label>
                 <div style={S.fieldWrap}>
-                  <span style={S.fieldIcon}><User size={16} color="#8B95A8" /></span>
+                  <span style={S.fieldIcon}><User size={16} color="#717171" /></span>
                   <input {...register('full_name')} type="text" placeholder="Thandizo Mwale"
                     style={S.input} onFocus={focus} onBlur={blur} />
                 </div>
@@ -236,7 +236,7 @@ export default function SignUpPage() {
               <div style={{ marginBottom: '16px' }}>
                 <label style={S.label}>Email</label>
                 <div style={S.fieldWrap}>
-                  <span style={S.fieldIcon}><Mail size={16} color="#8B95A8" /></span>
+                  <span style={S.fieldIcon}><Mail size={16} color="#717171" /></span>
                   <input {...register('email')} type="email" placeholder="thandizo@gmail.com"
                     style={{ ...S.input, borderColor: '#2563EB', boxShadow: '0 0 0 3px rgba(59,130,246,0.12)' }}
                     onFocus={focus} onBlur={blur} />
@@ -248,7 +248,7 @@ export default function SignUpPage() {
               <div style={{ marginBottom: '16px' }}>
                 <label style={S.label}>Password</label>
                 <div style={S.fieldWrap}>
-                  <span style={S.fieldIcon}><Lock size={16} color="#8B95A8" /></span>
+                  <span style={S.fieldIcon}><Lock size={16} color="#717171" /></span>
                   <input
                     {...register('password', {
                       onChange: (e) => setPassword(e.target.value)
@@ -259,7 +259,7 @@ export default function SignUpPage() {
                     onFocus={focus} onBlur={blur}
                   />
                   <button type="button" style={S.fieldIconR} onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff size={16} color="#8B95A8" /> : <Eye size={16} color="#8B95A8" />}
+                    {showPassword ? <EyeOff size={16} color="#717171" /> : <Eye size={16} color="#717171" />}
                   </button>
                 </div>
                 {/* Strength bars */}
@@ -267,7 +267,7 @@ export default function SignUpPage() {
                   {[1,2,3,4].map(i => (
                     <div key={i} style={{
                       flex: 1, height: '3px', borderRadius: '2px',
-                      background: i <= strength ? strengthColors[strength] : '#E2E5F0',
+                      background: i <= strength ? strengthColors[strength] : '#2a2a2a',
                       transition: 'background .2s',
                     }} />
                   ))}
@@ -280,15 +280,15 @@ export default function SignUpPage() {
                 <label style={S.label}>Phone (Optional)</label>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <div style={{
-                    padding: '12px 14px', border: '1.5px solid #E2E5F0', borderRadius: '8px',
-                    fontSize: '13px', fontWeight: 600, color: '#0D1B3E',
-                    background: '#fff', whiteSpace: 'nowrap',
+                    padding: '12px 14px', border: '1.5px solid #2a2a2a', borderRadius: '8px',
+                    fontSize: '13px', fontWeight: 600, color: '#ffffff',
+                    background: '#000000', whiteSpace: 'nowrap',
                     display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0,
                   }}>
                     🇲🇼 +265
                   </div>
                   <div style={{ ...S.fieldWrap, flex: 1 }}>
-                    <span style={S.fieldIcon}><Phone size={16} color="#8B95A8" /></span>
+                    <span style={S.fieldIcon}><Phone size={16} color="#717171" /></span>
                     <input {...register('phone')} type="tel" placeholder="99 123 4567"
                       style={S.input} onFocus={focus} onBlur={blur} />
                   </div>
@@ -297,8 +297,8 @@ export default function SignUpPage() {
 
               {/* Terms */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '20px' }}>
-                <input {...register('terms')} type="checkbox" style={{ width: '17px', height: '17px', accentColor: '#0D1B3E', marginTop: '1px', cursor: 'pointer', flexShrink: 0 }} />
-                <label style={{ fontSize: '13px', color: '#5C677D', lineHeight: 1.5 }}>
+                <input {...register('terms')} type="checkbox" style={{ width: '17px', height: '17px', accentColor: '#ffffff', marginTop: '1px', cursor: 'pointer', flexShrink: 0 }} />
+                <label style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: 1.5 }}>
                   I agree to Muzika&apos;s{' '}
                   <a style={{ color: '#2563EB', fontWeight: 600 }}>Terms of Service</a>
                   {' '}and{' '}
@@ -317,7 +317,7 @@ export default function SignUpPage() {
             {/* Divider */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <div style={S.dividerLine} />
-              <span style={{ fontSize: '12px', color: '#8B95A8' }}>or continue with</span>
+              <span style={{ fontSize: '12px', color: '#717171' }}>or continue with</span>
               <div style={S.dividerLine} />
             </div>
 
@@ -340,7 +340,7 @@ export default function SignUpPage() {
               </button>
             </div>
 
-            <p style={{ textAlign: 'center', fontSize: '13px', color: '#5C677D' }}>
+            <p style={{ textAlign: 'center', fontSize: '13px', color: '#717171' }}>
               Already have an account?{' '}
               <Link href="/signin" style={{ color: '#2563EB', fontWeight: 700 }}>Sign in</Link>
             </p>

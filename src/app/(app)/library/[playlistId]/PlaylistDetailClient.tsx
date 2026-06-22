@@ -70,11 +70,11 @@ export default function PlaylistDetailClient({ playlist, tracks: initialTracks, 
         .pl-header { display: flex; align-items: flex-end; gap: 20px; margin-bottom: 24px; flex-wrap: wrap; }
         .pl-cover { width: 120px; height: 120px; border-radius: 16px; background: linear-gradient(135deg,#1e3a8a,#0d1b3e); display: grid; place-items: center; flex-shrink: 0; box-shadow: 0 8px 24px rgba(13,27,62,.2); }
         .pl-track-row { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; cursor: pointer; transition: background .12s; }
-        .pl-track-row:hover { background: #F4F6FB; }
+        .pl-track-row:hover { background: #282828; }
       `}</style>
 
       <div className="pl-wrap">
-        <Link href="/library" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#5C677D', textDecoration: 'none', fontSize: '14px', fontWeight: 600, marginBottom: '20px' }}>
+        <Link href="/library" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: '#b3b3b3', textDecoration: 'none', fontSize: '14px', fontWeight: 600, marginBottom: '20px' }}>
           <ChevronLeft size={18} /> Library
         </Link>
 
@@ -83,16 +83,16 @@ export default function PlaylistDetailClient({ playlist, tracks: initialTracks, 
             <Music2 size={40} color="rgba(255,255,255,0.35)" />
           </div>
           <div style={{ flex: 1, minWidth: '200px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, color: '#8B95A8', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '6px' }}>Playlist</p>
-            <h1 style={{ fontSize: '26px', fontWeight: 900, color: '#0D1B3E', letterSpacing: '-0.6px', marginBottom: '6px' }}>{playlist.name}</h1>
-            <p style={{ fontSize: '13px', color: '#8B95A8', marginBottom: '14px' }}>{tracks.length} tracks</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: '#717171', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '6px' }}>Playlist</p>
+            <h1 style={{ fontSize: '26px', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.6px', marginBottom: '6px' }}>{playlist.name}</h1>
+            <p style={{ fontSize: '13px', color: '#717171', marginBottom: '14px' }}>{tracks.length} tracks</p>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={playAll}
                 disabled={tracks.length === 0}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', background: '#0D1B3E', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: tracks.length === 0 ? 'not-allowed' : 'pointer', opacity: tracks.length === 0 ? 0.5 : 1, fontFamily: 'inherit' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', background: '#ffffff', color: '#000000', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: tracks.length === 0 ? 'not-allowed' : 'pointer', opacity: tracks.length === 0 ? 0.5 : 1, fontFamily: 'inherit' }}
               >
-                <Play size={13} fill="white" /> Play All
+                <Play size={13} fill="black" /> Play All
               </button>
               {isOwner && (
                 <button
@@ -108,27 +108,27 @@ export default function PlaylistDetailClient({ playlist, tracks: initialTracks, 
         </div>
 
         {tracks.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '50px 20px', color: '#8B95A8' }}>
-            <p style={{ fontSize: '15px', fontWeight: 700, color: '#0D1B3E', marginBottom: '6px' }}>This playlist is empty</p>
+          <div style={{ textAlign: 'center', padding: '50px 20px', color: '#717171' }}>
+            <p style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', marginBottom: '6px' }}>This playlist is empty</p>
             <p style={{ fontSize: '13px' }}>Add tracks from any song's options menu.</p>
           </div>
         ) : (
-          <div style={{ background: '#fff', borderRadius: '12px', padding: '10px', boxShadow: '0 1px 3px rgba(13,27,62,.06)' }}>
+          <div style={{ background: '#181818', borderRadius: '12px', padding: '10px', boxShadow: '0 1px 3px rgba(0,0,0,.3)' }}>
             {tracks.map((track, i) => (
               <div key={track.id} className="pl-track-row" onClick={() => handlePlay(track)}>
-                <span style={{ fontSize: '13px', color: '#8B95A8', width: '20px', textAlign: 'center', flexShrink: 0 }}>{i + 1}</span>
+                <span style={{ fontSize: '13px', color: '#717171', width: '20px', textAlign: 'center', flexShrink: 0 }}>{i + 1}</span>
                 <div style={{ width: '42px', height: '42px', borderRadius: '8px', flexShrink: 0, overflow: 'hidden', background: artBg(track.genre) }}>
                   {track.cover_url && <img src={track.cover_url} alt={track.title} style={{ width:'100%',height:'100%',objectFit:'cover' }} />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '14px', fontWeight: 700, color: '#0D1B3E', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{track.title}</p>
-                  <p style={{ fontSize: '12px', color: '#8B95A8', marginTop: '1px' }}>{track.artist?.stage_name}</p>
+                  <p style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{track.title}</p>
+                  <p style={{ fontSize: '12px', color: '#717171', marginTop: '1px' }}>{track.artist?.stage_name}</p>
                 </div>
                 {isOwner && (
                   <button
                     onClick={e => { e.stopPropagation(); removeTrack(track.id) }}
                     style={{ width: '28px', height: '28px', borderRadius: '6px', border: 'none', background: 'transparent', cursor: 'pointer', display: 'grid', placeItems: 'center', flexShrink: 0 }}
-                    onMouseOver={e => (e.currentTarget.style.background = '#FEF2F2')}
+                    onMouseOver={e => (e.currentTarget.style.background = '#3a1f1f')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     <Trash2 size={13} color="#EF4444" />

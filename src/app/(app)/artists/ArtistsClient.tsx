@@ -25,27 +25,27 @@ export default function ArtistsClient({ artists, userId }: Props) {
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:block mb-7">
           <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Browse</p>
-          <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Artists</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight">Artists</h1>
         </div>
 
-        <div className="flex items-center gap-3 bg-white border-[1.5px] border-[#E2E5F0] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-          <Search className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
+        <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+          <Search className="w-4 h-4 text-[#717171] flex-shrink-0" />
           <input
-            className="flex-1 bg-transparent text-sm text-[#0D1B3E] outline-none placeholder:text-[#8B95A8]"
+            className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#717171]"
             placeholder="Search artists…"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
-          <Mic className="w-4 h-4 text-[#8B95A8] flex-shrink-0" />
+          <Mic className="w-4 h-4 text-[#717171] flex-shrink-0" />
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[17px] font-black text-[#0D1B3E] tracking-tight">Latest Artists</h2>
-          <span className="text-sm text-[#8B95A8]">{filtered.length} artists</span>
+          <h2 className="text-[17px] font-black text-white tracking-tight">Latest Artists</h2>
+          <span className="text-sm text-[#717171]">{filtered.length} artists</span>
         </div>
 
         {filtered.length === 0 ? (
-          <div className="text-center py-16 text-[#8B95A8]">
+          <div className="text-center py-16 text-[#717171]">
             <p className="text-lg font-semibold">No artists found</p>
           </div>
         ) : (

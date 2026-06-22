@@ -30,11 +30,11 @@ export default function ChartsClient({ tracks, userId }: Props) {
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:block mb-7">
           <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Malawi's Biggest</p>
-          <h1 className="text-3xl font-black text-[#0D1B3E] tracking-tight">Top Charts</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight">Top Charts</h1>
         </div>
 
         {/* Tab row */}
-        <div className="flex border-b-2 border-[#E2E5F0] mb-5 overflow-x-auto scrollbar-none">
+        <div className="flex border-b-2 border-[#2a2a2a] mb-5 overflow-x-auto scrollbar-none">
           {TABS.map(tab => (
             <button
               key={tab}
@@ -42,8 +42,8 @@ export default function ChartsClient({ tracks, userId }: Props) {
               className={cn(
                 'px-5 py-2.5 text-sm font-semibold whitespace-nowrap border-b-2 -mb-0.5 transition-all flex-shrink-0',
                 activeTab === tab
-                  ? 'text-[#0D1B3E] border-[#0D1B3E]'
-                  : 'text-[#8B95A8] border-transparent hover:text-[#0D1B3E]'
+                  ? 'text-white border-white'
+                  : 'text-[#717171] border-transparent hover:text-white'
               )}
             >
               {tab}
@@ -52,7 +52,7 @@ export default function ChartsClient({ tracks, userId }: Props) {
         </div>
 
         {filtered.length === 0 ? (
-          <div className="text-center py-16 text-[#8B95A8]">
+          <div className="text-center py-16 text-[#717171]">
             <p className="text-lg font-semibold">No tracks in this chart yet</p>
           </div>
         ) : (

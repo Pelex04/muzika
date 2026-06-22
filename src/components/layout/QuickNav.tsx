@@ -22,14 +22,14 @@ export default function QuickNav({ active }: { active: string }) {
             <div className={cn(
               'w-[52px] h-[52px] rounded-full flex items-center justify-center transition-all border-2',
               isActive
-                ? 'bg-[#0D1B3E] text-white border-blue-500'
-                : 'bg-[#ECEEF5] text-[#5C677D] border-transparent hover:bg-[#E2E5F0]'
+                ? 'bg-white text-black border-blue-500'
+                : 'bg-[#282828] text-[#b3b3b3] border-transparent hover:bg-[#3a3a3a]'
             )}>
               <Icon className="w-5 h-5" />
             </div>
             <span className={cn(
               'text-[11px] font-semibold whitespace-nowrap',
-              isActive ? 'text-[#0D1B3E] font-bold' : 'text-[#5C677D]'
+              isActive ? 'text-white font-bold' : 'text-[#b3b3b3]'
             )}>{label}</span>
           </Link>
         )

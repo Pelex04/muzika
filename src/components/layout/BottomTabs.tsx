@@ -24,8 +24,8 @@ export default function BottomTabs() {
         className="muzika-bottom-tabs"
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 300,
-          height: '62px', background: '#fff',
-          borderTop: '1.5px solid #E2E5F0',
+          height: '62px', background: '#121212',
+          borderTop: '1.5px solid #2a2a2a',
           gridTemplateColumns: 'repeat(4, 1fr)',
         }}
       >
@@ -40,7 +40,7 @@ export default function BottomTabs() {
                 alignItems: 'center', justifyContent: 'center',
                 gap: '3px', textDecoration: 'none',
                 fontSize: '11px', fontWeight: 600,
-                color: active ? '#0D1B3E' : '#8B95A8',
+                color: active ? '#ffffff' : '#717171',
                 transition: 'color .15s',
               }}
             >

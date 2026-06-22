@@ -43,7 +43,7 @@ export default function ArtistCard({ artist, userId }: Props) {
 
   return (
     <Link href={`/artists/${artist.id}`}>
-      <div className="bg-white rounded-xl px-4 py-5 text-center cursor-pointer shadow-[0_1px_3px_rgba(13,27,62,.06),0_4px_16px_rgba(13,27,62,.08)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(13,27,62,.04),0_12px_40px_rgba(13,27,62,.14)] transition-all">
+      <div className="bg-[#181818] rounded-xl px-4 py-5 text-center cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,.3),0_4px_16px_rgba(0,0,0,.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(0,0,0,.4),0_12px_40px_rgba(0,0,0,.5)] transition-all">
         {/* Avatar */}
         <div className="relative w-[76px] h-[76px] mx-auto mb-3">
           <div className={cn(
@@ -62,17 +62,17 @@ export default function ArtistCard({ artist, userId }: Props) {
             }
           </div>
           {artist.verified && (
-            <div className="absolute bottom-0 right-0 w-[22px] h-[22px] bg-blue-500 rounded-full border-[2.5px] border-white grid place-items-center">
+            <div className="absolute bottom-0 right-0 w-[22px] h-[22px] bg-blue-500 rounded-full border-[2.5px] border-[#181818] grid place-items-center">
               <CheckCircle2 className="w-3 h-3 text-white" fill="white" strokeWidth={0}/>
             </div>
           )}
         </div>
 
-        <p className="text-sm font-bold text-[#0D1B3E] mb-0.5 truncate">{artist.stage_name}</p>
-        <p className="text-xs text-[#5C677D] mb-3.5 truncate">
+        <p className="text-sm font-bold text-white mb-0.5 truncate">{artist.stage_name}</p>
+        <p className="text-xs text-[#b3b3b3] mb-3.5 truncate">
           {artist.genre} · {artist.location}
         </p>
-        <p className="text-xs text-[#8B95A8] mb-3">
+        <p className="text-xs text-[#717171] mb-3">
           {formatCount(artist.follower_count)} followers
         </p>
 
@@ -82,8 +82,8 @@ export default function ArtistCard({ artist, userId }: Props) {
           className={cn(
             'px-5 py-1.5 rounded-full text-xs font-bold border-[1.5px] transition-all',
             following
-              ? 'bg-[#0D1B3E] text-white border-[#0D1B3E]'
-              : 'bg-transparent text-[#0D1B3E] border-[#0D1B3E] hover:bg-[#0D1B3E] hover:text-white'
+              ? 'bg-white text-black border-white'
+              : 'bg-transparent text-white border-[#3a3a3a] hover:border-white'
           )}
         >
           {loading ? '…' : following ? 'Following' : 'Follow'}

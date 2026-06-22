@@ -80,8 +80,8 @@ export default function TrackRow({
   return (
     <div
       className={cn(
-        'relative flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg bg-white cursor-pointer transition-colors group',
-        isActive ? 'bg-blue-50' : 'hover:bg-blue-50/70'
+        'relative flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg bg-[#181818] cursor-pointer transition-colors group',
+        isActive ? 'bg-[#282828]' : 'hover:bg-[#282828]'
       )}
       onClick={handlePlay}
     >
@@ -104,7 +104,7 @@ export default function TrackRow({
           ) : (
             <span className={cn(
               'text-sm font-bold',
-              rank <= 3 ? 'text-blue-500 text-base font-black' : 'text-[#8B95A8]'
+              rank <= 3 ? 'text-blue-400 text-base font-black' : 'text-[#717171]'
             )}>
               {rank}
             </span>
@@ -124,9 +124,9 @@ export default function TrackRow({
       <div className="flex-1 min-w-0">
         <p className={cn(
           'text-sm font-bold truncate',
-          isActive ? 'text-blue-600' : 'text-[#0D1B3E]'
+          isActive ? 'text-blue-400' : 'text-white'
         )}>{track.title}</p>
-        <p className="text-xs text-[#5C677D] truncate mt-0.5">
+        <p className="text-xs text-[#b3b3b3] truncate mt-0.5">
           {track.artist?.stage_name}
           {playCount !== undefined && <span className="ml-1">· {formatCount(playCount)} plays</span>}
         </p>
@@ -135,14 +135,14 @@ export default function TrackRow({
       {/* Trend */}
       {showTrend && (
         <div className="flex-shrink-0">
-          {trend === 'up' && <TrendingUp className="w-4 h-4 text-emerald-500" />}
-          {trend === 'down' && <TrendingDown className="w-4 h-4 text-red-500" />}
+          {trend === 'up' && <TrendingUp className="w-4 h-4 text-emerald-400" />}
+          {trend === 'down' && <TrendingDown className="w-4 h-4 text-red-400" />}
         </div>
       )}
 
       {/* More */}
       <button
-        className="w-7 h-7 rounded-md flex-shrink-0 grid place-items-center text-[#8B95A8] hover:bg-[#ECEEF5] hover:text-[#5C677D] opacity-0 group-hover:opacity-100 transition-all relative"
+        className="w-7 h-7 rounded-md flex-shrink-0 grid place-items-center text-[#717171] hover:bg-[#3a3a3a] hover:text-white opacity-0 group-hover:opacity-100 transition-all relative"
         onClick={e => { e.stopPropagation(); setMenuOpen(v => !v) }}
       >
         <MoreVertical className="w-4 h-4" />
@@ -159,20 +159,20 @@ export default function TrackRow({
             onClick={e => e.stopPropagation()}
             style={{
               position: 'absolute', right: '14px', top: '48px', zIndex: 100,
-              background: '#fff', borderRadius: '12px',
-              boxShadow: '0 8px 24px rgba(13,27,62,.18)',
-              border: '1px solid #E2E5F0',
+              background: '#282828', borderRadius: '12px',
+              boxShadow: '0 8px 24px rgba(0,0,0,.5)',
+              border: '1px solid #3a3a3a',
               minWidth: '180px', padding: '6px',
             }}
           >
             <button onClick={handleSave} style={menuItemStyle}>
-              <Bookmark size={15} color="#5C677D" /> Save to Library
+              <Bookmark size={15} color="#b3b3b3" /> Save to Library
             </button>
             <button onClick={e => { e.stopPropagation(); setMenuOpen(false); setPlaylistModalOpen(true) }} style={menuItemStyle}>
-              <ListPlus size={15} color="#5C677D" /> Add to Playlist
+              <ListPlus size={15} color="#b3b3b3" /> Add to Playlist
             </button>
             <button onClick={handleShare} style={menuItemStyle}>
-              <Share2 size={15} color="#5C677D" /> Share
+              <Share2 size={15} color="#b3b3b3" /> Share
             </button>
             <button onClick={handleDownload} style={menuItemStyle}>
               <Download size={15} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
@@ -201,7 +201,7 @@ const menuItemStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: '10px',
   width: '100%', padding: '9px 12px', borderRadius: '8px',
   border: 'none', background: 'transparent', cursor: 'pointer',
-  fontSize: '13.5px', fontWeight: 600, color: '#0D1B3E',
+  fontSize: '13.5px', fontWeight: 600, color: '#ffffff',
   textAlign: 'left', fontFamily: 'inherit',
 }
 
