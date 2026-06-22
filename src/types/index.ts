@@ -52,13 +52,31 @@ export interface Track {
   play_count: number
   download_count: number
   published: boolean
+  album_id?: string | null
+  track_number?: number | null
   created_at: string
   updated_at: string
   // joined
   artist?: Artist
+  album?: Album
   // client-side
   is_purchased?: boolean
   is_saved?: boolean
+}
+
+export interface Album {
+  id: string
+  artist_id: string
+  title: string
+  cover_url: string | null
+  genre: TrackGenre
+  published: boolean
+  created_at: string
+  updated_at: string
+  // joined
+  artist?: Artist
+  tracks?: Track[]
+  track_count?: number
 }
 
 export interface Purchase {
@@ -163,6 +181,7 @@ export interface Database {
       profiles: { Row: Profile; Insert: Partial<Profile>; Update: Partial<Profile> }
       artists: { Row: Artist; Insert: Partial<Artist>; Update: Partial<Artist> }
       tracks: { Row: Track; Insert: Partial<Track>; Update: Partial<Track> }
+      albums: { Row: Album; Insert: Partial<Album>; Update: Partial<Album> }
       purchases: { Row: Purchase; Insert: Partial<Purchase>; Update: Partial<Purchase> }
       saved_tracks: { Row: SavedTrack; Insert: Partial<SavedTrack>; Update: Partial<SavedTrack> }
       artist_follows: { Row: ArtistFollow; Insert: Partial<ArtistFollow>; Update: Partial<ArtistFollow> }
