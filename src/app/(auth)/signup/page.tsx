@@ -117,6 +117,7 @@ export default function SignUpPage() {
 
   const strength = getStrength(password)
   const strengthColors = ['#2a2a2a', '#EF4444', '#F59E0B', '#F59E0B', '#10B981']
+  const watchTerms = watch('terms')
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
@@ -297,8 +298,34 @@ export default function SignUpPage() {
 
               {/* Terms */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '20px' }}>
-                <input {...register('terms')} type="checkbox" style={{ width: '17px', height: '17px', accentColor: '#ffffff', marginTop: '1px', cursor: 'pointer', flexShrink: 0 }} />
-                <label style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: 1.5 }}>
+                <label style={{ position: 'relative', flexShrink: 0, marginTop: '1px', cursor: 'pointer', display: 'block', width: '18px', height: '18px' }}>
+                  <input
+                    {...register('terms')}
+                    type="checkbox"
+                    style={{
+                      position: 'absolute', inset: 0, width: '18px', height: '18px',
+                      margin: 0, opacity: 0, cursor: 'pointer', zIndex: 1,
+                    }}
+                  />
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute', inset: 0,
+                      width: '18px', height: '18px', borderRadius: '4px',
+                      border: watchTerms ? 'none' : '1.5px solid #717171',
+                      background: watchTerms ? '#ffffff' : 'transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all .12s', pointerEvents: 'none',
+                    }}
+                  >
+                    {watchTerms && (
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </span>
+                </label>
+                <label style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: 1.5, cursor: 'pointer' }}>
                   I agree to Muzika&apos;s{' '}
                   <a style={{ color: '#2563EB', fontWeight: 600 }}>Terms of Service</a>
                   {' '}and{' '}
