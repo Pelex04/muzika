@@ -353,8 +353,8 @@ export default function LandingPage() {
         .lp-footer {
           padding: 24px 52px;
           display: flex;
-          align-items: center;
-          justify-content: space-between;
+          flex-direction: column;
+          gap: 18px;
           border-top: 1px solid rgba(255,255,255,0.05);
         }
         .lp-footer-copy {
@@ -373,6 +373,34 @@ export default function LandingPage() {
           transition: color 0.15s;
         }
         .lp-footer-links a:hover { color: rgba(255,255,255,0.6); }
+
+        .lp-footer-social {
+          display: flex;
+          gap: 14px;
+          align-items: center;
+        }
+        .lp-social-icon {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.06);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: rgba(255,255,255,0.5);
+          transition: all 0.15s;
+        }
+        .lp-social-icon:hover {
+          background: rgba(255,255,255,0.12);
+          color: #ffffff;
+        }
+        .lp-footer-bottom {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
 
         /* ── RESPONSIVE ── */
         @media (max-width: 1024px) {
@@ -413,6 +441,8 @@ export default function LandingPage() {
           }
           .lp-footer { padding: 20px 24px; flex-direction: column; gap: 12px; text-align: center; }
           .lp-footer-links { justify-content: center; }
+          .lp-footer-bottom { flex-direction: column; gap: 16px; }
+          .lp-footer-social { justify-content: center; }
         }
         @media (max-width: 480px) {
           .lp-nav { padding: 0 14px; }
@@ -621,12 +651,36 @@ export default function LandingPage() {
 
         {/* ── FOOTER ── */}
         <footer className="lp-footer">
-          <span className="lp-footer-copy">© 2026 Muzika</span>
-          <ul className="lp-footer-links">
-            <li><Link href="/artists" style={{color:'inherit',textDecoration:'none'}}>Artists</Link></li>
-            <li><Link href="/blog" style={{color:'inherit',textDecoration:'none'}}>Blog</Link></li>
-            <li><Link href="/signin" style={{color:'inherit',textDecoration:'none'}}>Sign in</Link></li>
-          </ul>
+          <div className="lp-footer-bottom">
+            <span className="lp-footer-copy">© 2026 Muzika</span>
+            <ul className="lp-footer-links">
+              <li><Link href="/artists" style={{color:'inherit',textDecoration:'none'}}>Artists</Link></li>
+              <li><Link href="/blog" style={{color:'inherit',textDecoration:'none'}}>Blog</Link></li>
+              <li><Link href="/signin" style={{color:'inherit',textDecoration:'none'}}>Sign in</Link></li>
+            </ul>
+          </div>
+
+          {/* TODO: replace href="#" with real social URLs once provided by client */}
+          <div className="lp-footer-social">
+            <a href="#" className="lp-social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+            </a>
+            <a href="#" className="lp-social-icon" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </a>
+            <a href="#" className="lp-social-icon" aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-7-6.2 7H1.5l8.1-9.3L1 2h7l4.9 6.4L18.9 2z"/></svg>
+            </a>
+            <a href="#" className="lp-social-icon" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82a4.28 4.28 0 01-2.94-1.07v9.93a5.78 5.78 0 11-5-5.74v3.05a2.74 2.74 0 102.74 2.74V0h3.03a4.28 4.28 0 004.28 4.28v3.04a4.28 4.28 0 01-2.11-1.5z"/></svg>
+            </a>
+            <a href="#" className="lp-social-icon" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2s-.23-1.64-.94-2.36c-.9-.95-1.91-.95-2.37-1C16.8 2.6 12 2.6 12 2.6h-.01s-4.8 0-8.18.24c-.46.05-1.47.05-2.37 1-.71.72-.94 2.36-.94 2.36S0 8.13 0 10.05v1.8c0 1.93.23 3.86.23 3.86s.23 1.64.94 2.36c.9.95 2.08.92 2.6 1.02 1.89.18 8.03.24 8.23.24 0 0 4.8 0 8.18-.25.46-.06 1.47-.06 2.37-1.01.71-.72.94-2.36.94-2.36s.23-1.93.23-3.86v-1.8c0-1.92-.23-3.85-.23-3.85zM9.55 14.6V7.84l6.27 3.39-6.27 3.38z"/></svg>
+            </a>
+            <a href="#" className="lp-social-icon" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.42 1.27 4.86L2.05 22l5.3-1.27a9.9 9.9 0 004.7 1.2h.01c5.5 0 9.96-4.46 9.96-9.96S17.55 2 12.05 2zm5.85 14.1c-.25.7-1.46 1.34-2 1.43-.52.08-1.18.12-1.9-.12-.44-.14-1-.32-1.72-.63-3.02-1.31-4.99-4.36-5.14-4.56-.15-.2-1.23-1.63-1.23-3.1s.77-2.2 1.04-2.5c.27-.3.6-.37.8-.37.2 0 .4 0 .57.01.18.01.43-.07.67.51.25.6.85 2.07.92 2.22.07.15.12.33.02.53-.1.2-.15.32-.3.49-.15.17-.32.38-.45.51-.15.15-.31.31-.13.6.18.3.8 1.32 1.72 2.14 1.18 1.05 2.18 1.38 2.5 1.53.3.15.49.13.67-.05.18-.18.78-.9.99-1.21.2-.3.4-.25.66-.15.27.1 1.72.81 2.02.96.3.15.5.22.57.34.07.13.07.73-.18 1.43z"/></svg>
+            </a>
+          </div>
         </footer>
 
       </div>
