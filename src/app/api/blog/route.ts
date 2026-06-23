@@ -14,6 +14,20 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  // Only admins can write blog posts. This mirrors the database RLS
+  // policy (only_admins_can_create_posts) -- checking here too gives a
+  // clean error message and avoids uploading a cover image for a post
+  // that's going to be rejected anyway.
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'admin') {
+    return NextResponse.json({ error: 'Only admins can publish blog posts' }, { status: 403 })
+  }
+
   const formData = await req.formData()
   const title = (formData.get('title') as string)?.trim()
   const excerpt = (formData.get('excerpt') as string)?.trim() ?? ''

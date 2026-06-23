@@ -34,9 +34,9 @@ function CatIcon({ category, size = 11 }: { category: string; size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2a3 3 0 013 3v7a3 3 0 01-6 0V5a3 3 0 013-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
 }
 
-interface Props { posts: BlogPost[] }
+interface Props { posts: BlogPost[]; isAdmin: boolean }
 
-export default function BlogClient({ posts }: Props) {
+export default function BlogClient({ posts, isAdmin }: Props) {
   const [search, setSearch] = useState('')
   const [activeCat, setActiveCat] = useState('All')
 
@@ -57,9 +57,11 @@ export default function BlogClient({ posts }: Props) {
         eyebrow="Stories from the scene"
         title="Blog & News"
         rightSlot={
-          <Link href="/blog/new" style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', background:'#ffffff', color:'#000000', borderRadius:'8px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
-            <PenSquare size={13} /> Write
-          </Link>
+          isAdmin ? (
+            <Link href="/blog/new" style={{ display:'flex', alignItems:'center', gap:'6px', padding:'8px 14px', background:'#ffffff', color:'#000000', borderRadius:'8px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
+              <PenSquare size={13} /> Write
+            </Link>
+          ) : undefined
         }
       />
 
@@ -69,9 +71,11 @@ export default function BlogClient({ posts }: Props) {
             <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Stories from the scene</p>
             <h1 className="text-3xl font-black text-white tracking-tight">Blog &amp; News</h1>
           </div>
-          <Link href="/blog/new" className="flex items-center gap-2 px-4 py-2.5 bg-white text-black rounded-lg text-sm font-bold hover:bg-gray-200 transition-colors">
-            <PenSquare className="w-4 h-4" /> Write
-          </Link>
+          {isAdmin && (
+            <Link href="/blog/new" className="flex items-center gap-2 px-4 py-2.5 bg-white text-black rounded-lg text-sm font-bold hover:bg-gray-200 transition-colors">
+              <PenSquare className="w-4 h-4" /> Write
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
