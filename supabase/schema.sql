@@ -402,21 +402,10 @@ create policy "Users update own avatars" on storage.objects
   for update using (bucket_id = 'avatars' and auth.role() = 'authenticated');
 
 drop policy if exists "Track files private" on storage.objects;
-create policy "Track files private" on storage.objects
+drop policy if exists "Authenticated users can stream tracks" on storage.objects;
+create policy "Authenticated users can stream tracks" on storage.objects
   for select using (
-    bucket_id = 'tracks' and (
-      exists (
-        select 1 from tracks t
-        join artists a on a.id = t.artist_id
-        where t.audio_path = name and a.profile_id = auth.uid()
-      )
-      OR
-      exists (
-        select 1 from tracks t
-        join purchases p on p.track_id = t.id
-        where t.audio_path = name and p.user_id = auth.uid() and p.payment_status = 'completed'
-      )
-    )
+    bucket_id = 'tracks' and auth.role() = 'authenticated'
   );
 
 drop policy if exists "Artists upload tracks" on storage.objects;

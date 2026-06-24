@@ -142,7 +142,18 @@ export default function BlogClient({ posts, isAdmin }: Props) {
                   <div className="w-20 h-20 rounded-[9px] overflow-hidden flex-shrink-0 bg-[#0D1B3E]">
                     {post.cover_url
                       ? <img src={post.cover_url} alt={post.title} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full" style={{ background: 'linear-gradient(135deg, #0d1b3e, #1e4a9e)' }}/>
+                      : (
+                        <div className="w-full h-full" style={{ background: 'linear-gradient(130deg, #0D1B3E 0%, #152b6e 55%, #1e4a9e 100%)' }}>
+                          <svg viewBox="0 0 80 80" className="w-full h-full opacity-50">
+                            <g stroke="#d4af37" strokeWidth="1.2">
+                              {[10, 25, 40, 50, 60, 70].map((x, i) => (
+                                <line key={i} x1="40" y1="0" x2={x} y2="80" />
+                              ))}
+                            </g>
+                            <circle cx="40" cy="32" r="14" fill="rgba(59,130,246,0.25)" />
+                          </svg>
+                        </div>
+                      )
                     }
                   </div>
                   <div className="flex-1 min-w-0">
