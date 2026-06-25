@@ -17,9 +17,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#121212' }}>
+      <style>{`
+        .muzika-main { padding-bottom: 76px; }
+        @media (max-width: 768px) { .muzika-main { padding-bottom: 138px; } }
+      `}</style>
       <Sidebar profile={profile} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
-        <main style={{ flex: 1, overflowY: 'auto', paddingBottom: '76px' }}>
+        <main className="muzika-main" style={{ flex: 1, overflowY: 'auto' }}>
           {children}
         </main>
         <MiniPlayer />

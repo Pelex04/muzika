@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 interface Props {
   eyebrow: string
@@ -9,6 +10,9 @@ interface Props {
 }
 
 export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
+  const pathname = usePathname()
+  const onSearchPage = pathname === '/search'
+
   return (
     <div
       className="md:hidden"
@@ -29,6 +33,21 @@ export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {rightSlot}
+        {!onSearchPage && (
+          <Link
+            href="/search"
+            style={{
+              width: '36px', height: '36px', borderRadius: '50%',
+              background: '#181818', display: 'grid', placeItems: 'center',
+              textDecoration: 'none', flexShrink: 0,
+            }}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </Link>
+        )}
         <Link
           href="/profile"
           style={{

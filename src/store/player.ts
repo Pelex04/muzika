@@ -23,8 +23,9 @@ interface PlayerStore {
   pause: () => void
   resume: () => void
   togglePlay: () => void
-  next: () => void
-  prev: () => void
+  next: () => Promise<void>
+  prev: () => Promise<void>
+  playQueueItem: (index: number) => Promise<void>
   seek: (time: number) => void
   setVolume: (vol: number) => void
   toggleShuffle: () => void
@@ -58,7 +59,14 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     const queueList = queue ?? [track]
     const idx = queueList.findIndex(t => t.id === track.id)
 
-    set({ isLoading: true, currentTrack: track, queue: queueList, queueIndex: idx < 0 ? 0 : idx })
+    set({
+      isLoading: true,
+      currentTrack: track,
+      queue: queueList,
+      queueIndex: idx < 0 ? 0 : idx,
+      currentTime: 0,
+      duration: 0,
+    })
 
     const howl = new Howl({
       src: [track.audio_url!],
@@ -111,8 +119,8 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     isPlaying ? pause() : resume()
   },
 
-  next: () => {
-    const { queue, queueIndex, shuffle, repeat, play } = get()
+  next: async () => {
+    const { queue, queueIndex, shuffle, repeat, playQueueItem } = get()
     if (!queue.length) return
 
     let nextIdx: number
@@ -125,14 +133,41 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         else { set({ isPlaying: false }); return }
       }
     }
-    play(queue[nextIdx], queue)
+    await playQueueItem(nextIdx)
   },
 
-  prev: () => {
-    const { queue, queueIndex, currentTime, play, seek } = get()
+  prev: async () => {
+    const { queue, queueIndex, currentTime, playQueueItem, seek } = get()
     if (currentTime > 3) { seek(0); return }
     const prevIdx = Math.max(0, queueIndex - 1)
-    play(queue[prevIdx], queue)
+    await playQueueItem(prevIdx)
+  },
+
+  // Advances to a specific position in the queue and fetches a FRESH
+  // signed audio URL before playing it. This matters because tracks
+  // sitting in the queue array never carry a usable audio_url -- only
+  // the track the user directly clicked gets one injected (by the
+  // calling UI code, right before play()). next()/prev() previously
+  // called play(queue[idx], queue) directly, reusing that stale queue
+  // object with no audio_url -- Howler would get src: [undefined],
+  // never fire onload, and just sit there. The title (currentTrack)
+  // had already updated by then, so visually it looked like the song
+  // changed but the audio/progress just froze on whatever the last
+  // working track left behind.
+  playQueueItem: async (index: number) => {
+    const { queue, play, setIsLoading } = get()
+    const track = queue[index]
+    if (!track) return
+
+    setIsLoading(true)
+    try {
+      const res = await fetch(`/api/tracks/${track.id}/stream`)
+      const data = await res.json()
+      if (!data.url) { setIsLoading(false); return }
+      play({ ...track, audio_url: data.url }, queue)
+    } catch {
+      setIsLoading(false)
+    }
   },
 
   seek: (time) => {

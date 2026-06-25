@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Music, BarChart2, BookOpen } from 'lucide-react'
+import { Home, Search, Music, BarChart2, BookOpen } from 'lucide-react'
 
 const TABS = [
   { href: '/discover', label: 'Home',    icon: Home },
+  { href: '/search',   label: 'Search',  icon: Search },
   { href: '/songs',    label: 'Songs',   icon: Music },
   { href: '/charts',   label: 'Charts',  icon: BarChart2 },
   { href: '/library',  label: 'Library', icon: BookOpen },
@@ -26,7 +27,7 @@ export default function BottomTabs() {
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 300,
           height: '62px', background: '#121212',
           borderTop: '1.5px solid #2a2a2a',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          gridTemplateColumns: 'repeat(5, 1fr)',
         }}
       >
         {TABS.map(({ href, label, icon: Icon }) => {
@@ -39,12 +40,12 @@ export default function BottomTabs() {
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 gap: '3px', textDecoration: 'none',
-                fontSize: '11px', fontWeight: 600,
+                fontSize: '10.5px', fontWeight: 600,
                 color: active ? '#ffffff' : '#717171',
                 transition: 'color .15s',
               }}
             >
-              <Icon size={22} />
+              <Icon size={20} />
               {label}
             </Link>
           )

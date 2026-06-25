@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Search, X, Music, Users, Loader2 } from 'lucide-react'
+import { Search, X, Music, Users, Loader2, Disc3 } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import { usePlayerStore } from '@/store/player'
 import { toast } from 'sonner'
@@ -10,11 +10,12 @@ import Link from 'next/link'
 interface SearchResult {
   tracks: any[]
   artists: any[]
+  albums: any[]
 }
 
 export default function SearchPage() {
   const [query, setQuery] = useState('')
-  const [results, setResults] = useState<SearchResult>({ tracks: [], artists: [] })
+  const [results, setResults] = useState<SearchResult>({ tracks: [], artists: [], albums: [] })
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -40,7 +41,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (!query.trim()) {
-      setResults({ tracks: [], artists: [] })
+      setResults({ tracks: [], artists: [], albums: [] })
       setSearched(false)
       return
     }
@@ -54,7 +55,7 @@ export default function SearchPage() {
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
     if (!data.url) { toast.error('Could not load track'); return }
-    play({ ...track, audio_url: data.url })
+    play({ ...track, audio_url: data.url }, results.tracks)
   }
 
   const artBg = (genre: string) => {
@@ -65,7 +66,7 @@ export default function SearchPage() {
     return `linear-gradient(135deg,${m[genre]??'#0d1b3e'},#0d1b3e)`
   }
 
-  const hasResults = results.tracks.length > 0 || results.artists.length > 0
+  const hasResults = results.tracks.length > 0 || results.artists.length > 0 || results.albums.length > 0
 
   return (
     <>
@@ -168,6 +169,29 @@ export default function SearchPage() {
                     </div>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="#717171"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                   </div>
+                ))}
+              </>
+            )}
+
+            {results.albums.length > 0 && (
+              <>
+                <p className="section-title">
+                  <Disc3 size={12} style={{ display:'inline', marginRight:'5px' }} />
+                  Albums ({results.albums.length})
+                </p>
+                {results.albums.map((album: any) => (
+                  <Link key={album.id} href={`/albums/${album.id}`} style={{ textDecoration:'none' }}>
+                    <div className="result-row">
+                      <div className="result-art" style={{ background: artBg(album.genre) }}>
+                        {album.cover_url && <img src={album.cover_url} alt={album.title} style={{ width:'100%',height:'100%',objectFit:'cover' }} />}
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div className="result-name">{album.title}</div>
+                        <div className="result-sub">{album.artist?.stage_name ?? 'Unknown'} · Album</div>
+                      </div>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#717171" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                  </Link>
                 ))}
               </>
             )}

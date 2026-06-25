@@ -107,7 +107,7 @@ export default function BlogClient({ posts, isAdmin }: Props) {
           <>
             {/* Hero post */}
             {hero && (
-              <div className="rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(13,27,62,.06),0_4px_16px_rgba(13,27,62,.08)] mb-3.5 cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(13,27,62,.04),0_12px_40px_rgba(13,27,62,.14)] transition-all">
+              <Link href={`/blog/${hero.slug}`} className="block rounded-2xl overflow-hidden shadow-[0_1px_3px_rgba(13,27,62,.06),0_4px_16px_rgba(13,27,62,.08)] mb-3.5 cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(13,27,62,.04),0_12px_40px_rgba(13,27,62,.14)] transition-all">
                 <div className="h-[210px] overflow-hidden">
                   {hero.cover_url
                     ? <img src={hero.cover_url} alt={hero.title} className="w-full h-full object-cover" />
@@ -132,13 +132,13 @@ export default function BlogClient({ posts, isAdmin }: Props) {
                   <h3 className="text-base font-bold text-white leading-snug">{hero.title}</h3>
                   {hero.excerpt && <p className="text-sm text-[#b3b3b3] mt-1 line-clamp-2">{hero.excerpt}</p>}
                 </div>
-              </div>
+              </Link>
             )}
 
             {/* Rest of posts */}
             <div className="flex flex-col gap-2.5">
               {rest.map(post => (
-                <div key={post.id} className="bg-[#181818] rounded-xl p-3.5 flex gap-3.5 cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,.3),0_4px_16px_rgba(0,0,0,.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(0,0,0,.4),0_12px_40px_rgba(0,0,0,.5)] transition-all">
+                <Link key={post.id} href={`/blog/${post.slug}`} className="block bg-[#181818] rounded-xl p-3.5 flex gap-3.5 cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,.3),0_4px_16px_rgba(0,0,0,.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(0,0,0,.4),0_12px_40px_rgba(0,0,0,.5)] transition-all">
                   <div className="w-20 h-20 rounded-[9px] overflow-hidden flex-shrink-0 bg-[#0D1B3E]">
                     {post.cover_url
                       ? <img src={post.cover_url} alt={post.title} className="w-full h-full object-cover" />
@@ -165,7 +165,7 @@ export default function BlogClient({ posts, isAdmin }: Props) {
                       {post.author?.full_name} · {format(new Date(post.created_at), 'MMM d, yyyy')}
                     </p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </>
