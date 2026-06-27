@@ -82,12 +82,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
   return (
     <div style={{ background: '#121212', minHeight: '100%' }}>
       {/* Mobile Top Bar with avatar */}
-      <MobileTopBar
-        eyebrow={greeting}
-        title="Discover"
-        avatarUrl={profile?.avatar_url}
-        avatarInitial={profile?.full_name?.charAt(0)?.toUpperCase()}
-      />
+      <MobileTopBar eyebrow={greeting} title="Discover" />
 
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
 
