@@ -22,11 +22,12 @@ interface Props {
 
 type Tab = 'overview' | 'tracks' | 'saved' | 'purchases'
 
-export default function ProfileClient({ profile, artist, tracks, totalEarnings, totalPlays, savedTracks, purchases }: Props) {
+export default function ProfileClient({ profile, artist, tracks: initialTracks, totalEarnings, totalPlays, savedTracks, purchases }: Props) {
   const router = useRouter()
   const supabase = createClient()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [tracks, setTracks] = useState<Track[]>(initialTracks)
   const isArtist = !!artist
   const [editOpen, setEditOpen] = useState(false)
 
@@ -39,8 +40,12 @@ export default function ProfileClient({ profile, artist, tracks, totalEarnings, 
     if (!confirm('Delete this track? This cannot be undone.')) return
     setDeletingId(trackId)
     const res = await fetch(`/api/tracks/${trackId}`, { method: 'DELETE' })
-    if (res.ok) { toast.success('Track deleted'); router.refresh() }
-    else toast.error('Failed to delete track')
+    if (res.ok) {
+      setTracks(prev => prev.filter(t => t.id !== trackId))
+      toast.success('Track deleted')
+    } else {
+      toast.error('Failed to delete track')
+    }
     setDeletingId(null)
   }
 
