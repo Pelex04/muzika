@@ -1,26 +1,23 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
   const { pathname } = request.nextUrl
 
-  // Routes that never need auth checks
-  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback']
+  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended']
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p))
   const isApi = pathname.startsWith('/api/')
   const isStatic = pathname.startsWith('/_next/') || pathname.includes('.')
 
-  // Root always goes to landing
   if (pathname === '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/landing'
     return NextResponse.redirect(url)
   }
 
-  // For public + static routes, skip auth but check if authed user hits auth pages
   if (isPublic || isApi || isStatic) {
-    // If visiting signin/signup/landing while already logged in, go to app
     if (isPublic && !isApi) {
       try {
         const supabase = createServerClient(
@@ -45,14 +42,12 @@ export async function proxy(request: NextRequest) {
           url.pathname = '/discover'
           return NextResponse.redirect(url)
         }
-      } catch {
-        // Supabase unreachable - just serve the page
-      }
+      } catch {}
     }
     return supabaseResponse
   }
 
-  // Protected routes - require auth
+  // Protected routes — require auth
   try {
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -80,9 +75,43 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
+    // ── Role + suspension check via service-role (cannot be spoofed) ──
+    const admin = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } }
+    )
+
+    const { data: profile } = await admin
+      .from('profiles')
+      .select('role, suspended_at')
+      .eq('id', user.id)
+      .single()
+
+    // Suspended users → kick to /suspended page
+    if (profile?.suspended_at && pathname !== '/suspended') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/suspended'
+      return NextResponse.redirect(url)
+    }
+
+    // /admin routes — only admins allowed
+    if (pathname.startsWith('/admin') && profile?.role !== 'admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/discover'
+      return NextResponse.redirect(url)
+    }
+
+    // Non-admin users hitting signin after login → discover
+    // Admin users hitting /discover after login → /admin
+    if (pathname === '/discover' && profile?.role === 'admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin'
+      return NextResponse.redirect(url)
+    }
+
     return supabaseResponse
   } catch {
-    // Supabase unreachable - redirect to signin
     const url = request.nextUrl.clone()
     url.pathname = '/signin'
     return NextResponse.redirect(url)
@@ -91,6 +120,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

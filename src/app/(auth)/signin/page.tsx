@@ -47,7 +47,15 @@ export default function SignInPage() {
       }
       notify.success('Welcome back', 'Redirecting to your library…')
       const params = new URLSearchParams(window.location.search)
-      const redirectTo = params.get('redirectTo') ?? '/discover'
+      // Check role — admins go to /admin, everyone else to /discover
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', (await supabase.auth.getUser()).data.user?.id ?? '')
+        .single()
+
+      const redirectTo = params.get('redirectTo') ??
+        (profile?.role === 'admin' ? '/admin' : '/discover')
       router.push(redirectTo)
       router.refresh()
     } catch (err) {
