@@ -38,12 +38,18 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
     router.push('/signin')
   }
 
-  const deleteTrack = async (trackId: string) => {
-    if (!confirm('Delete this track? This cannot be undone.')) return
-    setDeletingId(trackId)
-    const res = await fetch(`/api/tracks/${trackId}`, { method: 'DELETE' })
+  const deleteTrack = (trackId: string) => {
+    setConfirmId(trackId)
+  }
+
+  const confirmDelete = async () => {
+    if (!confirmId) return
+    const id = confirmId
+    setConfirmId(null)
+    setDeletingId(id)
+    const res = await fetch(`/api/tracks/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      setTracks(prev => prev.filter(t => t.id !== trackId))
+      setTracks(prev => prev.filter(t => t.id !== id))
       notify.success('Track deleted', 'The track has been permanently removed.')
     } else {
       notify.error('Could not delete track', 'Please try again.')
@@ -422,6 +428,15 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
         )}
 
       </div>
+
+      <ConfirmDialog
+        open={!!confirmId}
+        title="Delete track"
+        description="This track will be permanently deleted and removed from all playlists. This cannot be undone."
+        confirmLabel="Delete track"
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmId(null)}
+      />
     </>
   )
 }
