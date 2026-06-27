@@ -18,11 +18,12 @@ interface Props {
   playCount?: number
   userId: string | null
   queue?: Track[]
+  variant?: 'default' | 'plain'
 }
 
 export default function TrackRow({
   track, rank, showRank = true, showTrend = false,
-  trend = 'neutral', playCount, userId, queue
+  trend = 'neutral', playCount, userId, queue, variant = 'default'
 }: Props) {
   const { play, currentTrack, isPlaying } = usePlayerStore()
   const isActive = currentTrack?.id === track.id
@@ -80,8 +81,10 @@ export default function TrackRow({
   return (
     <div
       className={cn(
-        'relative flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg bg-[#181818] cursor-pointer transition-colors group',
-        isActive ? 'bg-[#282828]' : 'hover:bg-[#282828]'
+        'relative flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors group',
+        variant === 'plain'
+          ? isActive ? 'bg-white/5' : 'hover:bg-white/5'
+          : isActive ? 'bg-[#282828]' : 'bg-[#181818] hover:bg-[#282828]'
       )}
       onClick={handlePlay}
     >

@@ -131,7 +131,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
               See all <ChevronRight size={15} />
             </Link>
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col">
             {popularTracks.slice(0, 5).map((track, i) => (
               <TrackRow
                 key={track.id}
@@ -139,6 +139,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
                 rank={i + 1}
                 showRank
                 showTrend
+                variant="plain"
                 trend={i < 2 ? 'up' : i === 4 ? 'down' : 'neutral'}
                 playCount={track.play_count}
                 userId={userId}
