@@ -17,6 +17,7 @@ interface PlayerStore {
 
   // Internal howl instance
   _howl: Howl | null
+  _playCountTimer: ReturnType<typeof setTimeout> | null
 
   // Actions
   play: (track: Track, queue?: Track[]) => void
@@ -47,6 +48,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   repeat: 'none',
   isLoading: false,
   _howl: null,
+  _playCountTimer: null,
 
   play: (track, queue) => {
     const state = get()
@@ -101,7 +103,17 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
     howl.play()
     requestAnimationFrame(tick)
-    set({ _howl: howl })
+
+    // Cancel any previous 30-second play-count timer
+    const prevTimer = get()._playCountTimer
+    if (prevTimer) clearTimeout(prevTimer)
+
+    // Record a play after 30 seconds of continuous listening
+    const playCountTimer = setTimeout(async () => {
+      try { await fetch(`/api/tracks/${track.id}/play`, { method: 'POST' }) } catch {}
+    }, 30_000)
+
+    set({ _howl: howl, _playCountTimer: playCountTimer })
   },
 
   pause: () => {

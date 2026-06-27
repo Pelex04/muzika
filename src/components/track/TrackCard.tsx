@@ -66,7 +66,7 @@ export default function TrackCard({ track, userId, queue }: Props) {
   }
 
   return (
-    <div className="relative bg-[#181818] rounded-xl overflow-hidden cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,.3),0_4px_16px_rgba(0,0,0,.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(0,0,0,.4),0_12px_40px_rgba(0,0,0,.5)] transition-all group">
+    <div className="relative bg-[#181818] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-0.5 transition-all group">
       {/* Art */}
       <div className="relative aspect-square" onClick={handlePlay}>
         {track.cover_url

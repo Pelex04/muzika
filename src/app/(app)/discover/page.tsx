@@ -7,27 +7,29 @@ export default async function DiscoverPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [tracks, artists] = await Promise.all([
-    getTracks({ limit: 8, orderBy: 'created_at' }),
-    getArtists({ limit: 8 }),
+  const [tracks, artists, trendingTracks, popularTracks] = await Promise.all([
+    getTracks({ limit: 12, orderBy: 'created_at' }),   // new releases
+    getArtists({ limit: 12 }),
+    getTracks({ limit: 7, orderBy: 'play_count' }),     // hero + now playing slider (up to 7)
+    getTracks({ limit: 8, orderBy: 'play_count' }),     // trending now section
   ])
 
-  // Get top 3 trending tracks for the rotating hero banner
-  const trendingTracks = await getTracks({ limit: 3, orderBy: 'play_count' })
-
-  // Get purchased track IDs for this user
   let purchasedIds: string[] = []
   let savedIds: string[] = []
+  let profile: any = null
+
   if (user) {
-    const [purchasesRes, savedRes] = await Promise.all([
+    const [purchasesRes, savedRes, profileRes] = await Promise.all([
       supabase.from('purchases').select('track_id').eq('user_id', user.id).eq('payment_status', 'completed'),
       supabase.from('saved_tracks').select('track_id').eq('user_id', user.id),
+      supabase.from('profiles').select('avatar_url, full_name').eq('id', user.id).single(),
     ])
     purchasedIds = (purchasesRes.data ?? []).map((p: any) => p.track_id)
     savedIds = (savedRes.data ?? []).map((s: any) => s.track_id)
+    profile = profileRes.data
   }
 
-  const tracksWithState = tracks.map(t => ({
+  const withState = (ts: typeof tracks) => ts.map(t => ({
     ...t,
     is_purchased: purchasedIds.includes(t.id),
     is_saved: savedIds.includes(t.id),
@@ -35,10 +37,12 @@ export default async function DiscoverPage() {
 
   return (
     <DiscoverClient
-      trendingTracks={trendingTracks}
-      tracks={tracksWithState}
+      trendingTracks={withState(trendingTracks)}
+      tracks={withState(tracks)}
       artists={artists}
+      popularTracks={withState(popularTracks)}
       userId={user?.id ?? null}
+      profile={profile}
     />
   )
 }

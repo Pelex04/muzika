@@ -29,8 +29,6 @@ export async function GET(
 
   if (signErr || !signed) return NextResponse.json({ error: 'Could not load track' }, { status: 500 })
 
-  // Increment play count
-  await supabase.rpc('increment_play_count', { track_id: id })
-
+  // Play count is incremented via /api/tracks/[id]/play after 30s of listening
   return NextResponse.json({ url: signed.signedUrl })
 }

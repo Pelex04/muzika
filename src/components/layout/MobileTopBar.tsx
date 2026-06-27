@@ -6,10 +6,12 @@ import { usePathname } from 'next/navigation'
 interface Props {
   eyebrow: string
   title: string
-  rightSlot?: React.ReactNode  // optional extra button (e.g. Write, Filter) shown left of avatar
+  rightSlot?: React.ReactNode
+  avatarUrl?: string | null
+  avatarInitial?: string
 }
 
-export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
+export default function MobileTopBar({ eyebrow, title, rightSlot, avatarUrl, avatarInitial }: Props) {
   const pathname = usePathname()
   const onSearchPage = pathname === '/search'
 
@@ -53,13 +55,21 @@ export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
           style={{
             width: '36px', height: '36px', borderRadius: '50%',
             background: '#0D1B3E', display: 'grid', placeItems: 'center',
-            textDecoration: 'none', flexShrink: 0,
+            textDecoration: 'none', flexShrink: 0, overflow: 'hidden',
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : avatarInitial ? (
+            <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '15px', fontWeight: 700 }}>
+              {avatarInitial}
+            </span>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          )}
         </Link>
       </div>
     </div>

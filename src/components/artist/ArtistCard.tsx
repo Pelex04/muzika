@@ -43,7 +43,7 @@ export default function ArtistCard({ artist, userId }: Props) {
 
   return (
     <Link href={`/artists/${artist.id}`}>
-      <div className="bg-[#181818] rounded-xl px-4 py-5 text-center cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,.3),0_4px_16px_rgba(0,0,0,.4)] hover:-translate-y-0.5 hover:shadow-[0_4px_6px_rgba(0,0,0,.4),0_12px_40px_rgba(0,0,0,.5)] transition-all">
+      <div className="bg-[#181818] rounded-xl px-4 py-5 text-center cursor-pointer hover:-translate-y-0.5 transition-all">
         {/* Avatar */}
         <div className="relative w-[76px] h-[76px] mx-auto mb-3">
           <div className={cn(

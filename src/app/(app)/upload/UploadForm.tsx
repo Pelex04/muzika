@@ -218,6 +218,7 @@ export default function UploadForm() {
             title: t.title.trim() || t.file.name,
             genre: albumGenre,
             audioPath,
+            coverPath,      // apply album cover to every track that has no own cover
             albumId,
           }),
         })
