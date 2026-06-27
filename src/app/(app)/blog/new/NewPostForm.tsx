@@ -65,7 +65,7 @@ export default function NewPostForm() {
       }
 
       notify.success('Post published!')
-      router.push('/blog')
+      router.push('/admin?tab=blog')
       router.refresh()
     } catch {
       notify.error('Connection error. Please try again.')
@@ -106,12 +106,12 @@ export default function NewPostForm() {
         .drop-zone-mini:hover { border-color: #2563EB; background: #1a2332; }
       `}</style>
 
-      <MobileTopBar eyebrow="New post" title="Write" />
+      <MobileTopBar eyebrow="Admin" title="Write Post" />
 
       <div className="new-post-wrap">
         <div className="desktop-header" style={{ alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <Link href="/blog" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#b3b3b3', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>
-            <ChevronLeft size={18} /> Back to Blog
+          <Link href="/admin" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#b3b3b3', textDecoration: 'none', fontSize: '14px', fontWeight: 600 }}>
+            <ChevronLeft size={18} /> Back to Admin
           </Link>
         </div>
 
