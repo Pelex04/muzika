@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Play } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import type { Track } from '@/types'
 
 const ROTATE_MS = 5000
@@ -45,7 +45,7 @@ export default function HeroBanner({ tracks }: { tracks: Track[] }) {
   const handlePlay = async () => {
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
-    if (!data.url) { toast.error('Could not load track'); return }
+    if (!data.url) { notify.error('Could not load track'); return }
     play({ ...track, audio_url: data.url }, tracks)
     router.push('/now-playing')
   }

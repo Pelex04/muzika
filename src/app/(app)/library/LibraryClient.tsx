@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Heart, Music2, Plus, Loader2, ListMusic } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import type { Track, Playlist } from '@/types'
 import MobileTopBar from '@/components/layout/MobileTopBar'
@@ -25,7 +25,7 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
   const { play } = usePlayerStore()
 
   const createPlaylist = async () => {
-    if (!newName.trim()) { toast.error('Give your playlist a name'); return }
+    if (!newName.trim()) { notify.error('Give your playlist a name'); return }
     setCreating(true)
     try {
       const res = await fetch('/api/playlists', {
@@ -38,12 +38,12 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
         setPlaylists(prev => [{ ...data.playlist, track_count: 0 }, ...prev])
         setNewName('')
         setShowCreate(false)
-        toast.success('Playlist created')
+        notify.success('Playlist created')
       } else {
-        toast.error(data.error ?? 'Could not create playlist')
+        notify.error(data.error ?? 'Could not create playlist')
       }
     } catch {
-      toast.error('Connection error')
+      notify.error('Connection error')
     }
     setCreating(false)
   }
@@ -51,7 +51,7 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
   const handlePlay = async (track: Track) => {
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
-    if (!data.url) { toast.error('Could not load track'); return }
+    if (!data.url) { notify.error('Could not load track'); return }
     play({ ...track, audio_url: data.url }, savedTracks)
   }
 

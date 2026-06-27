@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Music2, Trash2, Play, MoreVertical } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { usePlayerStore } from '@/store/player'
 import type { Playlist, Track } from '@/types'
 
@@ -19,11 +20,12 @@ export default function PlaylistDetailClient({ playlist, tracks: initialTracks, 
   const { play } = usePlayerStore()
   const [tracks, setTracks] = useState(initialTracks)
   const [deleting, setDeleting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const handlePlay = async (track: Track) => {
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
-    if (!data.url) { toast.error('Could not load track'); return }
+    if (!data.url) { notify.error('Could not load track'); return }
     play({ ...track, audio_url: data.url }, tracks)
   }
 
@@ -36,21 +38,20 @@ export default function PlaylistDetailClient({ playlist, tracks: initialTracks, 
     const res = await fetch(`/api/playlists/${playlist.id}/tracks/${trackId}`, { method: 'DELETE' })
     if (res.ok) {
       setTracks(prev => prev.filter(t => t.id !== trackId))
-      toast.success('Removed from playlist')
+      notify.success('Removed from playlist')
     } else {
-      toast.error('Could not remove track')
+      notify.error('Could not remove track')
     }
   }
 
   const deletePlaylist = async () => {
-    if (!confirm(`Delete "${playlist.name}"? This cannot be undone.`)) return
     setDeleting(true)
     const res = await fetch(`/api/playlists/${playlist.id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast.success('Playlist deleted')
+      notify.success('Playlist deleted')
       router.push('/library')
     } else {
-      toast.error('Could not delete playlist')
+      notify.error('Could not delete playlist')
       setDeleting(false)
     }
   }
@@ -96,7 +97,7 @@ export default function PlaylistDetailClient({ playlist, tracks: initialTracks, 
               </button>
               {isOwner && (
                 <button
-                  onClick={deletePlaylist}
+                  onClick={() => setConfirmOpen(true)}
                   disabled={deleting}
                   style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 14px', background: '#FEF2F2', color: '#EF4444', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
                 >

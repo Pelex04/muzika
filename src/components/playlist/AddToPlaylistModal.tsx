@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { X, Plus, Music2, Check, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import type { Playlist } from '@/types'
 
 interface Props {
@@ -30,7 +30,7 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
       const data = await res.json()
       setPlaylists(data.playlists ?? [])
     } catch {
-      toast.error('Could not load playlists')
+      notify.error('Could not load playlists')
     }
     setLoading(false)
   }
@@ -45,24 +45,24 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
       })
       if (res.ok) {
         setAddedIds(prev => new Set(prev).add(playlistId))
-        toast.success('Added to playlist')
+        notify.success('Added to playlist')
       } else {
         const data = await res.json()
         if (res.status === 409) {
           setAddedIds(prev => new Set(prev).add(playlistId))
-          toast.info('Already in this playlist')
+          notify.info('Already in this playlist')
         } else {
-          toast.error(data.error ?? 'Could not add track')
+          notify.error(data.error ?? 'Could not add track')
         }
       }
     } catch {
-      toast.error('Connection error')
+      notify.error('Connection error')
     }
     setAddingId(null)
   }
 
   const createPlaylist = async () => {
-    if (!newName.trim()) { toast.error('Give your playlist a name'); return }
+    if (!newName.trim()) { notify.error('Give your playlist a name'); return }
     setCreating(true)
     try {
       const res = await fetch('/api/playlists', {
@@ -76,12 +76,12 @@ export default function AddToPlaylistModal({ trackId, onClose }: Props) {
         await addToPlaylist(data.playlist.id)
         setNewName('')
         setShowCreate(false)
-        toast.success(`Created "${data.playlist.name}" and added track`)
+        notify.success(`Created "${data.playlist.name}" and added track`)
       } else {
-        toast.error(data.error ?? 'Could not create playlist')
+        notify.error(data.error ?? 'Could not create playlist')
       }
     } catch {
-      toast.error('Connection error')
+      notify.error('Connection error')
     }
     setCreating(false)
   }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { CheckCircle2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import { formatCount } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import type { Artist } from '@/types'
@@ -19,13 +19,13 @@ export default function ArtistCard({ artist, userId }: Props) {
 
   const toggleFollow = async (e: React.MouseEvent) => {
     e.preventDefault()
-    if (!userId) { toast.error('Sign in to follow artists'); return }
+    if (!userId) { notify.error('Sign in to follow artists'); return }
     setLoading(true)
     const res = await fetch(`/api/artists/${artist.id}/follow`, { method: 'POST' })
     const data = await res.json()
     if (data.following !== undefined) {
       setFollowing(data.following)
-      toast.success(data.following ? `Following ${artist.stage_name}` : 'Unfollowed')
+      notify.success(data.following ? `Following ${artist.stage_name}` : 'Unfollowed')
     }
     setLoading(false)
   }

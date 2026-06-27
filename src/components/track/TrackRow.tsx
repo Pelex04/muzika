@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Play, Pause, MoreVertical, TrendingUp, TrendingDown, Bookmark, ListPlus, Share2, Download, X } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { formatCount } from '@/lib/utils'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import type { Track } from '@/types'
 import { cn } from '@/lib/utils'
 import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
@@ -32,14 +32,14 @@ export default function TrackRow({
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
 
   const handlePlay = async () => {
-    if (!userId) { toast.error('Sign in to play tracks'); return }
+    if (!userId) { notify.error('Sign in to play tracks'); return }
     if (isActive) {
       usePlayerStore.getState().togglePlay()
       return
     }
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
-    if (!data.url) { toast.error('Could not load track'); return }
+    if (!data.url) { notify.error('Could not load track'); return }
     play({ ...track, audio_url: data.url }, queue)
   }
 
@@ -48,7 +48,7 @@ export default function TrackRow({
     setMenuOpen(false)
     const res = await fetch(`/api/tracks/${track.id}/save`, { method: 'POST' })
     const data = await res.json()
-    toast.success(data.saved ? 'Saved to library' : 'Removed from library')
+    notify.success(data.saved ? 'Saved to library' : 'Removed from library')
   }
 
   const handleShare = async (e: React.MouseEvent) => {
@@ -59,7 +59,7 @@ export default function TrackRow({
       try { await navigator.share({ title: track.title, url: shareUrl }) } catch {}
     } else {
       await navigator.clipboard.writeText(shareUrl)
-      toast.success('Link copied to clipboard')
+      notify.success('Link copied to clipboard')
     }
   }
 
@@ -68,14 +68,14 @@ export default function TrackRow({
     setMenuOpen(false)
     const res = await fetch(`/api/tracks/${track.id}/download`)
     const data = await res.json()
-    if (!data.url) { toast.error('Could not download track'); return }
+    if (!data.url) { notify.error('Could not download track'); return }
     const a = document.createElement('a')
     a.href = data.url
     a.download = data.filename ?? track.title
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
-    toast.success('Download started')
+    notify.success('Download started')
   }
 
   return (

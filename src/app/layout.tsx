@@ -18,7 +18,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
         {children}
-        <Toaster position="top-right" richColors />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              fontFamily: "'Inter', system-ui, sans-serif",
+            },
+          }}
+        />
       </body>
     </html>
   )

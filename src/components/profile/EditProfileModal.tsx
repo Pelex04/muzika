@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { X, Camera, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import type { Profile, Artist } from '@/types'
 
 const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Dancehall']
@@ -43,7 +43,7 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
     const file = e.target.files?.[0]
     if (!file) return
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Photo must be under 5MB')
+      notify.error('Photo must be under 5MB')
       return
     }
     setAvatarFile(file)
@@ -97,12 +97,12 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
         body: JSON.stringify(payload),
       })
       const result = await res.json()
-      if (!res.ok) { toast.error(result.error ?? 'Could not save changes'); setSaving(false); return }
+      if (!res.ok) { notify.error(result.error ?? 'Could not save changes'); setSaving(false); return }
 
-      toast.success('Profile updated')
+      notify.success('Profile updated')
       onSaved()
     } catch (err: any) {
-      toast.error(err?.message ?? 'Something went wrong')
+      notify.error(err?.message ?? 'Something went wrong')
       setSaving(false)
     }
   }

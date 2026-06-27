@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import { Eye, EyeOff, Mail, Lock, User, Phone, Music2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthVisualPanel from '@/components/auth/AuthVisualPanel'
@@ -130,11 +130,11 @@ export default function SignUpPage() {
       },
     })
     if (error) {
-      toast.error(error.message)
+      notify.error(error.message)
       setLoading(false)
       return
     }
-    toast.success('Account created! Check your email to confirm.')
+    notify.success('Account created! Check your email to confirm.')
     router.push('/check-email')
   }
 

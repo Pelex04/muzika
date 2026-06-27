@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Search, X, Music, Users, Loader2, Disc3 } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import { usePlayerStore } from '@/store/player'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import Link from 'next/link'
 
 interface SearchResult {
@@ -34,7 +34,7 @@ export default function SearchPage() {
       setResults(data)
       setSearched(true)
     } catch {
-      toast.error('Search failed')
+      notify.error('Search failed')
     }
     setLoading(false)
   }
@@ -54,7 +54,7 @@ export default function SearchPage() {
   const handlePlay = async (track: any) => {
     const res = await fetch(`/api/tracks/${track.id}/stream`)
     const data = await res.json()
-    if (!data.url) { toast.error('Could not load track'); return }
+    if (!data.url) { notify.error('Could not load track'); return }
     play({ ...track, audio_url: data.url }, results.tracks)
   }
 

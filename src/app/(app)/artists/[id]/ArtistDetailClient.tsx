@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, CheckCircle2, Play, Music2, Disc3 } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import { formatCount } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -39,7 +39,7 @@ export default function ArtistDetailClient({ artist, tracks, albums, userId }: P
   const bg = GENRE_BG[artist.genre] ?? GENRE_BG['Afropop']
 
   const handleFollow = async () => {
-    if (!userId) { toast.error('Sign in to follow artists'); return }
+    if (!userId) { notify.error('Sign in to follow artists'); return }
     setFollowLoading(true)
     const res = await fetch(`/api/artists/${artist.id}/follow`, { method: 'POST' })
     const data = await res.json()
@@ -51,7 +51,7 @@ export default function ArtistDetailClient({ artist, tracks, albums, userId }: P
     if (tracks.length === 0) return
     const res = await fetch(`/api/tracks/${tracks[0].id}/stream`)
     const data = await res.json()
-    if (!data.url) { toast.error('Could not load track'); return }
+    if (!data.url) { notify.error('Could not load track'); return }
     play({ ...tracks[0], audio_url: data.url }, tracks)
     router.push('/now-playing')
   }

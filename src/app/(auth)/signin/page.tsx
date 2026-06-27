@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import { Eye, EyeOff, Mail, Lock, Music2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthVisualPanel from '@/components/auth/AuthVisualPanel'
@@ -36,22 +36,22 @@ export default function SignInPage() {
       })
       if (error) {
         if (error.message.toLowerCase().includes('email not confirmed')) {
-          toast.error('Please confirm your email first. Check your inbox.')
+          notify.error('Please confirm your email first. Check your inbox.')
         } else if (error.message.toLowerCase().includes('invalid login')) {
-          toast.error('Wrong email or password. Please try again.')
+          notify.error('Wrong email or password. Please try again.')
         } else {
-          toast.error(error.message)
+          notify.error(error.message)
         }
         setLoading(false)
         return
       }
-      toast.success('Welcome back!')
+      notify.success('Welcome back', 'Redirecting to your library…')
       const params = new URLSearchParams(window.location.search)
       const redirectTo = params.get('redirectTo') ?? '/discover'
       router.push(redirectTo)
       router.refresh()
     } catch (err) {
-      toast.error('Cannot connect to server. Check your internet connection and try again.')
+      notify.error('Cannot connect to server. Check your internet connection and try again.')
       setLoading(false)
     }
   }

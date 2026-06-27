@@ -4,7 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Upload, ChevronRight, Mic, Play, Download, DollarSign, Music2, Heart, ShoppingBag, Trash2, LogOut, Pencil } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { formatMWK, formatCount } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile, Artist, Track } from '@/types'
@@ -27,6 +28,7 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
   const supabase = createClient()
   const [activeTab, setActiveTab] = useState<Tab>('overview')
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [confirmId, setConfirmId] = useState<string | null>(null)
   const [tracks, setTracks] = useState<Track[]>(initialTracks)
   const isArtist = !!artist
   const [editOpen, setEditOpen] = useState(false)

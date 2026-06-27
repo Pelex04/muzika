@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ChevronLeft, Image as ImageIcon, Loader2, Send } from 'lucide-react'
-import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 
 const CATEGORIES = [
@@ -43,8 +43,8 @@ export default function NewPostForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title.trim()) { toast.error('Title is required'); return }
-    if (!content.trim()) { toast.error('Write something in the body'); return }
+    if (!title.trim()) { notify.error('Title is required'); return }
+    if (!content.trim()) { notify.error('Write something in the body'); return }
 
     setSubmitting(true)
     try {
@@ -59,16 +59,16 @@ export default function NewPostForm() {
       const result = await res.json()
 
       if (!res.ok) {
-        toast.error(result.error ?? 'Failed to publish post')
+        notify.error(result.error ?? 'Failed to publish post')
         setSubmitting(false)
         return
       }
 
-      toast.success('Post published!')
+      notify.success('Post published!')
       router.push('/blog')
       router.refresh()
     } catch {
-      toast.error('Connection error. Please try again.')
+      notify.error('Connection error. Please try again.')
       setSubmitting(false)
     }
   }
