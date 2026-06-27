@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminClient } from '@/lib/admin'
+import SignOutButton from './SignOutButton'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient() as any
@@ -35,7 +36,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         .admin-topbar-right { display: flex; align-items: center; gap: 8px; }
         .admin-topbar-email { font-size: 12px; color: #555; display: none; }
         @media (min-width: 640px) { .admin-topbar-email { display: block; } }
-        .admin-back-link { font-size: 13px; color: #60a5fa; text-decoration: none; font-weight: 600; white-space: nowrap; }
+        .admin-signout {
+          font-size: 13px; color: #717171; background: none; border: none;
+          cursor: pointer; font-family: inherit; font-weight: 600; padding: 0;
+        }
+        .admin-signout:hover { color: #ef4444; }
         .admin-content { max-width: 1100px; margin: 0 auto; padding: 20px 14px 40px; }
         @media (min-width: 640px) { .admin-content { padding: 28px 24px 60px; } }
         @media (min-width: 1024px) { .admin-content { padding: 32px 24px 60px; } }
@@ -51,6 +56,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="admin-topbar-right">
           <span className="admin-topbar-email">{profile.email}</span>
           <a href="/discover" className="admin-back-link">← App</a>
+          <SignOutButton />
         </div>
       </div>
 
