@@ -23,7 +23,7 @@ interface Props {
 
 export default function TrackRow({
   track, rank, showRank = true, showTrend = false,
-  trend = 'neutral', playCount, userId, queue, variant = 'default'
+  trend = 'neutral', playCount, userId, queue, variant = 'plain'
 }: Props) {
   const { play, currentTrack, isPlaying } = usePlayerStore()
   const isActive = currentTrack?.id === track.id

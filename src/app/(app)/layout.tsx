@@ -16,7 +16,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .eq('id', user.id)
     .single()
 
-  const avatarUrl = profile?.avatar_url ?? null
+  // Artists store their avatar on the artists table — use that as fallback
+  // so the top bar shows the correct photo even if profiles.avatar_url is null
+  const { data: artist } = await supabase
+    .from('artists')
+    .select('avatar_url')
+    .eq('profile_id', user.id)
+    .single()
+
+  const avatarUrl = profile?.avatar_url ?? artist?.avatar_url ?? null
   const avatarInitial = profile?.full_name?.charAt(0)?.toUpperCase() ?? '?'
 
   return (

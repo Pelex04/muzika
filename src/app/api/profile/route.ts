@@ -59,8 +59,11 @@ export async function PATCH(req: NextRequest) {
       if (body.artist_avatar_path) {
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(body.artist_avatar_path)
         artistUpdates.avatar_url = publicUrl
+        // Also sync to profiles so the top bar avatar stays current
+        profileUpdates.avatar_url = publicUrl
       } else {
         artistUpdates.avatar_url = null
+        profileUpdates.avatar_url = null
       }
     }
 
