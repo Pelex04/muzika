@@ -44,9 +44,9 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
     const res = await fetch(`/api/tracks/${trackId}`, { method: 'DELETE' })
     if (res.ok) {
       setTracks(prev => prev.filter(t => t.id !== trackId))
-      toast.success('Track deleted')
+      notify.success('Track deleted', 'The track has been permanently removed.')
     } else {
-      toast.error('Failed to delete track')
+      notify.error('Could not delete track', 'Please try again.')
     }
     setDeletingId(null)
   }
