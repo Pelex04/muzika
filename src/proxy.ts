@@ -6,7 +6,25 @@ export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
   const { pathname } = request.nextUrl
 
-  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended']
+  // ── Maintenance mode ─────────────────────────────────────────────
+  // Toggle by setting NEXT_PUBLIC_MAINTENANCE_MODE=true in Vercel env vars.
+  // Admins are let through so they can verify the site before disabling.
+  const maintenance = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true'
+  if (maintenance && pathname !== '/maintenance') {
+    // Let admins bypass — check cookie-based session without a DB call
+    // for speed (the admin check happens later if they get through)
+    const isAdminBypass = request.cookies.get('muzika_admin_bypass')?.value === process.env.ADMIN_BYPASS_SECRET
+    const isAsset = pathname.startsWith('/_next/') || pathname.includes('.')
+    if (!isAdminBypass && !isAsset) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/maintenance'
+      return NextResponse.redirect(url)
+    }
+  }
+  // Allow the maintenance page itself through always
+  if (pathname === '/maintenance') return NextResponse.next({ request })
+
+  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended', '/maintenance']
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p))
   const isApi = pathname.startsWith('/api/')
   const isStatic = pathname.startsWith('/_next/') || pathname.includes('.')
