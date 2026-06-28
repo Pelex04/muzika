@@ -107,21 +107,20 @@ export default function MaintenancePage() {
         }
 
         .m-status {
-          display: flex; align-items: center; justify-content: center;
-          gap: 8px; margin-bottom: 52px;
+          display: inline-flex; align-items: center; gap: 8px;
+          margin-bottom: 52px;
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 100px;
+          padding: 7px 16px;
         }
-        .m-dot {
-          width: 7px; height: 7px; border-radius: 50%;
-          background: #22c55e;
-          box-shadow: 0 0 8px rgba(34,197,94,0.7);
-          animation: m-blink 2s ease-in-out infinite;
+        .m-status-line {
+          width: 16px; height: 1.5px;
+          background: linear-gradient(90deg, #2563eb, #7c3aed);
+          border-radius: 2px;
           flex-shrink: 0;
         }
-        .m-status-text { font-size: 13px; color: #6b7a9f; font-weight: 500; }
-        @keyframes m-blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
+        .m-status-text { font-size: 12px; color: #6b7a9f; font-weight: 500; letter-spacing: 0.3px; }
 
         .m-social {
           display: flex; align-items: center; justify-content: center; gap: 12px;
@@ -186,7 +185,7 @@ export default function MaintenancePage() {
           </div>
 
           <div className="m-status">
-            <div className="m-dot" />
+            <div className="m-status-line" />
             <span className="m-status-text">Systems are being updated</span>
           </div>
 
