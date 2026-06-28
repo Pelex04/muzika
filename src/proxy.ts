@@ -7,24 +7,27 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // ── Maintenance mode ─────────────────────────────────────────────
-  // Toggle by setting NEXT_PUBLIC_MAINTENANCE_MODE=true in Vercel env vars.
-  // Admins are let through so they can verify the site before disabling.
-  const maintenance = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true'
-  if (maintenance && pathname !== '/maintenance') {
-    // Let admins bypass — check cookie-based session without a DB call
-    // for speed (the admin check happens later if they get through)
-    const isAdminBypass = request.cookies.get('muzika_admin_bypass')?.value === process.env.ADMIN_BYPASS_SECRET
-    const isAsset = pathname.startsWith('/_next/') || pathname.includes('.')
-    if (!isAdminBypass && !isAsset) {
-      const url = request.nextUrl.clone()
-      url.pathname = '/maintenance'
-      return NextResponse.redirect(url)
-    }
-  }
-  // Allow the maintenance page itself through always
-  if (pathname === '/maintenance') return NextResponse.next({ request })
+  // Toggle: set MAINTENANCE_MODE=true in Vercel env vars (server only,
+  // no NEXT_PUBLIC_ prefix). Then redeploy — or use Vercel's
+  // "Instant Rollback" / env var override to avoid a full rebuild.
+  const maintenance = process.env.MAINTENANCE_MODE === 'true'
+  const isAsset = pathname.startsWith('/_next/') || pathname.includes('.')
+  const isMaintenancePage = pathname === '/maintenance'
 
-  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended', '/maintenance']
+  if (maintenance && !isMaintenancePage && !isAsset) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/maintenance'
+    return NextResponse.redirect(url)
+  }
+  if (isMaintenancePage && !maintenance) {
+    // Maintenance page visited but mode is off — redirect to landing
+    const url = request.nextUrl.clone()
+    url.pathname = '/landing'
+    return NextResponse.redirect(url)
+  }
+  if (isMaintenancePage) return NextResponse.next({ request })
+
+  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended']
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p))
   const isApi = pathname.startsWith('/api/')
   const isStatic = pathname.startsWith('/_next/') || pathname.includes('.')
