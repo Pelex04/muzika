@@ -15,9 +15,15 @@ export async function proxy(request: NextRequest) {
   const isMaintenancePage = pathname === '/maintenance'
 
   if (maintenance && !isMaintenancePage && !isAsset) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/maintenance'
-    return NextResponse.redirect(url)
+    // Admins can bypass by setting a cookie: muzika_admin_bypass=<ADMIN_BYPASS_SECRET>
+    const bypass = request.cookies.get('muzika_admin_bypass')?.value
+    const secret = process.env.ADMIN_BYPASS_SECRET
+    const isAdminBypass = secret && bypass === secret
+    if (!isAdminBypass) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/maintenance'
+      return NextResponse.redirect(url)
+    }
   }
   if (isMaintenancePage && !maintenance) {
     // Maintenance page visited but mode is off — redirect to landing
