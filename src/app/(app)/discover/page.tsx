@@ -1,18 +1,36 @@
 import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/admin'
 import { getTracks } from '@/lib/api/tracks'
 import { getArtists } from '@/lib/api/artists'
 import DiscoverClient from './DiscoverClient'
+
+export const dynamic = 'force-dynamic'
 
 export default async function DiscoverPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
+  const now = new Date().toISOString()
+
   const [tracks, artists, trendingTracks, popularTracks] = await Promise.all([
-    getTracks({ limit: 12, orderBy: 'created_at' }),   // new releases
+    getTracks({ limit: 12, orderBy: 'created_at' }),
     getArtists({ limit: 12 }),
-    getTracks({ limit: 7, orderBy: 'play_count' }),     // hero + now playing slider (up to 7)
-    getTracks({ limit: 8, orderBy: 'play_count' }),     // trending now section
+    getTracks({ limit: 7, orderBy: 'play_count' }),
+    getTracks({ limit: 8, orderBy: 'play_count' }),
   ])
+
+  // Fetch active promotion — use admin client so RLS doesn't interfere
+  const db = getAdminClient()
+  const { data: promoRows } = await db
+    .from('promotions')
+    .select('*')
+    .eq('published', true)
+    .or(`starts_at.is.null,starts_at.lte.${now}`)
+    .or(`ends_at.is.null,ends_at.gte.${now}`)
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  const promotion = promoRows?.[0] ?? null
 
   let purchasedIds: string[] = []
   let savedIds: string[] = []
@@ -43,6 +61,7 @@ export default async function DiscoverPage() {
       popularTracks={withState(popularTracks)}
       userId={user?.id ?? null}
       profile={profile}
+      promotion={promotion}
     />
   )
 }

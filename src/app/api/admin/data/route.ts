@@ -14,6 +14,15 @@ export async function GET(req: NextRequest) {
   const db = getAdminClient()
   const { tab = 'tracks' } = Object.fromEntries(new URL(req.url).searchParams)
 
+  if (tab === 'promotions') {
+    const { data } = await db
+      .from('promotions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(50)
+    return NextResponse.json({ items: data ?? [] })
+  }
+
   if (tab === 'blog') {
     const { data } = await db
       .from('blog_posts')

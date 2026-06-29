@@ -41,6 +41,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           cursor: pointer; font-family: inherit; font-weight: 600; padding: 0;
         }
         .admin-signout:hover { color: #ef4444; }
+        .admin-subnav { display: flex; gap: 2px; padding: 0 16px; border-bottom: 1px solid #1a1a1a; overflow-x: auto; scrollbar-width: none; }
+        .admin-subnav::-webkit-scrollbar { display: none; }
+        .admin-subnav-link { font-size: 13px; font-weight: 600; color: #555; text-decoration: none; padding: 10px 12px; white-space: nowrap; border-bottom: 2px solid transparent; transition: color .15s; display: block; }
+        .admin-subnav-link:hover { color: #b3b3b3; }
         .admin-content { max-width: 1100px; margin: 0 auto; padding: 20px 14px 40px; }
         @media (min-width: 640px) { .admin-content { padding: 28px 24px 60px; } }
         @media (min-width: 1024px) { .admin-content { padding: 32px 24px 60px; } }
@@ -55,9 +59,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
         <div className="admin-topbar-right">
           <span className="admin-topbar-email">{profile.email}</span>
-          <a href="/discover" className="admin-back-link">← App</a>
+          <a href="/discover" style={{ fontSize: '13px', color: '#60a5fa', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}>← App</a>
           <SignOutButton />
         </div>
+      </div>
+
+      {/* Secondary nav */}
+      <div className="admin-subnav">
+        <a href="/admin" className="admin-subnav-link">Dashboard</a>
+        <a href="/admin/promotions" className="admin-subnav-link">Promotions</a>
+        <a href="/blog/new" className="admin-subnav-link">Write Post</a>
       </div>
 
       <div className="admin-content">

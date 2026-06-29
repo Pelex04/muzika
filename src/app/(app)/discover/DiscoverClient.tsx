@@ -18,6 +18,10 @@ interface Props {
   popularTracks: Track[]
   userId: string | null
   profile?: { avatar_url: string | null; full_name: string } | null
+  promotion?: {
+    label: string; title: string; subtitle: string;
+    cta_text: string; cta_url: string; gradient: string
+  } | null
 }
 
 function getGreeting(): string {
@@ -76,7 +80,7 @@ const GENRES = [
   { name: 'Traditional', emoji: '🥁', color: 'from-teal-800 to-teal-950' },
 ]
 
-export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, userId, profile }: Props) {
+export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, userId, profile, promotion }: Props) {
   const greeting = getGreeting()
 
   return (
@@ -144,32 +148,44 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           </div>
         </section>
 
-        {/* ── PROMOTION BANNER ── */}
-        <div
-          className="relative rounded-2xl overflow-hidden mb-10 p-6 flex items-center justify-between gap-4"
-          style={{ background: 'linear-gradient(130deg, #0f2460 0%, #1a3a8f 50%, #2563eb 100%)' }}
-        >
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <svg viewBox="0 0 400 120" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
-              <g stroke="white" strokeWidth="1">
-                {[0,40,80,120,160,200,240,280,320,360,400].map((x,i)=>(
-                  <line key={i} x1={x} y1="0" x2={x-30} y2="120"/>
-                ))}
-              </g>
-            </svg>
-          </div>
-          <div className="relative z-10">
-            <p className="text-blue-200 text-xs font-bold uppercase tracking-wider mb-1">🎵 Limited Offer</p>
-            <h3 className="text-white text-lg font-black mb-1">Upload Your Music Free</h3>
-            <p className="text-blue-200 text-sm">Share your sound with thousands of listeners across Malawi.</p>
-          </div>
-          <Link
-            href="/become-artist"
-            className="relative z-10 flex-shrink-0 bg-white text-blue-900 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-blue-50 transition-colors whitespace-nowrap"
-          >
-            Get Started
-          </Link>
-        </div>
+        {/* ── PROMOTION BANNER — dynamic, managed from /admin/promotions ── */}
+        {(() => {
+          const p = promotion ?? {
+            label: '🎵 Limited Offer',
+            title: 'Upload Your Music Free',
+            subtitle: 'Share your sound with thousands of listeners across Malawi.',
+            cta_text: 'Get Started',
+            cta_url: '/become-artist',
+            gradient: 'linear-gradient(130deg,#0f2460 0%,#1a3a8f 50%,#2563eb 100%)',
+          }
+          return (
+            <div
+              className="relative rounded-2xl overflow-hidden mb-10 p-6 flex items-center justify-between gap-4"
+              style={{ background: p.gradient }}
+            >
+              <div className="absolute inset-0 opacity-10 pointer-events-none">
+                <svg viewBox="0 0 400 120" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
+                  <g stroke="white" strokeWidth="1">
+                    {[0,40,80,120,160,200,240,280,320,360,400].map((x,i)=>(
+                      <line key={i} x1={x} y1="0" x2={x-30} y2="120"/>
+                    ))}
+                  </g>
+                </svg>
+              </div>
+              <div className="relative z-10 min-w-0">
+                {p.label && <p className="text-white/60 text-xs font-bold uppercase tracking-wider mb-1">{p.label}</p>}
+                <h3 className="text-white text-lg font-black mb-1 leading-tight">{p.title}</h3>
+                {p.subtitle && <p className="text-white/65 text-sm">{p.subtitle}</p>}
+              </div>
+              <Link
+                href={p.cta_url}
+                className="relative z-10 flex-shrink-0 bg-white text-blue-900 font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-blue-50 transition-colors whitespace-nowrap"
+              >
+                {p.cta_text}
+              </Link>
+            </div>
+          )
+        })()}
 
         {/* ── NEW RELEASES — horizontal scroll ── */}
         <section className="mb-10">
