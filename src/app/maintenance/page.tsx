@@ -15,8 +15,8 @@ export default function MaintenancePage() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
-          padding: 24px;
+          justify-content: space-between;
+          padding: 48px 24px 32px;
           position: relative;
           overflow: hidden;
         }
@@ -43,6 +43,21 @@ export default function MaintenancePage() {
           position: relative; z-index: 1;
           max-width: 480px; width: 100%;
           text-align: center;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 20px 0;
+        }
+
+        .m-footer {
+          position: relative; z-index: 1;
+          text-align: center;
+          padding-top: 24px;
+        }
+        .m-footer-text {
+          font-size: 12px; color: rgba(107,122,159,0.5); letter-spacing: 0.2px;
         }
 
         .m-logo {
@@ -139,18 +154,9 @@ export default function MaintenancePage() {
           color: #93b4fd;
         }
 
-        .m-footer {
-          position: absolute; bottom: 28px; left: 0; right: 0;
-          text-align: center; z-index: 1;
-        }
-        .m-footer-text {
-          font-size: 12px; color: rgba(107,122,159,0.5); letter-spacing: 0.2px;
-        }
-
         @media (max-width: 480px) {
           .m-logo { margin-bottom: 40px; }
           .m-body { font-size: 14px; }
-          .m-footer { position: relative; bottom: auto; margin-top: 48px; }
         }
       `}</style>
 
