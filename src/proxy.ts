@@ -15,10 +15,31 @@ export async function proxy(request: NextRequest) {
   const isMaintenancePage = pathname === '/maintenance'
 
   if (maintenance && !isMaintenancePage && !isAsset) {
-    // Admins can bypass by setting a cookie: muzika_admin_bypass=<ADMIN_BYPASS_SECRET>
-    const bypass = request.cookies.get('muzika_admin_bypass')?.value
     const secret = process.env.ADMIN_BYPASS_SECRET
-    const isAdminBypass = secret && bypass === secret
+
+    // Bypass method 1: URL param ?bypass=<secret>
+    // Visit https://muziqa.vercel.app/?bypass=<your-secret> to set the cookie, then browse freely
+    const urlBypass = request.nextUrl.searchParams.get('bypass')
+    if (secret && urlBypass === secret) {
+      // Set cookie and let them through
+      const url = request.nextUrl.clone()
+      url.searchParams.delete('bypass')
+      const res = url.pathname === '/maintenance'
+        ? NextResponse.redirect(new URL('/discover', request.url))
+        : NextResponse.redirect(url)
+      res.cookies.set('muzika_admin_bypass', secret, {
+        httpOnly: false,
+        path: '/',
+        maxAge: 60 * 60 * 24, // 24 hours
+        sameSite: 'lax',
+      })
+      return res
+    }
+
+    // Bypass method 2: cookie set by method 1
+    const cookieBypass = request.cookies.get('muzika_admin_bypass')?.value
+    const isAdminBypass = secret && cookieBypass === secret
+
     if (!isAdminBypass) {
       const url = request.nextUrl.clone()
       url.pathname = '/maintenance'
@@ -26,7 +47,6 @@ export async function proxy(request: NextRequest) {
     }
   }
   if (isMaintenancePage && !maintenance) {
-    // Maintenance page visited but mode is off — redirect to landing
     const url = request.nextUrl.clone()
     url.pathname = '/landing'
     return NextResponse.redirect(url)
