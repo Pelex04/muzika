@@ -304,9 +304,14 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
             </div>
 
             {/* Copyright */}
-            <p className="text-[#717171] text-xs text-center">
-              © {new Date().getFullYear()} Muzika · All rights reserved
-            </p>
+            <div className="text-center">
+              <p className="text-[#717171] text-xs">
+                © {new Date().getFullYear()} Muzika · All rights reserved
+              </p>
+              <p style={{ fontSize: '11px', color: 'rgba(113,113,113,0.55)', marginTop: '4px', letterSpacing: '0.3px' }}>
+                Powered by <span style={{ color: 'rgba(113,113,113,0.8)', fontWeight: 600 }}>Rasta Kadema</span>
+              </p>
+            </div>
           </div>
         </footer>
 

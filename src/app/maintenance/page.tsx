@@ -218,6 +218,9 @@ export default function MaintenancePage() {
 
         <div className="m-footer">
           <p className="m-footer-text">© {new Date().getFullYear()} Muzika · All rights reserved</p>
+          <p style={{ fontSize: '11px', color: 'rgba(107,122,159,0.35)', marginTop: '5px', letterSpacing: '0.3px' }}>
+            Powered by <span style={{ color: 'rgba(107,122,159,0.55)', fontWeight: 600 }}>Rasta Kadema</span>
+          </p>
         </div>
       </div>
     </>

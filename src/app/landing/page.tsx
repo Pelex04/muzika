@@ -652,7 +652,12 @@ export default function LandingPage() {
         {/* ── FOOTER ── */}
         <footer className="lp-footer">
           <div className="lp-footer-bottom">
-            <span className="lp-footer-copy">© 2026 Muzika</span>
+            <div>
+              <span className="lp-footer-copy">© 2026 Muzika</span>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px', letterSpacing: '0.3px' }}>
+                Powered by <span style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>Rasta Kadema</span>
+              </p>
+            </div>
             <ul className="lp-footer-links">
               <li><Link href="/artists" style={{color:'inherit',textDecoration:'none'}}>Artists</Link></li>
               <li><Link href="/blog" style={{color:'inherit',textDecoration:'none'}}>Blog</Link></li>
