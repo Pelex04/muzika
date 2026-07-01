@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { Howl } from 'howler'
 import type { Track } from '@/types'
+import { fetchStreamUrl, setCachedUrl } from '@/lib/stream-cache'
 
 interface PlayerStore {
-  // State
   currentTrack: Track | null
   queue: Track[]
   queueIndex: number
@@ -14,12 +14,9 @@ interface PlayerStore {
   shuffle: boolean
   repeat: 'none' | 'one' | 'all'
   isLoading: boolean
-
-  // Internal howl instance
   _howl: Howl | null
   _playCountTimer: ReturnType<typeof setTimeout> | null
 
-  // Actions
   play: (track: Track, queue?: Track[]) => void
   pause: () => void
   resume: () => void
@@ -52,11 +49,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   play: (track, queue) => {
     const state = get()
-
-    // Destroy existing howl
-    if (state._howl) {
-      state._howl.unload()
-    }
+    if (state._howl) state._howl.unload()
 
     const queueList = queue ?? [track]
     const idx = queueList.findIndex(t => t.id === track.id)
@@ -70,45 +63,45 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       duration: 0,
     })
 
+    // Cache the URL we already have so future plays are instant
+    if (track.audio_url) {
+      setCachedUrl(track.id, track.audio_url)
+    }
+
+    // Prefetch next track in queue silently
+    const nextIdx = (idx < 0 ? 0 : idx) + 1
+    if (queueList[nextIdx]) {
+      import('@/lib/stream-cache').then(({ prefetchStreamUrl }) => {
+        prefetchStreamUrl(queueList[nextIdx].id)
+      })
+    }
+
     const howl = new Howl({
       src: [track.audio_url!],
       html5: true,
       volume: state.volume,
-      onload: () => {
-        set({ duration: howl.duration(), isLoading: false })
-      },
+      onload: () => set({ duration: howl.duration(), isLoading: false }),
       onplay: () => set({ isPlaying: true }),
       onpause: () => set({ isPlaying: false }),
       onend: () => {
         const { repeat, next } = get()
-        if (repeat === 'one') {
-          howl.seek(0)
-          howl.play()
-        } else {
-          next()
-        }
+        if (repeat === 'one') { howl.seek(0); howl.play() }
+        else next()
       },
-      onseek: () => {},
+      onloaderror: () => set({ isLoading: false }),
     })
 
-    // Tick current time
     const tick = () => {
-      if (howl.playing()) {
-        set({ currentTime: howl.seek() as number })
-      }
-      if (get().currentTrack?.id === track.id) {
-        requestAnimationFrame(tick)
-      }
+      if (howl.playing()) set({ currentTime: howl.seek() as number })
+      if (get().currentTrack?.id === track.id) requestAnimationFrame(tick)
     }
 
     howl.play()
     requestAnimationFrame(tick)
 
-    // Cancel any previous 30-second play-count timer
+    // 30-second play count
     const prevTimer = get()._playCountTimer
     if (prevTimer) clearTimeout(prevTimer)
-
-    // Record a play after 30 seconds of continuous listening
     const playCountTimer = setTimeout(async () => {
       try { await fetch(`/api/tracks/${track.id}/play`, { method: 'POST' }) } catch {}
     }, 30_000)
@@ -116,29 +109,16 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     set({ _howl: howl, _playCountTimer: playCountTimer })
   },
 
-  pause: () => {
-    get()._howl?.pause()
-    set({ isPlaying: false })
-  },
-
-  resume: () => {
-    get()._howl?.play()
-    set({ isPlaying: true })
-  },
-
-  togglePlay: () => {
-    const { isPlaying, pause, resume } = get()
-    isPlaying ? pause() : resume()
-  },
+  pause: () => { get()._howl?.pause(); set({ isPlaying: false }) },
+  resume: () => { get()._howl?.play(); set({ isPlaying: true }) },
+  togglePlay: () => { const { isPlaying, pause, resume } = get(); isPlaying ? pause() : resume() },
 
   next: async () => {
     const { queue, queueIndex, shuffle, repeat, playQueueItem } = get()
     if (!queue.length) return
-
     let nextIdx: number
-    if (shuffle) {
-      nextIdx = Math.floor(Math.random() * queue.length)
-    } else {
+    if (shuffle) nextIdx = Math.floor(Math.random() * queue.length)
+    else {
       nextIdx = queueIndex + 1
       if (nextIdx >= queue.length) {
         if (repeat === 'all') nextIdx = 0
@@ -149,58 +129,33 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   prev: async () => {
-    const { queue, queueIndex, currentTime, playQueueItem, seek } = get()
+    const { currentTime, queueIndex, playQueueItem, seek } = get()
     if (currentTime > 3) { seek(0); return }
-    const prevIdx = Math.max(0, queueIndex - 1)
-    await playQueueItem(prevIdx)
+    await playQueueItem(Math.max(0, queueIndex - 1))
   },
 
-  // Advances to a specific position in the queue and fetches a FRESH
-  // signed audio URL before playing it. This matters because tracks
-  // sitting in the queue array never carry a usable audio_url -- only
-  // the track the user directly clicked gets one injected (by the
-  // calling UI code, right before play()). next()/prev() previously
-  // called play(queue[idx], queue) directly, reusing that stale queue
-  // object with no audio_url -- Howler would get src: [undefined],
-  // never fire onload, and just sit there. The title (currentTrack)
-  // had already updated by then, so visually it looked like the song
-  // changed but the audio/progress just froze on whatever the last
-  // working track left behind.
   playQueueItem: async (index: number) => {
     const { queue, play, setIsLoading } = get()
     const track = queue[index]
     if (!track) return
 
     setIsLoading(true)
-    try {
-      const res = await fetch(`/api/tracks/${track.id}/stream`)
-      const data = await res.json()
-      if (!data.url) { setIsLoading(false); return }
-      play({ ...track, audio_url: data.url }, queue)
-    } catch {
-      setIsLoading(false)
-    }
+    // fetchStreamUrl returns cached URL instantly if available
+    const url = await fetchStreamUrl(track.id)
+    if (!url) { setIsLoading(false); return }
+    play({ ...track, audio_url: url }, queue)
   },
 
   seek: (time) => {
     const { _howl } = get()
-    if (_howl) {
-      _howl.seek(time)
-      set({ currentTime: time })
-    }
+    if (_howl) { _howl.seek(time); set({ currentTime: time }) }
   },
 
-  setVolume: (vol) => {
-    get()._howl?.volume(vol)
-    set({ volume: vol })
-  },
-
+  setVolume: (vol) => { get()._howl?.volume(vol); set({ volume: vol }) },
   toggleShuffle: () => set(s => ({ shuffle: !s.shuffle })),
-
   cycleRepeat: () => set(s => ({
     repeat: s.repeat === 'none' ? 'all' : s.repeat === 'all' ? 'one' : 'none'
   })),
-
   setCurrentTime: (t) => set({ currentTime: t }),
   setDuration: (d) => set({ duration: d }),
   setIsLoading: (v) => set({ isLoading: v }),

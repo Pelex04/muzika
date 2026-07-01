@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Play } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
+import { fetchStreamUrl } from '@/lib/stream-cache'
 import { useRouter } from 'next/navigation'
 import { notify } from '@/components/ui/notify'
 import type { Track } from '@/types'
@@ -43,10 +44,9 @@ export default function HeroBanner({ tracks }: { tracks: Track[] }) {
   const theme = SLIDE_THEMES[active % SLIDE_THEMES.length]
 
   const handlePlay = async () => {
-    const res = await fetch(`/api/tracks/${track.id}/stream`)
-    const data = await res.json()
-    if (!data.url) { notify.error('Could not load track'); return }
-    play({ ...track, audio_url: data.url }, tracks)
+    const _streamUrl = await fetchStreamUrl(track.id)
+    if (!_streamUrl) { notify.error('Could not load track'); return }
+    play({ ...track, audio_url: _streamUrl }, tracks)
     router.push('/now-playing')
   }
 

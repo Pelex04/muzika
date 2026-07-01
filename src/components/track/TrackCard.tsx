@@ -6,6 +6,8 @@ import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import type { Track } from '@/types'
 import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
+import { usePrefetchTrack } from '@/hooks/usePrefetchTrack'
+import { fetchStreamUrl } from '@/lib/stream-cache'
 
 interface Props {
   track: Track
@@ -19,13 +21,13 @@ export default function TrackCard({ track, userId, queue }: Props) {
   const [saved, setSaved] = useState(track.is_saved ?? false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
+  const prefetchRef = usePrefetchTrack(track.id)
 
   const handlePlay = async () => {
     if (!userId) { notify.error('Sign in to play tracks'); return }
-    const res = await fetch(`/api/tracks/${track.id}/stream`)
-    const data = await res.json()
-    if (!data.url) { notify.error('Could not load track'); return }
-    play({ ...track, audio_url: data.url }, queue)
+    const _streamUrl = await fetchStreamUrl(track.id)
+    if (!_streamUrl) { notify.error('Could not load track'); return }
+    play({ ...track, audio_url: _streamUrl }, queue)
   }
 
   const handleSave = async (e: React.MouseEvent) => {
@@ -55,9 +57,9 @@ export default function TrackCard({ track, userId, queue }: Props) {
     setMenuOpen(false)
     const res = await fetch(`/api/tracks/${track.id}/download`)
     const data = await res.json()
-    if (!data.url) { notify.error('Could not download track'); return }
+    if (!_streamUrl) { notify.error('Could not download track'); return }
     const a = document.createElement('a')
-    a.href = data.url
+    a.href = _streamUrl
     a.download = data.filename ?? track.title
     document.body.appendChild(a)
     a.click()
@@ -66,7 +68,7 @@ export default function TrackCard({ track, userId, queue }: Props) {
   }
 
   return (
-    <div className="relative bg-[#181818] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-0.5 transition-all group">
+    <div ref={prefetchRef} className="relative bg-[#181818] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-0.5 transition-all group">
       {/* Art */}
       <div className="relative aspect-square" onClick={handlePlay}>
         {track.cover_url

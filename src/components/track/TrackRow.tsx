@@ -8,6 +8,8 @@ import { notify } from '@/components/ui/notify'
 import type { Track } from '@/types'
 import { cn } from '@/lib/utils'
 import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
+import { usePrefetchTrack } from '@/hooks/usePrefetchTrack'
+import { fetchStreamUrl } from '@/lib/stream-cache'
 
 interface Props {
   track: Track
@@ -30,6 +32,7 @@ export default function TrackRow({
   const isCurrentlyPlaying = isActive && isPlaying
   const [menuOpen, setMenuOpen] = useState(false)
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
+  const prefetchRef = usePrefetchTrack(track.id)
 
   const handlePlay = async () => {
     if (!userId) { notify.error('Sign in to play tracks'); return }
@@ -37,10 +40,9 @@ export default function TrackRow({
       usePlayerStore.getState().togglePlay()
       return
     }
-    const res = await fetch(`/api/tracks/${track.id}/stream`)
-    const data = await res.json()
-    if (!data.url) { notify.error('Could not load track'); return }
-    play({ ...track, audio_url: data.url }, queue)
+    const _streamUrl = await fetchStreamUrl(track.id)
+    if (!_streamUrl) { notify.error('Could not load track'); return }
+    play({ ...track, audio_url: _streamUrl }, queue)
   }
 
   const handleSave = async (e: React.MouseEvent) => {
@@ -68,9 +70,9 @@ export default function TrackRow({
     setMenuOpen(false)
     const res = await fetch(`/api/tracks/${track.id}/download`)
     const data = await res.json()
-    if (!data.url) { notify.error('Could not download track'); return }
+    if (!_streamUrl) { notify.error('Could not download track'); return }
     const a = document.createElement('a')
-    a.href = data.url
+    a.href = _streamUrl
     a.download = data.filename ?? track.title
     document.body.appendChild(a)
     a.click()
@@ -80,6 +82,7 @@ export default function TrackRow({
 
   return (
     <div
+      ref={prefetchRef}
       className={cn(
         'relative flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors group',
         variant === 'plain'

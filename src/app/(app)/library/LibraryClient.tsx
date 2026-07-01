@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Heart, Music2, Plus, Loader2, ListMusic } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
+import { fetchStreamUrl } from '@/lib/stream-cache'
 import type { Track, Playlist } from '@/types'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 
@@ -49,10 +50,9 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
   }
 
   const handlePlay = async (track: Track) => {
-    const res = await fetch(`/api/tracks/${track.id}/stream`)
-    const data = await res.json()
-    if (!data.url) { notify.error('Could not load track'); return }
-    play({ ...track, audio_url: data.url }, savedTracks)
+    const _streamUrl = await fetchStreamUrl(track.id)
+    if (!_streamUrl) { notify.error('Could not load track'); return }
+    play({ ...track, audio_url: _streamUrl }, savedTracks)
   }
 
   const artBg = (genre: string) => {

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ChevronLeft, Play, Disc3 } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePlayerStore } from '@/store/player'
+import { fetchStreamUrl } from '@/lib/stream-cache'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import TrackRow from '@/components/track/TrackRow'
 import type { Track } from '@/types'
@@ -33,10 +34,9 @@ export default function AlbumDetailClient({ album, tracks, userId }: Props) {
 
   const playAll = async () => {
     if (tracks.length === 0) return
-    const res = await fetch(`/api/tracks/${tracks[0].id}/stream`)
-    const data = await res.json()
-    if (!data.url) { toast.error('Could not load track'); return }
-    play({ ...tracks[0], audio_url: data.url }, tracks)
+    const _streamUrl = await fetchStreamUrl(tracks[0].id)
+    if (!_streamUrl) { toast.error('Could not load track'); return }
+    play({ ...tracks[0], audio_url: _streamUrl }, tracks)
     router.push('/now-playing')
   }
 

@@ -9,6 +9,7 @@ import {
   Download, Loader2, Music2, CheckCircle2,
 } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
+import { fetchStreamUrl } from '@/lib/stream-cache'
 import { formatDuration, formatCount } from '@/lib/utils'
 import { notify } from '@/components/ui/notify'
 import { cn } from '@/lib/utils'
@@ -82,10 +83,9 @@ export default function NowPlayingPage() {
   const genreBg = GENRE_BG[currentTrack.genre] ?? '#0D1B3E'
 
   const handlePlayTrack = async (track: Track, fromQueue?: Track[]) => {
-    const res = await fetch(`/api/tracks/${track.id}/stream`)
-    const data = await res.json()
-    if (!data.url) { notify.error('Could not load track'); return }
-    play({ ...track, audio_url: data.url }, fromQueue)
+    const _streamUrl = await fetchStreamUrl(track.id)
+    if (!_streamUrl) { notify.error('Could not load track'); return }
+    play({ ...track, audio_url: _streamUrl }, fromQueue)
   }
 
   const handleSave = async () => {
@@ -132,9 +132,9 @@ export default function NowPlayingPage() {
     try {
       const res = await fetch(`/api/tracks/${currentTrack.id}/download`)
       const data = await res.json()
-      if (!data.url) { notify.error('Could not download track'); setDownloading(false); return }
+      if (!_streamUrl) { notify.error('Could not download track'); setDownloading(false); return }
       const a = document.createElement('a')
-      a.href = data.url
+      a.href = _streamUrl
       a.download = data.filename ?? currentTrack.title
       document.body.appendChild(a)
       a.click()

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Search, X, Music, Users, Loader2, Disc3 } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import { usePlayerStore } from '@/store/player'
+import { fetchStreamUrl } from '@/lib/stream-cache'
 import { notify } from '@/components/ui/notify'
 import Link from 'next/link'
 
@@ -61,10 +62,9 @@ export default function SearchPage() {
   }, [query])
 
   const handlePlay = async (track: any) => {
-    const res = await fetch(`/api/tracks/${track.id}/stream`)
-    const data = await res.json()
-    if (!data.url) { notify.error('Could not load track'); return }
-    play({ ...track, audio_url: data.url }, results.tracks)
+    const _streamUrl = await fetchStreamUrl(track.id)
+    if (!_streamUrl) { notify.error('Could not load track'); return }
+    play({ ...track, audio_url: _streamUrl }, results.tracks)
   }
 
   const artBg = (genre: string) => {
