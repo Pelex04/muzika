@@ -2,10 +2,45 @@ import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
 import './globals.css'
 
+const BASE_URL = 'https://muziqa.vercel.app'
+
 export const metadata: Metadata = {
-  title: 'Muzika · Stream & Own Malawian Music',
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: 'Muzika · Stream & Own Malawian Music',
+    template: '%s · Muzika',
+  },
   description: "Buy, stream and discover the best of Malawi's artists — from Afropop to Gospel. Pay in MWK, download forever.",
-  keywords: ['Malawi music', 'streaming', 'download', 'MWK', 'Afropop', 'Gospel'],
+  keywords: ['Malawi music', 'streaming', 'download', 'MWK', 'Afropop', 'Gospel', 'Malawian artists'],
+  authors: [{ name: 'Muzika' }],
+  creator: 'Muzika',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: BASE_URL,
+    siteName: 'Muzika',
+    title: 'Muzika · Stream & Own Malawian Music',
+    description: "Buy, stream and discover the best of Malawi's artists — from Afropop to Gospel.",
+    images: [
+      {
+        url: `${BASE_URL}/og-default.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Muzika — Stream & Own Malawian Music',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Muzika · Stream & Own Malawian Music',
+    description: "Buy, stream and discover the best of Malawi's artists.",
+    images: [`${BASE_URL}/og-default.png`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

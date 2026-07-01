@@ -3,6 +3,12 @@ import { getAdminClient } from '@/lib/admin'
 import { getTracks } from '@/lib/api/tracks'
 import { getArtists } from '@/lib/api/artists'
 import DiscoverClient from './DiscoverClient'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Discover · Muzika',
+  description: "Discover trending Malawian music, new releases, and featured artists — all in one place.",
+}
 
 export const dynamic = 'force-dynamic'
 

@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -52,6 +53,49 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
   if (isMaintenancePage) return NextResponse.next({ request })
+
+  // ── Auth rate limiting ───────────────────────────────────────────
+  // 10 attempts per IP per 15 minutes on auth endpoints.
+  // This limits brute-force attacks on login/signup without Redis.
+  const isAuthEndpoint =
+    pathname === '/signin' ||
+    pathname === '/signup' ||
+    pathname.startsWith('/api/auth/')
+
+  if (isAuthEndpoint) {
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
+      request.headers.get('x-real-ip') ??
+      'unknown'
+
+    const result = rateLimit(`auth:${ip}`, 10, 15 * 60 * 1000)
+
+    if (!result.allowed) {
+      const retryAfterSec = Math.ceil(result.resetInMs / 1000)
+
+      // For API calls return JSON
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json(
+          { error: 'Too many attempts. Please try again later.' },
+          {
+            status: 429,
+            headers: {
+              'Retry-After': String(retryAfterSec),
+              'X-RateLimit-Limit': '10',
+              'X-RateLimit-Remaining': '0',
+            },
+          }
+        )
+      }
+
+      // For page visits redirect to signin with error param
+      const url = request.nextUrl.clone()
+      url.pathname = '/signin'
+      url.searchParams.set('error', 'too_many_attempts')
+      url.searchParams.set('retry_after', String(retryAfterSec))
+      return NextResponse.redirect(url)
+    }
+  }
 
   const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended']
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p))

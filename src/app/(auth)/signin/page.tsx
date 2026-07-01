@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
@@ -26,6 +26,19 @@ export default function SignInPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
+
+  // Show rate limit error if redirected from middleware
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search)
+    if (p.get('error') === 'too_many_attempts') {
+      const sec = parseInt(p.get('retry_after') ?? '60', 10)
+      const mins = Math.ceil(sec / 60)
+      notify.error(
+        'Too many attempts',
+        `Please wait ${mins} minute${mins !== 1 ? 's' : ''} before trying again.`
+      )
+    }
+  }, [])
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)

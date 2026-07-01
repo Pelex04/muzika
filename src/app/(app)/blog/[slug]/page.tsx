@@ -1,6 +1,47 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import BlogPostClient from './BlogPostClient'
+import type { Metadata } from 'next'
+
+const BASE_URL = 'https://muziqa.vercel.app'
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = await createClient() as any
+  const { data: post } = await supabase
+    .from('blog_posts')
+    .select('title, excerpt, cover_url, author:profiles(full_name)')
+    .eq('slug', slug)
+    .eq('published', true)
+    .single()
+
+  if (!post) return { title: 'Post not found' }
+
+  const title = `${post.title} · Muzika Blog`
+  const description = post.excerpt?.slice(0, 155) ?? `Read "${post.title}" on the Muzika blog.`
+  const image = post.cover_url ?? `${BASE_URL}/og-default.png`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${BASE_URL}/blog/${slug}`,
+      images: [{ url: image, width: 1200, height: 630, alt: post.title }],
+      type: 'article',
+      authors: post.author?.full_name ? [post.author.full_name] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
+  }
+}
 
 export default async function BlogPostPage({
   params,
