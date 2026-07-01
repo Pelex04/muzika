@@ -55,7 +55,7 @@ export async function proxy(request: NextRequest) {
   if (isMaintenancePage) return NextResponse.next({ request })
 
   // ── Auth rate limiting ───────────────────────────────────────────
-  // 10 attempts per IP per 15 minutes on auth endpoints.
+  // 4 attempts per IP per 15 minutes on auth endpoints.
   // This limits brute-force attacks on login/signup without Redis.
   const isAuthEndpoint =
     pathname === '/signin' ||
@@ -68,7 +68,7 @@ export async function proxy(request: NextRequest) {
       request.headers.get('x-real-ip') ??
       'unknown'
 
-    const result = rateLimit(`auth:${ip}`, 10, 15 * 60 * 1000)
+    const result = rateLimit(`auth:${ip}`, 4, 15 * 60 * 1000)
 
     if (!result.allowed) {
       const retryAfterSec = Math.ceil(result.resetInMs / 1000)
@@ -81,7 +81,7 @@ export async function proxy(request: NextRequest) {
             status: 429,
             headers: {
               'Retry-After': String(retryAfterSec),
-              'X-RateLimit-Limit': '10',
+              'X-RateLimit-Limit': '4',
               'X-RateLimit-Remaining': '0',
             },
           }
