@@ -7,7 +7,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Discover · Muzika',
-  description: "Discover trending Malawian music, new releases, and featured artists — all in one place.",
+  description: 'Discover trending Malawian music, new releases, and featured artists — all in one place.',
 }
 
 export const dynamic = 'force-dynamic'
@@ -15,8 +15,8 @@ export const dynamic = 'force-dynamic'
 export default async function DiscoverPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   const now = new Date().toISOString()
+  const db = getAdminClient()
 
   const [tracks, artists, trendingTracks, popularTracks] = await Promise.all([
     getTracks({ limit: 12, orderBy: 'created_at' }),
@@ -25,8 +25,7 @@ export default async function DiscoverPage() {
     getTracks({ limit: 8, orderBy: 'play_count' }),
   ])
 
-  // Fetch active promotion — use admin client so RLS doesn't interfere
-  const db = getAdminClient()
+  // Fetch active promotion
   const { data: promoRows } = await db
     .from('promotions')
     .select('*')
@@ -41,6 +40,7 @@ export default async function DiscoverPage() {
   let purchasedIds: string[] = []
   let savedIds: string[] = []
   let profile: any = null
+  let recommendedTracks: typeof tracks = []
 
   if (user) {
     const [purchasesRes, savedRes, profileRes] = await Promise.all([
@@ -49,14 +49,62 @@ export default async function DiscoverPage() {
       supabase.from('profiles').select('avatar_url, full_name').eq('id', user.id).single(),
     ])
     purchasedIds = (purchasesRes.data ?? []).map((p: any) => p.track_id)
-    savedIds = (savedRes.data ?? []).map((s: any) => s.track_id)
-    profile = profileRes.data
+    savedIds    = (savedRes.data    ?? []).map((s: any) => s.track_id)
+    profile     = profileRes.data
+
+    // ── Real recommendations ─────────────────────────────────────────
+    // Signal: genres of tracks the user has saved or purchased
+    const interactedIds = [...new Set([...purchasedIds, ...savedIds])]
+
+    if (interactedIds.length > 0) {
+      const { data: interactedTracks } = await supabase
+        .from('tracks')
+        .select('genre')
+        .in('id', interactedIds)
+
+      // Count genre frequency
+      const genreCounts: Record<string, number> = {}
+      for (const t of interactedTracks ?? []) {
+        if (t.genre) genreCounts[t.genre] = (genreCounts[t.genre] ?? 0) + 1
+      }
+
+      // Top 2 genres by frequency
+      const topGenres = Object.entries(genreCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2)
+        .map(([g]) => g)
+
+      if (topGenres.length > 0) {
+        // Fetch popular tracks in those genres that the user hasn't touched
+        const exclude = interactedIds.map(id => `'${id}'`).join(',')
+        const { data: recs } = await db
+          .from('tracks')
+          .select('*, artist:artists(id, stage_name, genre, location, verified, avatar_url)')
+          .eq('published', true)
+          .in('genre', topGenres)
+          .not('id', 'in', `(${exclude})`)
+          .order('play_count', { ascending: false })
+          .limit(10)
+
+        recommendedTracks = recs ?? []
+      }
+    }
+
+    // Fallback: if not enough recs, pad with popular tracks user hasn't saved
+    if (recommendedTracks.length < 4) {
+      const shown = new Set([...savedIds, ...purchasedIds, ...recommendedTracks.map(t => t.id)])
+      const extras = popularTracks.filter(t => !shown.has(t.id))
+      recommendedTracks = [...recommendedTracks, ...extras].slice(0, 10)
+    }
+  } else {
+    // Logged out — popular tracks as recommendations
+    recommendedTracks = popularTracks.slice(0, 10)
   }
 
   const withState = (ts: typeof tracks) => ts.map(t => ({
     ...t,
     is_purchased: purchasedIds.includes(t.id),
-    is_saved: savedIds.includes(t.id),
+    is_saved:     savedIds.includes(t.id),
   }))
 
   return (
@@ -65,6 +113,7 @@ export default async function DiscoverPage() {
       tracks={withState(tracks)}
       artists={artists}
       popularTracks={withState(popularTracks)}
+      recommendedTracks={withState(recommendedTracks)}
       userId={user?.id ?? null}
       profile={profile}
       promotion={promotion}

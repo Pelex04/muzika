@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Search, Mic, ChevronRight, Music2 } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import TrackCard from '@/components/track/TrackCard'
@@ -16,6 +17,7 @@ interface Props {
   tracks: Track[]
   artists: Artist[]
   popularTracks: Track[]
+  recommendedTracks: Track[]
   userId: string | null
   profile?: { avatar_url: string | null; full_name: string } | null
   promotion?: {
@@ -80,7 +82,45 @@ const GENRES = [
   { name: 'Traditional', emoji: '🥁', color: 'from-teal-800 to-teal-950' },
 ]
 
-export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, userId, profile, promotion }: Props) {
+function HomeSearch() {
+  const router = useRouter()
+  const [q, setQ] = useState('')
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value
+    setQ(val)
+    clearTimeout(debounceRef.current)
+    if (val.trim().length >= 2) {
+      debounceRef.current = setTimeout(() => {
+        router.push(`/search?q=${encodeURIComponent(val.trim())}`)
+      }, 400)
+    }
+  }, [router])
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && q.trim()) {
+      clearTimeout(debounceRef.current)
+      router.push(`/search?q=${encodeURIComponent(q.trim())}`)
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+      <Search className="w-4 h-4 text-[#717171] flex-shrink-0" />
+      <input
+        className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#717171]"
+        placeholder="Artists, songs, albums…"
+        value={q}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+      />
+      <Mic className="w-4 h-4 text-[#717171] flex-shrink-0" />
+    </div>
+  )
+}
+
+export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, recommendedTracks, userId, profile, promotion }: Props) {
   const greeting = getGreeting()
 
   return (
@@ -109,12 +149,8 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           </Link>
         </div>
 
-        {/* Search */}
-        <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
-          <Search className="w-4 h-4 text-[#717171] flex-shrink-0" />
-          <input className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#717171]" placeholder="Artists, songs, albums…" />
-          <Mic className="w-4 h-4 text-[#717171] flex-shrink-0" />
-        </div>
+        {/* Search — routes to /search with query */}
+        <HomeSearch />
 
         {/* Hero Banner — up to 7 tracks */}
         {trendingTracks.length > 0 && <HeroBanner tracks={trendingTracks.slice(0, 7)} />}
@@ -204,19 +240,22 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           </HScroll>
         </section>
 
-        {/* ── RECOMMENDED FOR YOU — horizontal scroll ── */}
-        {tracks.length > 5 && (
+        {/* ── RECOMMENDED FOR YOU — real genre-based recommendations ── */}
+        {recommendedTracks.length > 0 && (
           <section className="mb-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[17px] font-black text-white tracking-tight">Recommended For You</h2>
+              <div>
+                <h2 className="text-[17px] font-black text-white tracking-tight">Recommended For You</h2>
+                <p className="text-[11px] text-[#717171] mt-0.5">Based on what you listen to</p>
+              </div>
               <Link href="/songs" className="flex items-center gap-0.5 text-sm font-bold text-blue-500 hover:underline">
                 See all <ChevronRight size={15} />
               </Link>
             </div>
             <HScroll>
-              {[...tracks].reverse().slice(0, 10).map(track => (
+              {recommendedTracks.map(track => (
                 <div key={track.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
-                  <TrackCard track={track} userId={userId} queue={tracks} />
+                  <TrackCard track={track} userId={userId} queue={recommendedTracks} />
                 </div>
               ))}
             </HScroll>

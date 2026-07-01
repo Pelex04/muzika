@@ -22,8 +22,17 @@ export default function SearchPage() {
   const { play } = usePlayerStore()
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
+  // Pre-fill from ?q= param (set by home page search bar)
   useEffect(() => {
-    inputRef.current?.focus()
+    const params = new URLSearchParams(window.location.search)
+    const q = params.get('q')
+    if (q) {
+      setQuery(q)
+      runSearch(q)
+    } else {
+      inputRef.current?.focus()
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const runSearch = async (q: string) => {
