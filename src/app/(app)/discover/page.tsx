@@ -64,7 +64,7 @@ export default async function DiscoverPage() {
 
       // Count genre frequency
       const genreCounts: Record<string, number> = {}
-      for (const t of interactedTracks ?? []) {
+      for (const t of (interactedTracks ?? []) as { genre: string }[]) {
         if (t.genre) genreCounts[t.genre] = (genreCounts[t.genre] ?? 0) + 1
       }
 

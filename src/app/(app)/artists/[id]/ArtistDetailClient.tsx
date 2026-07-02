@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, CheckCircle2, Play, Music2, Disc3, Clock, Instagram, Twitter, Facebook, Youtube, Globe, ExternalLink, Megaphone, Calendar } from 'lucide-react'
+import { ChevronLeft, CheckCircle2, Play, Music2, Disc3, Clock, Globe, ExternalLink, Megaphone, Calendar } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
@@ -35,12 +35,27 @@ interface Props {
   userId: string | null
 }
 
-const SOCIAL_META: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  instagram: { icon: Instagram, color: '#E1306C', label: 'Instagram' },
-  twitter:   { icon: Twitter,   color: '#1DA1F2', label: 'X / Twitter' },
-  facebook:  { icon: Facebook,  color: '#1877F2', label: 'Facebook' },
-  youtube:   { icon: Youtube,   color: '#FF0000', label: 'YouTube' },
-  website:   { icon: Globe,     color: '#60a5fa', label: 'Website' },
+const SOCIAL_META: Record<string, { icon: () => React.ReactElement; color: string; label: string }> = {
+  instagram: {
+    icon: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>,
+    color: '#E1306C', label: 'Instagram',
+  },
+  twitter: {
+    icon: () => <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>,
+    color: '#1DA1F2', label: 'X / Twitter',
+  },
+  facebook: {
+    icon: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
+    color: '#1877F2', label: 'Facebook',
+  },
+  youtube: {
+    icon: () => <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>,
+    color: '#FF0000', label: 'YouTube',
+  },
+  website: {
+    icon: () => <Globe size={14} />,
+    color: '#60a5fa', label: 'Website',
+  },
 }
 
 export default function ArtistDetailClient({
@@ -151,11 +166,10 @@ export default function ArtistDetailClient({
             {Object.entries(SOCIAL_META).map(([key, meta]) => {
               const url = socialLinks[key]
               if (!url) return null
-              const Icon = meta.icon
               return (
                 <a key={key} href={url.startsWith('http') ? url : `https://${url}`} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#181818] border border-[#2a2a2a] hover:border-[#3a3a3a] transition-colors text-sm font-medium text-[#b3b3b3] hover:text-white">
-                  <Icon size={14} style={{ color: meta.color }} />
+                  <span style={{ color: meta.color }}><meta.icon /></span>
                   {meta.label}
                   <ExternalLink size={10} className="opacity-40" />
                 </a>
