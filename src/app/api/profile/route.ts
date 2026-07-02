@@ -55,6 +55,7 @@ export async function PATCH(req: NextRequest) {
     if (body.genre !== undefined) artistUpdates.genre = body.genre
     if (body.location !== undefined) artistUpdates.location = body.location.trim()
     if (body.artist_bio !== undefined) artistUpdates.bio = body.artist_bio.trim() || null
+    if (body.social_links !== undefined) artistUpdates.social_links = body.social_links
     if (body.artist_avatar_path !== undefined) {
       if (body.artist_avatar_path) {
         const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(body.artist_avatar_path)

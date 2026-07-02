@@ -26,6 +26,13 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
   const [location, setLocation] = useState(artist?.location ?? '')
   const [artistBio, setArtistBio] = useState(artist?.bio ?? '')
 
+  const existingSocial = (artist as any)?.social_links ?? {}
+  const [instagram, setInstagram] = useState(existingSocial.instagram ?? '')
+  const [twitter, setTwitter] = useState(existingSocial.twitter ?? '')
+  const [facebook, setFacebook] = useState(existingSocial.facebook ?? '')
+  const [youtube, setYoutube] = useState(existingSocial.youtube ?? '')
+  const [website, setWebsite] = useState(existingSocial.website ?? '')
+
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     isArtist ? artist?.avatar_url ?? null : profile.avatar_url ?? null
@@ -89,6 +96,13 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
         payload.genre = genre
         payload.location = location
         payload.artist_bio = artistBio
+        payload.social_links = {
+          instagram: instagram.trim() || null,
+          twitter: twitter.trim() || null,
+          facebook: facebook.trim() || null,
+          youtube: youtube.trim() || null,
+          website: website.trim() || null,
+        }
       }
 
       const res = await fetch('/api/profile', {
@@ -258,6 +272,30 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
                 style={{ ...inputStyle, resize: 'vertical', minHeight: '80px' }}
                 onFocus={focus} onBlur={blur}
               />
+            </div>
+
+            {/* Social links */}
+            <div>
+              <label style={{ ...labelStyle, marginBottom: '10px', display: 'block' }}>Social Links</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {[
+                  { key: 'instagram', label: '📸 Instagram', val: instagram, set: setInstagram, ph: 'instagram.com/yourname' },
+                  { key: 'twitter',   label: '𝕏 X / Twitter', val: twitter,   set: setTwitter,   ph: 'x.com/yourname' },
+                  { key: 'facebook',  label: '👤 Facebook',   val: facebook,  set: setFacebook,  ph: 'facebook.com/yourname' },
+                  { key: 'youtube',   label: '▶️ YouTube',    val: youtube,   set: setYoutube,   ph: 'youtube.com/@yourname' },
+                  { key: 'website',   label: '🌐 Website',    val: website,   set: setWebsite,   ph: 'yourwebsite.com' },
+                ].map(({ key, label, val, set, ph }) => (
+                  <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', color: '#717171', width: '110px', flexShrink: 0 }}>{label}</span>
+                    <input
+                      value={val} onChange={e => set(e.target.value)}
+                      placeholder={ph}
+                      style={{ ...inputStyle, flex: 1, padding: '9px 12px', fontSize: '13px' }}
+                      onFocus={focus} onBlur={blur}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         )}

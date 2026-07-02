@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Music2, Disc3, Users, Trash2, ShieldX, ShieldCheck, AlertTriangle, Search, RefreshCw, BookOpen, PenLine } from 'lucide-react'
+import { Music2, Disc3, Users, Trash2, ShieldX, ShieldCheck, AlertTriangle, Search, RefreshCw, BookOpen, PenLine, Megaphone, Check, X } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import Link from 'next/link'
 
-type Tab = 'tracks' | 'albums' | 'users' | 'blog'
+type Tab = 'tracks' | 'albums' | 'users' | 'blog' | 'banner_requests'
 
 interface AdminItem {
   id: string
@@ -109,10 +109,11 @@ export default function AdminPage() {
   }
 
   const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
-    { key: 'tracks', label: 'Tracks', icon: Music2 },
-    { key: 'albums', label: 'Albums', icon: Disc3 },
-    { key: 'blog',   label: 'Blog',   icon: BookOpen },
-    { key: 'users',  label: 'Users',  icon: Users },
+    { key: 'tracks',          label: 'Tracks',   icon: Music2 },
+    { key: 'albums',          label: 'Albums',   icon: Disc3 },
+    { key: 'blog',            label: 'Blog',     icon: BookOpen },
+    { key: 'users',           label: 'Users',    icon: Users },
+    { key: 'banner_requests', label: 'Banners',  icon: Megaphone },
   ]
 
   const confirmMeta = {
@@ -378,6 +379,49 @@ export default function AdminPage() {
                 item.suspended_at
                   ? <button className="admin-btn-restore" onClick={() => openConfirm('unsuspend', item)}><ShieldCheck size={12} /> Restore</button>
                   : <button className="admin-btn-suspend" onClick={() => openConfirm('suspend', item)}><ShieldX size={12} /> Suspend</button>
+              )}
+            </div>
+          ))}
+
+          {/* BANNER REQUESTS */}
+          {tab === 'banner_requests' && filtered.map(item => (
+            <div key={item.id} className="admin-item">
+              <div style={{ width: '40px', height: '40px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, background: '#1a1a1a', display: 'grid', placeItems: 'center' }}>
+                {(item as any).artist?.avatar_url
+                  ? <img src={(item as any).artist.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <Megaphone size={16} color="#555" />}
+              </div>
+              <div className="admin-item-info">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span className="admin-item-title" style={{ marginBottom: 0 }}>{(item as any).artist?.stage_name ?? 'Unknown artist'}</span>
+                  <span className="admin-badge" style={{
+                    background: item.status === 'approved' ? 'rgba(34,197,94,0.1)' : item.status === 'rejected' ? 'rgba(239,68,68,0.1)' : 'rgba(251,191,36,0.1)',
+                    color: item.status === 'approved' ? '#4ade80' : item.status === 'rejected' ? '#f87171' : '#fbbf24',
+                  }}>{item.status}</span>
+                </div>
+                {item.message && <div className="admin-item-sub">"{item.message}"</div>}
+              </div>
+              <span className="admin-item-date">{new Date(item.created_at).toLocaleDateString()}</span>
+              {item.status === 'pending' && (
+                <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                  <button
+                    onClick={async () => {
+                      const res = await fetch(`/api/admin/banner-requests/${item.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'approved' }) })
+                      if (res.ok) { notify.success('Banner request approved'); load() } else notify.error('Failed')
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    <Check size={11} /> Approve
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const note = prompt('Reason for rejection (optional):')
+                      const res = await fetch(`/api/admin/banner-requests/${item.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'rejected', admin_note: note }) })
+                      if (res.ok) { notify.success('Request rejected'); load() } else notify.error('Failed')
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px', borderRadius: '8px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', color: '#ef4444', fontSize: '12px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    <X size={11} /> Reject
+                  </button>
+                </div>
               )}
             </div>
           ))}

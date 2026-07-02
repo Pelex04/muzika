@@ -19,17 +19,23 @@ export async function POST(req: NextRequest) {
 
   if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
 
-  const { title, genre, audioPath, coverPath, albumId } = await req.json() as {
+  const { title, genre, audioPath, coverPath, albumId, producers, featuredArtists, lyrics, releaseDate } = await req.json() as {
     title: string
     genre: string
     audioPath: string
     coverPath?: string | null
     albumId?: string | null
+    producers?: string[]
+    featuredArtists?: string[]
+    lyrics?: string | null
+    releaseDate?: string | null
   }
 
   if (!title?.trim() || !genre || !audioPath) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
   }
+
+  const isScheduled = !!(releaseDate && new Date(releaseDate) > new Date())
 
   let coverUrl: string | null = null
   if (coverPath) {
@@ -43,11 +49,16 @@ export async function POST(req: NextRequest) {
       artist_id: artist.id,
       title: title.trim(),
       genre,
-      price_mwk: 0, // Free during launch phase
+      price_mwk: 0,
       audio_path: audioPath,
       cover_url: coverUrl,
       album_id: albumId ?? null,
-      published: true,
+      producers: producers ?? [],
+      featured_artists: featuredArtists ?? [],
+      lyrics: lyrics ?? null,
+      release_date: releaseDate ?? null,
+      is_scheduled: isScheduled,
+      published: !isScheduled,
     })
     .select()
     .single()

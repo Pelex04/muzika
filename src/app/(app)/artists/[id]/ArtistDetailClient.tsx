@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, CheckCircle2, Play, Music2, Disc3 } from 'lucide-react'
+import { ChevronLeft, CheckCircle2, Play, Music2, Disc3, Clock, Instagram, Twitter, Facebook, Youtube, Globe, ExternalLink, Megaphone, Calendar } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
@@ -25,19 +25,39 @@ const GENRE_BG: Record<string, string> = {
 }
 
 interface Props {
-  artist: Artist
+  artist: Artist & { is_following?: boolean; social_links?: Record<string, string> }
   tracks: Track[]
   albums: any[]
+  scheduledTracks?: any[]
+  scheduledAlbums?: any[]
+  bannerRequest?: any
+  isOwnProfile?: boolean
   userId: string | null
 }
 
-export default function ArtistDetailClient({ artist, tracks, albums, userId }: Props) {
+const SOCIAL_META: Record<string, { icon: React.ElementType; color: string; label: string }> = {
+  instagram: { icon: Instagram, color: '#E1306C', label: 'Instagram' },
+  twitter:   { icon: Twitter,   color: '#1DA1F2', label: 'X / Twitter' },
+  facebook:  { icon: Facebook,  color: '#1877F2', label: 'Facebook' },
+  youtube:   { icon: Youtube,   color: '#FF0000', label: 'YouTube' },
+  website:   { icon: Globe,     color: '#60a5fa', label: 'Website' },
+}
+
+export default function ArtistDetailClient({
+  artist, tracks, albums, scheduledTracks = [], scheduledAlbums = [],
+  bannerRequest, isOwnProfile, userId,
+}: Props) {
   const router = useRouter()
   const { play } = usePlayerStore()
   const [following, setFollowing] = useState(artist.is_following ?? false)
   const [followLoading, setFollowLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState<'tracks' | 'albums'>('tracks')
+  const [bannerMsg, setBannerMsg] = useState(bannerRequest?.message ?? '')
+  const [requestingBanner, setRequestingBanner] = useState(false)
+  const [localBannerRequest, setLocalBannerRequest] = useState(bannerRequest)
 
   const bg = GENRE_BG[artist.genre] ?? GENRE_BG['Afropop']
+  const socialLinks = (artist as any).social_links ?? {}
 
   const handleFollow = async () => {
     if (!userId) { notify.error('Sign in to follow artists'); return }
@@ -50,11 +70,31 @@ export default function ArtistDetailClient({ artist, tracks, albums, userId }: P
 
   const playAll = async () => {
     if (tracks.length === 0) return
-    const _streamUrl = await fetchStreamUrl(tracks[0].id)
-    if (!_streamUrl) { notify.error('Could not load track'); return }
-    play({ ...tracks[0], audio_url: _streamUrl }, tracks)
+    const url = await fetchStreamUrl(tracks[0].id)
+    if (!url) { notify.error('Could not load track'); return }
+    play({ ...tracks[0], audio_url: url }, tracks)
     router.push('/now-playing')
   }
+
+  const requestBanner = async () => {
+    setRequestingBanner(true)
+    const res = await fetch('/api/banner-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: bannerMsg }),
+    })
+    const data = await res.json()
+    setRequestingBanner(false)
+    if (res.ok) {
+      setLocalBannerRequest(data.request)
+      notify.success('Banner request sent', 'Our team will review it shortly.')
+    } else {
+      notify.error(data.error ?? 'Could not submit request')
+    }
+  }
+
+  const statusColor = (s: string) => s === 'approved' ? '#4ade80' : s === 'rejected' ? '#f87171' : '#fbbf24'
+  const statusLabel = (s: string) => s === 'approved' ? 'Approved' : s === 'rejected' ? 'Rejected' : 'Pending review'
 
   return (
     <div>
@@ -67,85 +107,194 @@ export default function ArtistDetailClient({ artist, tracks, albums, userId }: P
 
         {/* Header */}
         <div className="flex items-center gap-5 mb-8 flex-wrap">
-          <div
-            className="w-28 h-28 rounded-full flex-shrink-0 grid place-items-center overflow-hidden"
-            style={{ background: bg }}
-          >
+          <div className="w-28 h-28 rounded-full flex-shrink-0 grid place-items-center overflow-hidden" style={{ background: bg }}>
             {artist.avatar_url
               ? <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
               : <span className="text-5xl font-black text-white/80">{artist.stage_name.charAt(0).toUpperCase()}</span>
             }
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h1 className="text-2xl font-black text-white tracking-tight">{artist.stage_name}</h1>
-              {artist.verified && <CheckCircle2 size={18} className="text-blue-400 flex-shrink-0" fill="#60a5fa" stroke="#121212" />}
+              {artist.verified && <CheckCircle2 size={18} className="text-blue-400 flex-shrink-0" />}
             </div>
-            <p className="text-sm text-[#b3b3b3] mb-3">{artist.genre} · {artist.location} · {formatCount(artist.follower_count)} followers</p>
-            {artist.bio && <p className="text-sm text-[#b3b3b3] leading-relaxed mb-3 max-w-md">{artist.bio}</p>}
-            <div className="flex gap-2">
-              <button
-                onClick={playAll}
-                disabled={tracks.length === 0}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-full text-sm font-bold hover:bg-gray-200 disabled:opacity-40 transition-colors"
-              >
-                <Play size={14} fill="black" /> Play
-              </button>
-              <button
-                onClick={handleFollow}
-                disabled={followLoading}
-                className={cn(
-                  'px-5 py-2.5 rounded-full text-sm font-bold transition-all',
-                  following ? 'bg-[#2a2a2a] text-white' : 'bg-transparent border-[1.5px] border-[#717171] text-white hover:border-white'
-                )}
-              >
-                {followLoading ? '…' : following ? 'Following' : 'Follow'}
-              </button>
+            <p className="text-sm text-[#b3b3b3] mb-3">
+              {artist.genre} · {artist.location} · {formatCount(artist.follower_count ?? 0)} followers
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              {tracks.length > 0 && (
+                <button onClick={playAll}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-5 py-2 rounded-full transition-colors">
+                  <Play size={14} fill="white" /> Play All
+                </button>
+              )}
+              {!isOwnProfile && (
+                <button onClick={handleFollow} disabled={followLoading}
+                  className={cn('flex items-center gap-2 text-sm font-bold px-5 py-2 rounded-full border-2 transition-colors',
+                    following ? 'border-white/20 text-white/70 hover:border-red-400 hover:text-red-400' : 'border-white text-white hover:bg-white hover:text-black'
+                  )}>
+                  {following ? 'Following' : 'Follow'}
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Albums */}
-        {albums.length > 0 && (
+        {/* Bio */}
+        {artist.bio && (
+          <p className="text-[#b3b3b3] text-sm leading-relaxed mb-6">{artist.bio}</p>
+        )}
+
+        {/* Social links */}
+        {Object.keys(socialLinks).some(k => socialLinks[k]) && (
+          <div className="flex flex-wrap gap-2.5 mb-8">
+            {Object.entries(SOCIAL_META).map(([key, meta]) => {
+              const url = socialLinks[key]
+              if (!url) return null
+              const Icon = meta.icon
+              return (
+                <a key={key} href={url.startsWith('http') ? url : `https://${url}`} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#181818] border border-[#2a2a2a] hover:border-[#3a3a3a] transition-colors text-sm font-medium text-[#b3b3b3] hover:text-white">
+                  <Icon size={14} style={{ color: meta.color }} />
+                  {meta.label}
+                  <ExternalLink size={10} className="opacity-40" />
+                </a>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Scheduled releases — only shown to own artist */}
+        {isOwnProfile && (scheduledTracks.length > 0 || scheduledAlbums.length > 0) && (
           <div className="mb-8">
-            <h2 className="text-[17px] font-black text-white mb-4">Albums</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
-              {albums.map((album: any) => (
-                <div key={album.id} className="bg-[#181818] rounded-xl overflow-hidden">
-                  <div className="aspect-square grid place-items-center" style={{ background: bg }}>
-                    {album.cover_url
-                      ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover" />
-                      : <Disc3 size={32} className="text-white/30" />
-                    }
+            <div className="flex items-center gap-2 mb-3">
+              <Calendar size={15} className="text-blue-400" />
+              <h2 className="text-sm font-bold text-white uppercase tracking-wider">Scheduled Releases</h2>
+            </div>
+            <div className="space-y-2">
+              {[...scheduledTracks.map(t => ({ ...t, _type: 'track' })), ...scheduledAlbums.map(a => ({ ...a, _type: 'album' }))]
+                .sort((a, b) => new Date(a.release_date).getTime() - new Date(b.release_date).getTime())
+                .map(item => (
+                  <div key={item.id} className="flex items-center gap-3 bg-[#181818] border border-amber-500/20 rounded-xl p-3">
+                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#282828] flex-shrink-0 grid place-items-center">
+                      {item.cover_url ? <img src={item.cover_url} alt="" className="w-full h-full object-cover" /> : item._type === 'album' ? <Disc3 size={16} className="text-[#555]" /> : <Music2 size={16} className="text-[#555]" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-white truncate">{item.title}</p>
+                      <p className="text-xs text-amber-400 font-medium mt-0.5 flex items-center gap-1">
+                        <Clock size={10} /> {item._type === 'album' ? 'Album' : 'Track'} · Goes live {new Date(item.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-3">
-                    <p className="text-[13px] font-bold text-white truncate">{album.title}</p>
-                    <p className="text-xs text-[#717171] mt-0.5">{album.tracks?.[0]?.count ?? 0} tracks</p>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
 
-        {/* Tracks */}
-        <div>
-          <h2 className="text-[17px] font-black text-white mb-4">Songs</h2>
-          {tracks.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-14 h-14 rounded-2xl bg-[#181818] grid place-items-center mx-auto mb-4">
-                <Music2 size={24} className="text-[#717171]" />
-              </div>
-              <p className="text-[#717171] text-sm">No tracks published yet.</p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-0.5">
-              {tracks.map((track, i) => (
-                <TrackRow key={track.id} track={track} rank={i + 1} userId={userId} queue={tracks} />
-              ))}
-            </div>
-          )}
+        {/* Tabs */}
+        <div className="flex gap-1 bg-[#181818] rounded-xl p-1 mb-6">
+          {(['tracks', 'albums'] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className={cn('flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all',
+                activeTab === tab ? 'bg-white text-black' : 'text-[#b3b3b3] hover:text-white'
+              )}>
+              {tab === 'tracks' ? <Music2 size={14} /> : <Disc3 size={14} />}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              <span className="text-xs opacity-60">
+                {tab === 'tracks' ? tracks.length : albums.length}
+              </span>
+            </button>
+          ))}
         </div>
+
+        {/* Tracks tab */}
+        {activeTab === 'tracks' && (
+          tracks.length === 0
+            ? <div className="text-center py-12 text-[#555] text-sm">No tracks yet</div>
+            : <div className="space-y-1">
+                {tracks.map(t => <TrackRow key={t.id} track={t} userId={userId} queue={tracks} showRank={false} />)}
+              </div>
+        )}
+
+        {/* Albums tab */}
+        {activeTab === 'albums' && (
+          albums.length === 0
+            ? <div className="text-center py-12 text-[#555] text-sm">No albums yet</div>
+            : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {albums.map(album => (
+                  <Link key={album.id} href={`/albums/${album.id}`}>
+                    <div className="bg-[#181818] rounded-xl overflow-hidden hover:bg-[#202020] transition-colors cursor-pointer">
+                      <div className="aspect-square bg-[#0d1b3e] grid place-items-center overflow-hidden">
+                        {album.cover_url
+                          ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover" />
+                          : <Disc3 size={36} className="text-[#2a2a2a]" />
+                        }
+                      </div>
+                      <div className="p-3">
+                        <p className="text-sm font-bold text-white truncate">{album.title}</p>
+                        <p className="text-xs text-[#717171] mt-0.5">
+                          {album.tracks?.[0]?.count ?? 0} tracks · {new Date(album.created_at).getFullYear()}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+        )}
+
+        {/* Banner request section — only for own artist */}
+        {isOwnProfile && (
+          <div className="mt-10 border-t border-[#1f1f1f] pt-8">
+            <div className="flex items-center gap-2.5 mb-4">
+              <Megaphone size={16} className="text-blue-400" />
+              <h2 className="text-base font-black text-white">Request Home Banner</h2>
+            </div>
+
+            {localBannerRequest ? (
+              <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold text-white">Banner Request</span>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full"
+                    style={{ background: `${statusColor(localBannerRequest.status)}15`, color: statusColor(localBannerRequest.status) }}>
+                    {statusLabel(localBannerRequest.status)}
+                  </span>
+                </div>
+                {localBannerRequest.message && (
+                  <p className="text-[#717171] text-sm mb-2">"{localBannerRequest.message}"</p>
+                )}
+                {localBannerRequest.admin_note && (
+                  <p className="text-sm text-[#b3b3b3] bg-[#111] rounded-lg px-3 py-2 mt-2">
+                    <span className="font-bold text-white">Admin note: </span>{localBannerRequest.admin_note}
+                  </p>
+                )}
+                {localBannerRequest.status === 'rejected' && (
+                  <button onClick={() => setLocalBannerRequest(null)}
+                    className="mt-3 text-xs text-blue-400 font-bold hover:underline">
+                    Submit new request
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-4">
+                <p className="text-sm text-[#b3b3b3] mb-4">
+                  Request to have your music featured in the promotional banner on the Muzika home page.
+                  Our team will review your request and get back to you.
+                </p>
+                <textarea
+                  value={bannerMsg}
+                  onChange={e => setBannerMsg(e.target.value)}
+                  rows={3}
+                  placeholder="Tell us about your release and why it should be featured… (optional)"
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2.5 text-sm text-white outline-none focus:border-blue-500 transition-all resize-none mb-3"
+                />
+                <button onClick={requestBanner} disabled={requestingBanner}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors disabled:opacity-60">
+                  {requestingBanner ? 'Submitting…' : <><Megaphone size={14} /> Request Feature Slot</>}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )

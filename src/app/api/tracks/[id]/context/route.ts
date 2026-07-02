@@ -14,7 +14,7 @@ export async function GET(
 
   const { data: track } = await supabase
     .from('tracks')
-    .select('id, artist_id, genre')
+    .select('id, artist_id, genre, lyrics, producers, featured_artists')
     .eq('id', trackId)
     .single()
 
@@ -60,5 +60,8 @@ export async function GET(
     artist: artistRes.data ? { ...artistRes.data, is_following: isFollowing } : null,
     moreByArtist: moreByArtistRes.data ?? [],
     related: relatedRes.data ?? [],
+    lyrics: track.lyrics ?? null,
+    producers: track.producers ?? [],
+    featuredArtists: track.featured_artists ?? [],
   })
 }

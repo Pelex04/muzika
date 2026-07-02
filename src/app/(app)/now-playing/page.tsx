@@ -41,18 +41,25 @@ export default function NowPlayingPage() {
   const [artist, setArtist] = useState<Artist | null>(null)
   const [moreByArtist, setMoreByArtist] = useState<Track[]>([])
   const [related, setRelated] = useState<Track[]>([])
+  const [lyrics, setLyrics] = useState<string | null>(null)
   const [contextLoading, setContextLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'related' | 'lyrics'>('related')
 
   const loadContext = useCallback(async (trackId: string) => {
     setContextLoading(true)
+    setLyrics(null)
     try {
       const res = await fetch(`/api/tracks/${trackId}/context`)
       const data = await res.json()
       setArtist(data.artist ?? null)
       setMoreByArtist(data.moreByArtist ?? [])
       setRelated(data.related ?? [])
+      setLyrics(data.lyrics ?? null)
+      // Auto-switch to lyrics tab if available
+      if (data.lyrics) setActiveTab('lyrics')
+      else setActiveTab('related')
     } catch {
-      // non-fatal — page still works without the extra context
+      // non-fatal
     }
     setContextLoading(false)
   }, [])
@@ -301,24 +308,65 @@ export default function NowPlayingPage() {
               </Link>
             )}
 
-            {/* More by this artist */}
-            {moreByArtist.length > 0 && (
-              <TrackSection
-                title={`More by ${artist?.stage_name ?? 'this artist'}`}
-                tracks={moreByArtist}
-                onPlay={(t) => handlePlayTrack(t, moreByArtist)}
-                currentTrackId={currentTrack.id}
-              />
+            {/* Tab switcher */}
+            {(lyrics || moreByArtist.length > 0 || related.length > 0) && (
+              <div className="flex gap-1 bg-[#181818] rounded-xl p-1 mb-5">
+                <button onClick={() => setActiveTab('related')}
+                  className={cn('flex-1 py-2 rounded-lg text-sm font-bold transition-all',
+                    activeTab === 'related' ? 'bg-white text-black' : 'text-[#b3b3b3] hover:text-white'
+                  )}>
+                  Related
+                </button>
+                <button onClick={() => setActiveTab('lyrics')}
+                  className={cn('flex-1 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-1.5',
+                    activeTab === 'lyrics' ? 'bg-white text-black' : 'text-[#b3b3b3] hover:text-white'
+                  )}>
+                  Lyrics
+                  {!lyrics && <span className="text-[10px] opacity-50">—</span>}
+                </button>
+              </div>
             )}
 
-            {/* Related tracks */}
-            {related.length > 0 && (
-              <TrackSection
-                title={`More ${currentTrack.genre}`}
-                tracks={related}
-                onPlay={(t) => handlePlayTrack(t, related)}
-                currentTrackId={currentTrack.id}
-              />
+            {/* Lyrics tab */}
+            {activeTab === 'lyrics' && (
+              <div className="mb-6">
+                {lyrics ? (
+                  <div className="bg-[#181818] rounded-2xl p-5">
+                    <pre className="text-[#e0e0e0] text-sm leading-8 whitespace-pre-wrap font-sans">
+                      {lyrics}
+                    </pre>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-[#555] text-sm">No lyrics available for this track</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Related tab */}
+            {activeTab === 'related' && (
+              <>
+                {/* More by this artist */}
+                {moreByArtist.length > 0 && (
+                  <TrackSection
+                    title={`More by ${artist?.stage_name ?? 'this artist'}`}
+                    tracks={moreByArtist}
+                    onPlay={(t) => handlePlayTrack(t, moreByArtist)}
+                    currentTrackId={currentTrack.id}
+                  />
+                )}
+
+                {/* Related tracks */}
+                {related.length > 0 && (
+                  <TrackSection
+                    title={`More ${currentTrack.genre}`}
+                    tracks={related}
+                    onPlay={(t) => handlePlayTrack(t, related)}
+                    currentTrackId={currentTrack.id}
+                  />
+                )}
+              </>
             )}
           </div>
         )}
