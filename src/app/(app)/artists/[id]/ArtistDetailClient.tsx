@@ -226,7 +226,7 @@ export default function ArtistDetailClient({
           tracks.length === 0
             ? <div className="text-center py-12 text-[#555] text-sm">No tracks yet</div>
             : <div className="space-y-1">
-                {tracks.map(t => <TrackRow key={t.id} track={t} userId={userId} queue={tracks} showRank={false} />)}
+                {tracks.map((t, i) => <TrackRow key={t.id} track={t} rank={i + 1} userId={userId} queue={tracks} showRank={false} />)}
               </div>
         )}
 
