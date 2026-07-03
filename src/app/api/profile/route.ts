@@ -19,6 +19,7 @@ export async function PATCH(req: NextRequest) {
     location?: string
     artist_bio?: string
     artist_avatar_path?: string | null
+    social_links?: Record<string, string | null>
   }
 
   // Update profile (listener-facing identity)
