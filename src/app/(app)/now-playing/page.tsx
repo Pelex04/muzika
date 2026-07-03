@@ -139,9 +139,9 @@ export default function NowPlayingPage() {
     try {
       const res = await fetch(`/api/tracks/${currentTrack.id}/download`)
       const data = await res.json()
-      if (!_streamUrl) { notify.error('Could not download track'); setDownloading(false); return }
+      if (!data.url) { notify.error('Could not download track'); setDownloading(false); return }
       const a = document.createElement('a')
-      a.href = _streamUrl
+      a.href = data.url
       a.download = data.filename ?? currentTrack.title
       document.body.appendChild(a)
       a.click()

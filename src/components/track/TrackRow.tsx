@@ -70,9 +70,9 @@ export default function TrackRow({
     setMenuOpen(false)
     const res = await fetch(`/api/tracks/${track.id}/download`)
     const data = await res.json()
-    if (!_streamUrl) { notify.error('Could not download track'); return }
+    if (!data.url) { notify.error('Could not download track'); return }
     const a = document.createElement('a')
-    a.href = _streamUrl
+    a.href = data.url
     a.download = data.filename ?? track.title
     document.body.appendChild(a)
     a.click()
