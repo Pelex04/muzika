@@ -18,10 +18,12 @@ interface AdminItem {
   cover_url?: string
   play_count?: number
   role?: string
+  status?: string
+  message?: string
   suspended_at?: string | null
   suspended_reason?: string | null
   created_at: string
-  artist?: { stage_name: string; profile?: { email: string } }
+  artist?: { stage_name: string; profile?: { email: string }; avatar_url?: string }
   author?: { full_name: string; email: string }
 }
 
