@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut, BookOpen, Search } from 'lucide-react'
+import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut, BookOpen, Search, Disc3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/types'
 
@@ -10,6 +10,7 @@ const NAV = [
   { href: '/discover', label: 'Home',        icon: Home },
   { href: '/search',   label: 'Search',      icon: Search },
   { href: '/songs',    label: 'Songs',       icon: Music },
+  { href: '/albums',   label: 'Albums',      icon: Disc3 },
   { href: '/charts',   label: 'Charts',      icon: BarChart2 },
   { href: '/library',  label: 'Library',     icon: BookOpen },
   { href: '/artists',  label: 'Artists',     icon: Users },
@@ -79,7 +80,23 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
           {NAV.map(({ href, label, icon }) => navItem(href, label, icon))}
 
           <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.1px', color: 'rgba(255,255,255,0.28)', padding: '20px 12px 7px', textTransform: 'uppercase' }}>Artist</p>
-          {ARTIST_NAV.map(({ href, label, icon }) => navItem(href, label, icon))}
+          {profile?.role === 'artist' || profile?.role === 'admin' ? (
+            <Link
+              href="/studio"
+              style={{
+                display: 'flex', alignItems: 'center', gap: '11px',
+                padding: '9px 12px', borderRadius: '8px', marginBottom: '1px',
+                fontSize: '13.5px', fontWeight: 600, textDecoration: 'none',
+                background: 'rgba(37,99,235,0.12)',
+                color: '#60a5fa', transition: 'all .15s',
+              }}
+            >
+              <Music2 size={16} style={{ flexShrink: 0 }} />
+              Switch to Studio
+            </Link>
+          ) : (
+            navItem('/become-artist', 'Become an Artist', Upload)
+          )}
         </nav>
 
         {/* User row */}

@@ -186,6 +186,20 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
+    // /studio routes — only artists allowed
+    if (pathname.startsWith('/studio')) {
+      const { data: artistCheck } = await admin
+        .from('artists')
+        .select('id')
+        .eq('profile_id', user.id)
+        .single()
+      if (!artistCheck) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/become-artist'
+        return NextResponse.redirect(url)
+      }
+    }
+
     // /admin routes — only admins allowed
     if (pathname.startsWith('/admin') && profile?.role !== 'admin') {
       const url = request.nextUrl.clone()

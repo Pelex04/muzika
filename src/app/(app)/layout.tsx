@@ -4,6 +4,7 @@ import Sidebar from '@/components/layout/Sidebar'
 import MiniPlayer from '@/components/player/MiniPlayer'
 import BottomTabs from '@/components/layout/BottomTabs'
 import { ProfileProvider } from '@/lib/profile-context'
+import StudioSwitcher from '@/components/layout/StudioSwitcher'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient() as any
@@ -16,14 +17,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .eq('id', user.id)
     .single()
 
-  // Artists store their avatar on the artists table — use that as fallback
-  // so the top bar shows the correct photo even if profiles.avatar_url is null
   const { data: artist } = await supabase
     .from('artists')
-    .select('avatar_url')
+    .select('avatar_url, id')
     .eq('profile_id', user.id)
     .single()
 
+  const isArtist = !!(artist?.id)
   const avatarUrl = profile?.avatar_url ?? artist?.avatar_url ?? null
   const avatarInitial = profile?.full_name?.charAt(0)?.toUpperCase() ?? '?'
 
@@ -42,6 +42,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <MiniPlayer />
         </div>
         <BottomTabs />
+        {isArtist && <StudioSwitcher />}
       </div>
     </ProfileProvider>
   )

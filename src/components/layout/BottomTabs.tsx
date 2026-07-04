@@ -2,13 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Search, Music, BarChart2, BookOpen } from 'lucide-react'
+import { Home, Search, Music, Disc3, BookOpen } from 'lucide-react'
 
 const TABS = [
   { href: '/discover', label: 'Home',    icon: Home },
   { href: '/search',   label: 'Search',  icon: Search },
   { href: '/songs',    label: 'Songs',   icon: Music },
-  { href: '/charts',   label: 'Charts',  icon: BarChart2 },
+  { href: '/albums',   label: 'Albums',  icon: Disc3 },
   { href: '/library',  label: 'Library', icon: BookOpen },
 ]
 

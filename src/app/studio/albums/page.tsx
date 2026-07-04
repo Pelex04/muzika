@@ -1,0 +1,23 @@
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { getAdminClient } from '@/lib/admin'
+import StudioAlbumsClient from './StudioAlbumsClient'
+
+export default async function StudioAlbumsPage() {
+  const supabase = await createClient() as any
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/signin')
+
+  const db = getAdminClient()
+  const { data: artist } = await db.from('artists').select('id').eq('profile_id', user.id).single()
+  if (!artist) redirect('/become-artist')
+
+  const { data: albums } = await db
+    .from('albums')
+    .select('id, title, genre, cover_url, published, created_at, tracks:tracks(count)')
+    .eq('artist_id', artist.id)
+    .eq('is_scheduled', false)
+    .order('created_at', { ascending: false })
+
+  return <StudioAlbumsClient albums={albums ?? []} />
+}
