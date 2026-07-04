@@ -1,20 +1,122 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, Play, Download, Music2 } from 'lucide-react'
+import { Trash2, Pencil, Play, Download, Music2, X, FileText, Mic2, Users } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 
 interface Track {
   id: string; title: string; genre: string; cover_url: string | null
   play_count: number; download_count: number; published: boolean; created_at: string
-  producers: string[]; featured_artists: string[]
+  producers: string[]; featured_artists: string[]; lyrics: string | null
+}
+
+function EditModal({ track, onClose, onSave }: { track: Track; onClose: () => void; onSave: (updated: Track) => void }) {
+  const [title, setTitle] = useState(track.title)
+  const [lyrics, setLyrics] = useState(track.lyrics ?? '')
+  const [producers, setProducers] = useState((track.producers ?? []).join(', '))
+  const [featuredArtists, setFeaturedArtists] = useState((track.featured_artists ?? []).join(', '))
+  const [saving, setSaving] = useState(false)
+
+  const save = async () => {
+    setSaving(true)
+    const res = await fetch(`/api/tracks/${track.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: title.trim(),
+        lyrics: lyrics.trim() || null,
+        producers: producers.split(',').map(s => s.trim()).filter(Boolean),
+        featured_artists: featuredArtists.split(',').map(s => s.trim()).filter(Boolean),
+      }),
+    })
+    setSaving(false)
+    if (res.ok) {
+      const data = await res.json()
+      onSave(data.track)
+      notify.success('Track updated')
+      onClose()
+    } else {
+      notify.error('Could not save changes')
+    }
+  }
+
+  const inp: React.CSSProperties = {
+    width: '100%', background: '#0d0d0d', border: '1px solid #2a2a2a',
+    borderRadius: '10px', color: '#fff', fontSize: '14px',
+    padding: '11px 14px', fontFamily: 'inherit', outline: 'none',
+    boxSizing: 'border-box',
+  }
+  const lbl: React.CSSProperties = { display: 'block', color: '#b3b3b3', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: '7px' }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 999, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0' }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }} />
+      <div style={{
+        position: 'relative', zIndex: 1, background: '#141414',
+        border: '1px solid #2a2a2a', borderRadius: '20px 20px 0 0',
+        width: '100%', maxWidth: '560px', maxHeight: '90vh',
+        overflowY: 'auto', padding: '24px 20px 32px',
+      }}>
+        {/* Handle */}
+        <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#2a2a2a', margin: '0 auto 20px' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <h2 style={{ color: '#fff', fontSize: '17px', fontWeight: 800, letterSpacing: '-0.3px', margin: 0 }}>Edit Track</h2>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#717171', cursor: 'pointer', padding: '4px' }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={lbl}>Title</label>
+            <input value={title} onChange={e => setTitle(e.target.value)} style={inp} />
+          </div>
+
+          <div>
+            <label style={{ ...lbl, display: 'flex', alignItems: 'center', gap: '5px' }}><Mic2 size={11} /> Producers</label>
+            <input value={producers} onChange={e => setProducers(e.target.value)} placeholder="Separate with commas" style={inp} />
+            <p style={{ fontSize: '11px', color: '#555', marginTop: '5px' }}>e.g. Rasta Kadema, DJ Khaled</p>
+          </div>
+
+          <div>
+            <label style={{ ...lbl, display: 'flex', alignItems: 'center', gap: '5px' }}><Users size={11} /> Featured Artists</label>
+            <input value={featuredArtists} onChange={e => setFeaturedArtists(e.target.value)} placeholder="Separate with commas" style={inp} />
+          </div>
+
+          <div>
+            <label style={{ ...lbl, display: 'flex', alignItems: 'center', gap: '5px' }}><FileText size={11} /> Lyrics</label>
+            <textarea
+              value={lyrics}
+              onChange={e => setLyrics(e.target.value)}
+              rows={10}
+              placeholder="Paste your full lyrics here…"
+              style={{ ...inp, resize: 'vertical', minHeight: '200px', lineHeight: 1.7 }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', paddingTop: '4px' }}>
+            <button onClick={onClose}
+              style={{ flex: 1, padding: '12px', background: '#1f1f1f', border: '1px solid #2a2a2a', borderRadius: '10px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Cancel
+            </button>
+            <button onClick={save} disabled={saving}
+              style={{ flex: 2, padding: '12px', background: '#2563eb', border: 'none', borderRadius: '10px', color: '#fff', fontSize: '14px', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function StudioTracksClient({ tracks: initial, artistId }: { tracks: Track[]; artistId: string }) {
   const [tracks, setTracks] = useState(initial)
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [editTrack, setEditTrack] = useState<Track | null>(null)
 
   const confirmDelete = async () => {
     if (!confirmId) return
@@ -29,6 +131,10 @@ export default function StudioTracksClient({ tracks: initial, artistId }: { trac
       notify.error('Could not delete track')
     }
     setDeletingId(null)
+  }
+
+  const handleSave = (updated: Track) => {
+    setTracks(prev => prev.map(t => t.id === updated.id ? { ...t, ...updated } : t))
   }
 
   return (
@@ -52,29 +158,37 @@ export default function StudioTracksClient({ tracks: initial, artistId }: { trac
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ color: '#fff', fontSize: '14px', fontWeight: 700, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{track.title}</p>
-                <div style={{ display: 'flex', gap: '12px', marginTop: '3px' }}>
+                <div style={{ display: 'flex', gap: '12px', marginTop: '3px', flexWrap: 'wrap' }}>
                   <span style={{ color: '#555', fontSize: '12px' }}>{track.genre}</span>
                   <span style={{ color: '#555', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '3px' }}><Play size={10} /> {track.play_count ?? 0}</span>
                   <span style={{ color: '#555', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '3px' }}><Download size={10} /> {track.download_count ?? 0}</span>
+                  {track.lyrics && <span style={{ color: '#2563eb', fontSize: '11px', fontWeight: 600 }}>Lyrics ✓</span>}
                 </div>
-                {(track.producers?.length > 0 || track.featured_artists?.length > 0) && (
-                  <p style={{ color: '#3a3a3a', fontSize: '11px', margin: '2px 0 0' }}>
-                    {track.producers?.length > 0 && `Prod. ${track.producers.join(', ')}`}
-                    {track.producers?.length > 0 && track.featured_artists?.length > 0 && ' · '}
-                    {track.featured_artists?.length > 0 && `ft. ${track.featured_artists.join(', ')}`}
-                  </p>
-                )}
               </div>
-              <span style={{ fontSize: '11px', color: '#3a3a3a', flexShrink: 0 }}>{new Date(track.created_at).toLocaleDateString()}</span>
-              <button
-                onClick={() => setConfirmId(track.id)}
-                disabled={deletingId === track.id}
-                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: '8px', color: '#ef4444', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, flexShrink: 0, fontFamily: 'inherit' }}>
-                <Trash2 size={12} /> {deletingId === track.id ? '…' : 'Delete'}
-              </button>
+              <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                <button
+                  onClick={() => setEditTrack(track)}
+                  style={{ background: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: '8px', color: '#60a5fa', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit' }}>
+                  <Pencil size={11} /> Edit
+                </button>
+                <button
+                  onClick={() => setConfirmId(track.id)}
+                  disabled={deletingId === track.id}
+                  style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: '8px', color: '#ef4444', padding: '6px 10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit' }}>
+                  <Trash2 size={11} /> {deletingId === track.id ? '…' : 'Del'}
+                </button>
+              </div>
             </div>
           ))}
         </div>
+      )}
+
+      {editTrack && (
+        <EditModal
+          track={editTrack}
+          onClose={() => setEditTrack(null)}
+          onSave={handleSave}
+        />
       )}
 
       <ConfirmDialog

@@ -14,7 +14,7 @@ export default async function StudioTracksPage() {
 
   const { data: tracks } = await db
     .from('tracks')
-    .select('id, title, genre, cover_url, play_count, download_count, published, created_at, producers, featured_artists')
+    .select('id, title, genre, cover_url, play_count, download_count, published, created_at, producers, featured_artists, lyrics')
     .eq('artist_id', artist.id)
     .eq('is_scheduled', false)
     .order('created_at', { ascending: false })

@@ -2,6 +2,54 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 
+function getAdmin() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
+}
+
+// PATCH — update track metadata (lyrics, producers, featured artists, title)
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const supabase = await createClient() as any
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { data: track } = await supabase
+    .from('tracks')
+    .select('artist_id')
+    .eq('id', id)
+    .single()
+
+  if (!track) return NextResponse.json({ error: 'Track not found' }, { status: 404 })
+
+  const { data: artist } = await supabase
+    .from('artists')
+    .select('id')
+    .eq('id', track.artist_id)
+    .eq('profile_id', user.id)
+    .single()
+
+  if (!artist) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  const body = await req.json()
+  const allowed = ['title', 'lyrics', 'producers', 'featured_artists', 'genre']
+  const updates: Record<string, any> = { updated_at: new Date().toISOString() }
+  for (const key of allowed) {
+    if (key in body) updates[key] = body[key]
+  }
+
+  const admin = getAdmin()
+  const { data, error } = await admin.from('tracks').update(updates).eq('id', id).select().single()
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ track: data })
+}
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -73,3 +121,4 @@ export async function DELETE(
 
   return NextResponse.json({ deleted: true })
 }
+
