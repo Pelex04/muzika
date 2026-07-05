@@ -55,7 +55,7 @@ export default function StudioProfileClient({ artist, profile }: Props) {
   }
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: '600px' }}>
+    <div style={{ padding: '28px 24px 100px', maxWidth: '600px' }}>
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ color: '#fff', fontSize: '24px', fontWeight: 900, letterSpacing: '-0.4px', margin: 0 }}>Artist Profile</h1>
         <p style={{ color: '#555', fontSize: '13px', marginTop: '4px' }}>Edit your public profile</p>
@@ -108,10 +108,12 @@ export default function StudioProfileClient({ artist, profile }: Props) {
           </div>
         </div>
 
-        <button onClick={save} disabled={saving}
-          style={{ background: '#2563eb', border: 'none', borderRadius: '12px', color: '#fff', padding: '13px', fontSize: '14px', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1 }}>
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
+        <div style={{ position: 'sticky', bottom: 0, background: '#0d0d0d', padding: '12px 0 4px', marginTop: '8px' }}>
+          <button onClick={save} disabled={saving}
+            style={{ background: '#2563eb', border: 'none', borderRadius: '12px', color: '#fff', padding: '13px', fontSize: '14px', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', fontFamily: 'inherit', opacity: saving ? 0.7 : 1, width: '100%' }}>
+            {saving ? 'Saving…' : 'Save Changes'}
+          </button>
+        </div>
       </div>
     </div>
   )

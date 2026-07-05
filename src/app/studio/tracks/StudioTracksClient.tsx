@@ -55,8 +55,8 @@ function EditModal({ track, onClose, onSave }: { track: Track; onClose: () => vo
       <div style={{
         position: 'relative', zIndex: 1, background: '#141414',
         border: '1px solid #2a2a2a', borderRadius: '20px 20px 0 0',
-        width: '100%', maxWidth: '560px', maxHeight: '90vh',
-        overflowY: 'auto', padding: '24px 20px 32px',
+        width: '100%', maxWidth: '560px', maxHeight: '92vh',
+        overflowY: 'auto', padding: '24px 20px 0',
       }}>
         {/* Handle */}
         <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#2a2a2a', margin: '0 auto 20px' }} />
@@ -96,7 +96,13 @@ function EditModal({ track, onClose, onSave }: { track: Track; onClose: () => vo
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '10px', paddingTop: '4px' }}>
+          <div style={{
+            position: 'sticky', bottom: 0,
+            background: '#141414',
+            padding: '16px 0 24px',
+            marginTop: '4px',
+            display: 'flex', gap: '10px',
+          }}>
             <button onClick={onClose}
               style={{ flex: 1, padding: '12px', background: '#1f1f1f', border: '1px solid #2a2a2a', borderRadius: '10px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
               Cancel
@@ -138,7 +144,7 @@ export default function StudioTracksClient({ tracks: initial, artistId }: { trac
   }
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: '900px' }}>
+    <div style={{ padding: '28px 24px 100px', maxWidth: '900px' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ color: '#fff', fontSize: '24px', fontWeight: 900, letterSpacing: '-0.4px', margin: 0 }}>My Tracks</h1>
         <p style={{ color: '#555', fontSize: '13px', marginTop: '4px' }}>{tracks.length} published track{tracks.length !== 1 ? 's' : ''}</p>

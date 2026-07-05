@@ -397,10 +397,12 @@ export default function UploadForm() {
 
             {uploading && <ProgressBar progress={progress} label={progressLabel} />}
 
-            <button type="button" onClick={onSubmitSingle} disabled={uploading}
-              className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-60">
-              {uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : <><Upload className="w-4 h-4" /> {isScheduled ? 'Schedule Track' : 'Publish Track'}</>}
-            </button>
+            <div className="sticky bottom-0 pt-3 pb-1 bg-[#121212]">
+              <button type="button" onClick={onSubmitSingle} disabled={uploading}
+                className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-60">
+                {uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : <><Upload className="w-4 h-4" /> {isScheduled ? 'Schedule Track' : 'Publish Track'}</>}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-5">
@@ -477,10 +479,12 @@ export default function UploadForm() {
 
             {uploading && <ProgressBar progress={progress} label={progressLabel} />}
 
-            <button type="button" onClick={onSubmitAlbum} disabled={uploading}
-              className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-60">
-              {uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : <><Disc3 className="w-4 h-4" /> {albumScheduled ? 'Schedule Album' : `Publish Album (${pendingTracks.length} track${pendingTracks.length === 1 ? '' : 's'})`}</>}
-            </button>
+            <div className="sticky bottom-0 pt-3 pb-1 bg-[#121212]">
+              <button type="button" onClick={onSubmitAlbum} disabled={uploading}
+                className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-60">
+                {uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : <><Disc3 className="w-4 h-4" /> {albumScheduled ? 'Schedule Album' : `Publish Album (${pendingTracks.length} track${pendingTracks.length === 1 ? '' : 's'})`}</>}
+              </button>
+            </div>
           </div>
         )}
       </div>

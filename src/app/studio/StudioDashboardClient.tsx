@@ -18,7 +18,7 @@ export default function StudioDashboardClient({ artist, topTracks, stats }: Prop
   ]
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: '900px' }}>
+    <div style={{ padding: '28px 24px 100px', maxWidth: '900px' }}>
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <p style={{ color: '#555', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Welcome back</p>

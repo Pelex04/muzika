@@ -34,7 +34,7 @@ export default function StudioBannerClient({ bannerRequest: initial }: { bannerR
   const statusColor = request?.status === 'approved' ? '#4ade80' : request?.status === 'rejected' ? '#ef4444' : '#fbbf24'
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: '600px' }}>
+    <div style={{ padding: '28px 24px 100px', maxWidth: '600px' }}>
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ color: '#fff', fontSize: '24px', fontWeight: 900, letterSpacing: '-0.4px', margin: 0 }}>Banner Request</h1>
         <p style={{ color: '#555', fontSize: '13px', marginTop: '4px' }}>Request to be featured in the home page promotional banner</p>

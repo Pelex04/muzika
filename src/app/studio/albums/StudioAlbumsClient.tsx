@@ -29,7 +29,7 @@ export default function StudioAlbumsClient({ albums: initial }: { albums: Album[
   }
 
   return (
-    <div style={{ padding: '28px 24px', maxWidth: '900px' }}>
+    <div style={{ padding: '28px 24px 100px', maxWidth: '900px' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ color: '#fff', fontSize: '24px', fontWeight: 900, letterSpacing: '-0.4px', margin: 0 }}>My Albums</h1>
         <p style={{ color: '#555', fontSize: '13px', marginTop: '4px' }}>{albums.length} album{albums.length !== 1 ? 's' : ''}</p>

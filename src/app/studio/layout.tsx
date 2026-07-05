@@ -24,6 +24,7 @@ export default async function StudioLayout({ children }: { children: React.React
         .studio-main { scrollbar-width: thin; scrollbar-color: #2a2a2a transparent; }
         .studio-main::-webkit-scrollbar { width: 4px; }
         .studio-main::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+        @media (max-width: 768px) { .studio-main { padding-bottom: 80px; } }
       `}</style>
       <StudioNav artist={artist} />
       <main className="studio-main" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>

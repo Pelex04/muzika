@@ -148,8 +148,8 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
         style={{
           background: '#181818', borderRadius: '20px 20px 0 0',
           width: '100%', maxWidth: '480px',
-          maxHeight: '85vh', overflowY: 'auto',
-          padding: '20px',
+          maxHeight: '90vh', overflowY: 'auto',
+          padding: '20px 20px 100px',
           animation: 'slideUpEdit .25s ease-out',
         }}
         className="md:rounded-2xl md:mb-[5vh]"
@@ -300,20 +300,27 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
           </>
         )}
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          style={{
-            width: '100%', padding: '13px',
-            background: saving ? '#717171' : '#ffffff',
-            color: '#000000', border: 'none', borderRadius: '10px',
-            fontSize: '14px', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            fontFamily: 'inherit',
-          }}
-        >
-          {saving ? <><Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> Saving…</> : 'Save Changes'}
-        </button>
+        <div style={{
+          position: 'sticky', bottom: 0,
+          background: '#181818',
+          padding: '12px 0 4px',
+          marginTop: '8px',
+        }}>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            style={{
+              width: '100%', padding: '13px',
+              background: saving ? '#717171' : '#ffffff',
+              color: '#000000', border: 'none', borderRadius: '10px',
+              fontSize: '14px', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+              fontFamily: 'inherit',
+            }}
+          >
+            {saving ? <><Loader2 size={15} style={{ animation: 'spin 1s linear infinite' }} /> Saving…</> : 'Save Changes'}
+          </button>
+        </div>
 
         <style>{`
           @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
