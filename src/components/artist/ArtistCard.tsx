@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { BadgeCheck } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { formatCount } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -63,8 +63,8 @@ export default function ArtistCard({ artist, userId }: Props) {
             }
           </div>
           {artist.verified && (
-            <div className="absolute bottom-0 right-0 w-[22px] h-[22px] bg-blue-500 rounded-full border-[2.5px] border-[#121212] grid place-items-center">
-              <CheckCircle2 className="w-3 h-3 text-white" fill="white" strokeWidth={0}/>
+            <div className="absolute bottom-0 right-0 w-[22px] h-[22px] bg-[#121212] rounded-full grid place-items-center">
+              <BadgeCheck size={17} className="text-blue-500" />
             </div>
           )}
         </div>

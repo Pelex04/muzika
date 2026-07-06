@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   ChevronLeft, Heart, SkipBack, SkipForward, Play, Pause,
   Shuffle, Repeat, Repeat1, Bookmark, ListPlus, Share2,
-  Download, Loader2, Music2, CheckCircle2,
+  Download, Loader2, Music2, BadgeCheck,
 } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
@@ -290,7 +290,7 @@ export default function NowPlayingPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <p className="text-[15px] font-bold text-white truncate">{artist.stage_name}</p>
-                      {artist.verified && <CheckCircle2 size={14} className="text-blue-400 flex-shrink-0" fill="#60a5fa" stroke="#181818" />}
+                      {artist.verified && <BadgeCheck size={14} className="text-blue-500 flex-shrink-0" />}
                     </div>
                     <p className="text-xs text-[#717171] mt-0.5">{formatCount(artist.follower_count)} followers</p>
                   </div>

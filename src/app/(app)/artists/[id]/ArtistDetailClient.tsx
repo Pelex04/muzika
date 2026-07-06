@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, CheckCircle2, Play, Music2, Disc3, Clock, Globe, ExternalLink, Megaphone, Calendar } from 'lucide-react'
+import { ChevronLeft, BadgeCheck, Play, Music2, Disc3, Clock, Globe, ExternalLink, Megaphone, Calendar } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
@@ -132,7 +132,7 @@ export default function ArtistDetailClient({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h1 className="text-2xl font-black text-white tracking-tight">{artist.stage_name}</h1>
-              {artist.verified && <CheckCircle2 size={18} className="text-blue-400 flex-shrink-0" />}
+              {artist.verified && <BadgeCheck size={18} className="text-blue-500 flex-shrink-0" />}
             </div>
             <p className="text-sm text-[#b3b3b3] mb-3">
               {artist.genre} · {artist.location} · {formatCount(artist.follower_count ?? 0)} followers
