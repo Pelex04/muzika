@@ -9,6 +9,8 @@
 create table if not exists public.verification_requests (
   id           uuid primary key default gen_random_uuid(),
   artist_id    uuid not null references public.artists(id) on delete cascade,
+  legal_name   text not null,           -- full legal name, for identity matching against stage name
+  press_link   text,                    -- optional link to a press/media mention
   message      text,                    -- artist's pitch / notes
   status       text not null default 'pending'
                 check (status in ('pending','approved','rejected')),

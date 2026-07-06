@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const db = getAdminClient()
   const { data } = await db
     .from('verification_requests')
-    .select('*, artist:artists(id, stage_name, avatar_url, genre, verified)')
+    .select('*, artist:artists(id, stage_name, avatar_url, genre, verified, social_links)')
     .order('created_at', { ascending: false })
   return NextResponse.json({ requests: data ?? [] })
 }

@@ -23,7 +23,9 @@ interface AdminItem {
   suspended_at?: string | null
   suspended_reason?: string | null
   created_at: string
-  artist?: { stage_name: string; profile?: { email: string }; avatar_url?: string; verified?: boolean }
+  artist?: { stage_name: string; profile?: { email: string }; avatar_url?: string; verified?: boolean; social_links?: Record<string, string> }
+  legal_name?: string
+  press_link?: string | null
   author?: { full_name: string; email: string }
 }
 
@@ -449,6 +451,20 @@ export default function AdminPage() {
                   }}>{item.status}</span>
                 </div>
                 {item.message && <div className="admin-item-sub">"{item.message}"</div>}
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
+                  {(item as any).legal_name && (
+                    <span style={{ fontSize: '11px', color: '#717171' }}>Legal name: <span style={{ color: '#b3b3b3' }}>{(item as any).legal_name}</span></span>
+                  )}
+                  {(item as any).press_link && (
+                    <a href={(item as any).press_link} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#60a5fa' }}>Press link ↗</a>
+                  )}
+                  {(item as any).artist?.social_links && Object.entries((item as any).artist.social_links).filter(([, v]) => v).map(([key, val]) => (
+                    <a key={key} href={val as string} target="_blank" rel="noopener noreferrer" style={{ fontSize: '11px', color: '#60a5fa' }}>{key} ↗</a>
+                  ))}
+                  {(item as any).artist?.social_links && !Object.values((item as any).artist.social_links).some(Boolean) && (
+                    <span style={{ fontSize: '11px', color: '#f87171' }}>No social links on file</span>
+                  )}
+                </div>
               </div>
               <span className="admin-item-date">{new Date(item.created_at).toLocaleDateString()}</span>
               {item.status === 'pending' && (
