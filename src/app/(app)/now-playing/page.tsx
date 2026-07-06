@@ -18,7 +18,7 @@ import type { Artist, Track } from '@/types'
 
 const GENRE_BG: Record<string, string> = {
   'Afropop': '#1e3a8a', 'Gospel': '#065f46', 'Reggae': '#7f1d1d',
-  'Hip-Hop': '#4c1d95', 'RnB': '#78350f', 'Traditional': '#134e4a',
+  'Hip-Hop': '#4c1d95', 'RnB': '#78350f', 'Traditional': '#134e4a', 'Amapiano': '#831843',
   'Jazz': '#1c1917', 'Dancehall': '#064e3b',
 }
 

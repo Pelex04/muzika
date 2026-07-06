@@ -446,7 +446,7 @@ function TrackRow({ track, onDelete, deleting, showStats }: {
 }) {
   const bg = ({
     'Afropop':'#1e3a8a','Gospel':'#065f46','Reggae':'#7f1d1d',
-    'Hip-Hop':'#4c1d95','RnB':'#78350f','Traditional':'#134e4a',
+    'Hip-Hop':'#4c1d95','RnB':'#78350f','Traditional':'#134e4a','Amapiano':'#831843',
   } as any)[track.genre] ?? '#0d1b3e'
 
   return (
@@ -480,7 +480,7 @@ function TrackRow({ track, onDelete, deleting, showStats }: {
 function LibraryRow({ track }: { track: any }) {
   const bg = ({
     'Afropop':'#1e3a8a','Gospel':'#065f46','Reggae':'#7f1d1d',
-    'Hip-Hop':'#4c1d95','RnB':'#78350f',
+    'Hip-Hop':'#4c1d95','RnB':'#78350f','Amapiano':'#831843',
   } as any)[track.genre] ?? '#0d1b3e'
 
   return (

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { notify } from '@/components/ui/notify'
 import { Globe } from 'lucide-react'
 
-const GENRES = ['Afropop','Gospel','Hip-Hop','Reggae','RnB','Traditional','Jazz','Dancehall']
+const GENRES = ['Afropop','Gospel','Hip-Hop','Reggae','RnB','Traditional','Jazz','Dancehall','Amapiano']
 const SOCIALS = [
   { key: 'instagram', label: 'Instagram', ph: 'instagram.com/yourname' },
   { key: 'twitter',   label: 'X / Twitter', ph: 'x.com/yourname' },

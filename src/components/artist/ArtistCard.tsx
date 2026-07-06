@@ -37,6 +37,7 @@ export default function ArtistCard({ artist, userId }: Props) {
     'Hip-Hop': 'from-purple-900 to-[#1e1b4b]',
     'RnB': 'from-orange-900 to-[#431407]',
     'Traditional': 'from-teal-900 to-[#022c22]',
+    'Amapiano': 'from-pink-900 to-[#500724]',
     'Jazz': 'from-yellow-900 to-[#451a03]',
   }
   const gradientClass = colors[artist.genre] ?? colors['Afropop']

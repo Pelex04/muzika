@@ -37,7 +37,7 @@ export interface Artist {
   is_following?: boolean
 }
 
-export type TrackGenre = 'Afropop' | 'Gospel' | 'Hip-Hop' | 'Reggae' | 'RnB' | 'Jazz' | 'Traditional'
+export type TrackGenre = 'Afropop' | 'Gospel' | 'Hip-Hop' | 'Reggae' | 'RnB' | 'Jazz' | 'Traditional' | 'Amapiano'
 
 export interface Track {
   id: string

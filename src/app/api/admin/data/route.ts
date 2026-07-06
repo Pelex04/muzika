@@ -23,6 +23,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ items: data ?? [] })
   }
 
+  if (tab === 'verification_requests') {
+    const { data } = await db
+      .from('verification_requests')
+      .select('*, artist:artists(id, stage_name, avatar_url, genre, verified)')
+      .order('created_at', { ascending: false })
+      .limit(100)
+    return NextResponse.json({ items: data ?? [] })
+  }
+
   if (tab === 'promotions') {
     const { data } = await db
       .from('promotions')

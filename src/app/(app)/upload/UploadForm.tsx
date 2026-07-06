@@ -8,7 +8,7 @@ import { Upload, Music, Image, CheckCircle2, Loader2, Disc3, X, Plus, GripVertic
 import { cn } from '@/lib/utils'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 
-const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz']
+const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Amapiano']
 const MAX_AUDIO_MB = 50
 const MAX_COVER_MB = 5
 

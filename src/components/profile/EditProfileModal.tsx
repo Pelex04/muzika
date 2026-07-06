@@ -5,7 +5,7 @@ import { X, Camera, Loader2 } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import type { Profile, Artist } from '@/types'
 
-const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Dancehall']
+const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Dancehall', 'Amapiano']
 const CITIES = ['Blantyre', 'Lilongwe', 'Mzuzu', 'Zomba', 'Kasungu', 'Balaka', 'Mangochi', 'Other']
 
 interface Props {

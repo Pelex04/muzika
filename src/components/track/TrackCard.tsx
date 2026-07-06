@@ -160,6 +160,7 @@ function AlbumArtPlaceholder({ genre }: { genre: string }) {
     'Hip-Hop':      { bg: 'from-purple-900 to-[#1e1b4b]', stroke: '#a78bfa' },
     'RnB':          { bg: 'from-orange-900 to-[#431407]', stroke: '#fb923c' },
     'Traditional':  { bg: 'from-teal-900 to-[#022c22]', stroke: '#2dd4bf' },
+    'Amapiano':     { bg: 'from-pink-900 to-[#500724]', stroke: '#f472b6' },
   }
   const { bg, stroke } = palettes[genre] ?? palettes['Afropop']
 

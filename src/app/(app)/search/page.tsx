@@ -70,7 +70,7 @@ export default function SearchPage() {
   const artBg = (genre: string) => {
     const m: Record<string, string> = {
       'Afropop':'#1e3a8a','Gospel':'#065f46','Reggae':'#7f1d1d',
-      'Hip-Hop':'#4c1d95','RnB':'#78350f','Traditional':'#134e4a',
+      'Hip-Hop':'#4c1d95','RnB':'#78350f','Traditional':'#134e4a','Amapiano':'#831843',
     }
     return `linear-gradient(135deg,${m[genre]??'#0d1b3e'},#0d1b3e)`
   }

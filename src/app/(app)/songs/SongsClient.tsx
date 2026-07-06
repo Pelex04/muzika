@@ -8,7 +8,7 @@ import TrackRow from '@/components/track/TrackRow'
 import type { Track } from '@/types'
 import { cn } from '@/lib/utils'
 
-const GENRES = ['All', 'Afropop', 'Gospel', 'Reggae', 'Hip-Hop', 'RnB', 'Traditional', 'Jazz']
+const GENRES = ['All', 'Afropop', 'Gospel', 'Reggae', 'Hip-Hop', 'RnB', 'Traditional', 'Jazz', 'Amapiano']
 
 interface Props {
   tracks: Track[]

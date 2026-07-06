@@ -20,6 +20,7 @@ const GENRE_BG: Record<string, string> = {
   'Hip-Hop': 'linear-gradient(135deg,#4c1d95,#7c3aed)',
   'RnB': 'linear-gradient(135deg,#78350f,#d97706)',
   'Traditional': 'linear-gradient(135deg,#134e4a,#0d9488)',
+  'Amapiano': 'linear-gradient(135deg,#831843,#db2777)',
   'Jazz': 'linear-gradient(135deg,#1c1917,#44403c)',
   'Dancehall': 'linear-gradient(135deg,#064e3b,#10b981)',
 }

@@ -80,6 +80,7 @@ const GENRES = [
   { name: 'RnB', emoji: '🎶', color: 'from-orange-800 to-orange-950' },
   { name: 'Jazz', emoji: '🎷', color: 'from-yellow-800 to-yellow-950' },
   { name: 'Traditional', emoji: '🥁', color: 'from-teal-800 to-teal-950' },
+  { name: 'Amapiano', emoji: '🎹', color: 'from-pink-800 to-pink-950' },
 ]
 
 function HomeSearch() {
