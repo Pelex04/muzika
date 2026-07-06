@@ -9,6 +9,7 @@ export async function getArtists({
   const { data, error } = await supabase
     .from('artists')
     .select(`*, profile:profiles(full_name, email, avatar_url)`)
+    .order('verified', { ascending: false })
     .order('follower_count', { ascending: false })
     .range(offset, offset + limit - 1)
 
