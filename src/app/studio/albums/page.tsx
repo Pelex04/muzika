@@ -14,9 +14,8 @@ export default async function StudioAlbumsPage() {
 
   const { data: albums } = await db
     .from('albums')
-    .select('id, title, genre, cover_url, published, created_at, tracks:tracks(count)')
+    .select('id, title, genre, cover_url, published, is_scheduled, release_date, created_at, tracks:tracks(count)')
     .eq('artist_id', artist.id)
-    .eq('is_scheduled', false)
     .order('created_at', { ascending: false })
 
   return <StudioAlbumsClient albums={albums ?? []} />

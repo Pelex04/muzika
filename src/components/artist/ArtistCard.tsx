@@ -43,7 +43,7 @@ export default function ArtistCard({ artist, userId }: Props) {
 
   return (
     <Link href={`/artists/${artist.id}`}>
-      <div className="bg-[#181818] rounded-xl px-4 py-5 text-center cursor-pointer hover:-translate-y-0.5 transition-all">
+      <div className="text-center cursor-pointer hover:-translate-y-0.5 transition-all">
         {/* Avatar */}
         <div className="relative w-[76px] h-[76px] mx-auto mb-3">
           <div className={cn(
@@ -62,7 +62,7 @@ export default function ArtistCard({ artist, userId }: Props) {
             }
           </div>
           {artist.verified && (
-            <div className="absolute bottom-0 right-0 w-[22px] h-[22px] bg-blue-500 rounded-full border-[2.5px] border-[#181818] grid place-items-center">
+            <div className="absolute bottom-0 right-0 w-[22px] h-[22px] bg-blue-500 rounded-full border-[2.5px] border-[#121212] grid place-items-center">
               <CheckCircle2 className="w-3 h-3 text-white" fill="white" strokeWidth={0}/>
             </div>
           )}

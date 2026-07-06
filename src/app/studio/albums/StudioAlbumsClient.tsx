@@ -1,14 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, Disc3 } from 'lucide-react'
+import { Trash2, Disc3, Clock } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import Link from 'next/link'
 
 interface Album {
   id: string; title: string; genre: string; cover_url: string | null
-  published: boolean; created_at: string; tracks: { count: number }[]
+  published: boolean; is_scheduled?: boolean; release_date?: string | null
+  created_at: string; tracks: { count: number }[]
+}
+
+function countdown(date: string) {
+  const diff = new Date(date).getTime() - Date.now()
+  if (diff <= 0) return 'Going live soon…'
+  const d = Math.floor(diff / 86400000)
+  const h = Math.floor((diff % 86400000) / 3600000)
+  if (d > 0) return `${d}d ${h}h remaining`
+  const m = Math.floor((diff % 3600000) / 60000)
+  return `${h}h ${m}m remaining`
 }
 
 export default function StudioAlbumsClient({ albums: initial }: { albums: Album[] }) {
@@ -19,7 +30,7 @@ export default function StudioAlbumsClient({ albums: initial }: { albums: Album[
     if (!confirmId) return
     const id = confirmId
     setConfirmId(null)
-    const res = await fetch(`/api/admin/albums/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason: 'artist delete' }) })
+    const res = await fetch(`/api/albums/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setAlbums(prev => prev.filter(a => a.id !== id))
       notify.success('Album deleted')
@@ -44,17 +55,28 @@ export default function StudioAlbumsClient({ albums: initial }: { albums: Album[
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '14px' }}>
           {albums.map(album => (
-            <div key={album.id} style={{ background: '#161616', border: '1px solid #1f1f1f', borderRadius: '14px', overflow: 'hidden' }}>
-              <div style={{ aspectRatio: '1', background: '#0d1b3e', display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
+            <div key={album.id} style={{ background: '#161616', border: album.is_scheduled ? '1px solid rgba(251,191,36,0.15)' : '1px solid #1f1f1f', borderRadius: '14px', overflow: 'hidden' }}>
+              <div style={{ aspectRatio: '1', background: '#0d1b3e', display: 'grid', placeItems: 'center', overflow: 'hidden', position: 'relative' }}>
                 {album.cover_url
-                  ? <img src={album.cover_url} alt={album.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ? <img src={album.cover_url} alt={album.title} style={{ width: '100%', height: '100%', objectFit: 'cover', filter: album.is_scheduled ? 'grayscale(0.4) brightness(0.6)' : undefined }} />
                   : <Disc3 size={40} color="#2a2a2a" />}
+                {album.is_scheduled && (
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.35)' }}>
+                    <Clock size={28} color="#fbbf24" />
+                  </div>
+                )}
               </div>
               <div style={{ padding: '12px' }}>
                 <p style={{ color: '#fff', fontSize: '14px', fontWeight: 700, margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{album.title}</p>
-                <p style={{ color: '#555', fontSize: '12px', margin: '0 0 10px' }}>
-                  {album.genre} · {album.tracks?.[0]?.count ?? 0} tracks
-                </p>
+                {album.is_scheduled && album.release_date ? (
+                  <p style={{ color: '#fbbf24', fontSize: '12px', fontWeight: 600, margin: '0 0 10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Clock size={11} /> {countdown(album.release_date)}
+                  </p>
+                ) : (
+                  <p style={{ color: '#555', fontSize: '12px', margin: '0 0 10px' }}>
+                    {album.genre} · {album.tracks?.[0]?.count ?? 0} tracks
+                  </p>
+                )}
                 <button
                   onClick={() => setConfirmId(album.id)}
                   style={{ width: '100%', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: '8px', color: '#ef4444', padding: '7px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, fontFamily: 'inherit' }}>

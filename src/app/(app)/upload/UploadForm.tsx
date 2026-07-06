@@ -277,6 +277,7 @@ export default function UploadForm() {
             producers: parseTags(t.producers),
             featuredArtists: parseTags(t.featuredArtists),
             lyrics: t.lyrics.trim() || null,
+            releaseDate: albumScheduled && albumReleaseDate ? new Date(albumReleaseDate).toISOString() : null,
           }),
         })
       }
