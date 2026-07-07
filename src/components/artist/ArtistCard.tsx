@@ -46,7 +46,7 @@ export default function ArtistCard({ artist, userId }: Props) {
     <Link href={`/artists/${artist.id}`}>
       <div className="text-center cursor-pointer hover:-translate-y-0.5 transition-all">
         {/* Avatar */}
-        <div className="relative w-[76px] h-[76px] mx-auto mb-3">
+        <div className="relative w-[120px] h-[120px] mx-auto mb-3">
           <div className={cn(
             'w-full h-full rounded-full overflow-hidden bg-gradient-to-br',
             gradientClass
@@ -55,7 +55,7 @@ export default function ArtistCard({ artist, userId }: Props) {
               ? <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover"/>
               : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <span className="text-2xl font-black text-white/40">
+                  <span className="text-4xl font-black text-white/40">
                     {artist.stage_name.charAt(0)}
                   </span>
                 </div>
@@ -63,8 +63,8 @@ export default function ArtistCard({ artist, userId }: Props) {
             }
           </div>
           {artist.verified && (
-            <div className="absolute bottom-0 right-0 w-[22px] h-[22px] bg-[#121212] rounded-full grid place-items-center">
-              <BadgeCheck size={17} className="text-blue-500" />
+            <div className="absolute bottom-1 right-1 w-[30px] h-[30px] bg-[#121212] rounded-full grid place-items-center">
+              <BadgeCheck size={22} className="text-blue-500" />
             </div>
           )}
         </div>

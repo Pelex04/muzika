@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, Users, Music, Disc, BookOpen } from 'lucide-react'
+import { Home, Users, Music, Disc, BookOpen, Newspaper } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
@@ -10,6 +10,7 @@ const ITEMS = [
   { href: '/songs',    label: 'Songs',   icon: Music },
   { href: '/charts',   label: 'Charts',  icon: Disc },
   { href: '/library',  label: 'Library', icon: BookOpen },
+  { href: '/blog',     label: 'Blog',    icon: Newspaper },
 ]
 
 export default function QuickNav({ active }: { active: string }) {

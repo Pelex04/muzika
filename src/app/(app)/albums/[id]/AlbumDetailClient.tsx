@@ -2,12 +2,13 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Play, Disc3 } from 'lucide-react'
+import { ChevronLeft, Play, Disc3, Clock } from 'lucide-react'
 import { toast } from 'sonner'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import TrackRow from '@/components/track/TrackRow'
+import CountdownBoxes from '@/components/ui/CountdownBoxes'
 import type { Track } from '@/types'
 
 const GENRE_BG: Record<string, string> = {
@@ -26,9 +27,10 @@ interface Props {
   album: any
   tracks: Track[]
   userId: string | null
+  isScheduled?: boolean
 }
 
-export default function AlbumDetailClient({ album, tracks, userId }: Props) {
+export default function AlbumDetailClient({ album, tracks, userId, isScheduled }: Props) {
   const router = useRouter()
   const { play } = usePlayerStore()
   const bg = GENRE_BG[album.genre] ?? GENRE_BG['Afropop']
@@ -53,7 +55,7 @@ export default function AlbumDetailClient({ album, tracks, userId }: Props) {
         <div className="flex items-center gap-5 mb-8 flex-wrap">
           <div className="w-28 h-28 rounded-xl flex-shrink-0 grid place-items-center overflow-hidden" style={{ background: bg }}>
             {album.cover_url
-              ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover" />
+              ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover" style={isScheduled ? { filter: 'grayscale(0.4) brightness(0.6)' } : undefined} />
               : <Disc3 size={40} className="text-white/30" />
             }
           </div>
@@ -65,18 +67,35 @@ export default function AlbumDetailClient({ album, tracks, userId }: Props) {
                 {album.artist.stage_name}
               </Link>
             )}
-            <p className="text-sm text-[#717171] mt-1 mb-3">{tracks.length} track{tracks.length === 1 ? '' : 's'} · {album.genre}</p>
-            <button
-              onClick={playAll}
-              disabled={tracks.length === 0}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-full text-sm font-bold hover:bg-gray-200 disabled:opacity-40 transition-colors"
-            >
-              <Play size={14} fill="black" /> Play
-            </button>
+            {isScheduled ? (
+              <p className="text-sm text-[#fbbf24] mt-1 mb-3 font-semibold flex items-center gap-1.5">
+                <Clock size={13} />
+                Releases {new Date(album.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </p>
+            ) : (
+              <p className="text-sm text-[#717171] mt-1 mb-3">{tracks.length} track{tracks.length === 1 ? '' : 's'} · {album.genre}</p>
+            )}
+            {!isScheduled && (
+              <button
+                onClick={playAll}
+                disabled={tracks.length === 0}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-full text-sm font-bold hover:bg-gray-200 disabled:opacity-40 transition-colors"
+              >
+                <Play size={14} fill="black" /> Play
+              </button>
+            )}
           </div>
         </div>
 
-        {tracks.length === 0 ? (
+        {isScheduled ? (
+          <div className="text-center py-10">
+            <p className="text-[#b3b3b3] text-sm font-semibold mb-5">Coming soon</p>
+            <div className="flex justify-center">
+              <CountdownBoxes targetDate={album.release_date} />
+            </div>
+            <p className="text-[#555] text-xs mt-8">The tracklist will be available once this album releases.</p>
+          </div>
+        ) : tracks.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-[#717171] text-sm">No tracks in this album yet.</p>
           </div>
