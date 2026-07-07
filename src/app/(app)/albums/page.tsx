@@ -31,14 +31,14 @@ export default async function AlbumsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {albums.map((album: any) => (
               <Link key={album.id} href={`/albums/${album.id}`} className="group block">
-                <div className="bg-[#181818] rounded-xl overflow-hidden hover:bg-[#202020] transition-colors">
-                  <div className="aspect-square bg-[#0d1b3e] grid place-items-center overflow-hidden">
+                <div className="rounded-lg overflow-hidden">
+                  <div className="aspect-square bg-[#0d1b3e] grid place-items-center overflow-hidden rounded-lg">
                     {album.cover_url
                       ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       : <Disc3 size={40} className="text-[#2a2a2a]" />
                     }
                   </div>
-                  <div className="p-3">
+                  <div className="pt-2 px-0.5">
                     <p className="text-sm font-bold text-white truncate mb-0.5">{album.title}</p>
                     <p className="text-xs text-[#717171] truncate">
                       {album.artist?.stage_name} · {album.genre}

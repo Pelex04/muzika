@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Music2, Disc3, Users, Trash2, ShieldX, ShieldCheck, AlertTriangle, Search, RefreshCw, BookOpen, PenLine, Megaphone, Check, X, BadgeCheck } from 'lucide-react'
+import { Music2, Disc3, Users, Trash2, ShieldX, ShieldCheck, AlertTriangle, Search, RefreshCw, BookOpen, PenLine, Megaphone, Check, X, BadgeCheck, Calendar } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import Link from 'next/link'
 
@@ -37,6 +37,7 @@ export default function AdminPage() {
   const [filtered, setFiltered] = useState<AdminItem[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [publishing, setPublishing] = useState(false)
   const [confirm, setConfirm] = useState<{
     open: boolean
     type: 'delete_track' | 'delete_album' | 'delete_blog' | 'suspend' | 'unsuspend' | null
@@ -271,7 +272,23 @@ export default function AdminPage() {
             </span>
           </button>
         ))}
-        <button onClick={load} className="admin-refresh" style={{ marginLeft: 'auto' }}>
+        <button
+          onClick={async () => {
+            setPublishing(true)
+            const res = await fetch('/api/admin/publish-scheduled', { method: 'POST' })
+            const data = await res.json()
+            setPublishing(false)
+            if (res.ok) { notify.success(`Published ${data.published ?? 0} scheduled item(s)`); load() }
+            else notify.error(data.error ?? 'Failed to publish scheduled content')
+          }}
+          disabled={publishing}
+          className="admin-refresh"
+          style={{ marginLeft: 'auto', opacity: publishing ? 0.6 : 1 }}
+          title="Manually run the scheduled-publish job now (it also runs automatically every 10 minutes via cron)"
+        >
+          <Calendar size={13} /> {publishing ? 'Publishing…' : 'Publish Due Now'}
+        </button>
+        <button onClick={load} className="admin-refresh">
           <RefreshCw size={13} /> Refresh
         </button>
       </div>

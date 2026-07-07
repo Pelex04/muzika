@@ -1,19 +1,10 @@
 'use client'
 
 import { Calendar, Music2, Disc3, Clock } from 'lucide-react'
+import CountdownBoxes from '@/components/ui/CountdownBoxes'
 
 interface ScheduledItem {
   id: string; title: string; genre: string; cover_url: string | null; release_date: string
-}
-
-function countdown(date: string) {
-  const diff = new Date(date).getTime() - Date.now()
-  if (diff <= 0) return 'Going live soon…'
-  const d = Math.floor(diff / 86400000)
-  const h = Math.floor((diff % 86400000) / 3600000)
-  if (d > 0) return `${d}d ${h}h remaining`
-  const m = Math.floor((diff % 3600000) / 60000)
-  return `${h}h ${m}m remaining`
 }
 
 export default function StudioScheduledClient({ scheduledTracks, scheduledAlbums }: { scheduledTracks: ScheduledItem[]; scheduledAlbums: ScheduledItem[] }) {
@@ -47,11 +38,11 @@ export default function StudioScheduledClient({ scheduledTracks, scheduledAlbums
                       {(item as any)._type}
                     </span>
                   </div>
-                  <p style={{ color: '#fbbf24', fontSize: '12px', fontWeight: 600, margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Clock size={11} />
-                    {new Date(item.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                    <span style={{ color: '#555', fontWeight: 500 }}>· {countdown(item.release_date)}</span>
+                  <p style={{ color: '#555', fontSize: '12px', fontWeight: 500, margin: '0 0 8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <Clock size={11} color="#fbbf24" />
+                    Releases {new Date(item.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </p>
+                  <CountdownBoxes targetDate={item.release_date} compact />
                 </div>
               </div>
             ))}

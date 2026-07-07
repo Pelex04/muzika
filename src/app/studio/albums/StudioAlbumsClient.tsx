@@ -4,22 +4,13 @@ import { useState } from 'react'
 import { Trash2, Disc3, Clock } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
+import CountdownBoxes from '@/components/ui/CountdownBoxes'
 import Link from 'next/link'
 
 interface Album {
   id: string; title: string; genre: string; cover_url: string | null
   published: boolean; is_scheduled?: boolean; release_date?: string | null
   created_at: string; tracks: { count: number }[]
-}
-
-function countdown(date: string) {
-  const diff = new Date(date).getTime() - Date.now()
-  if (diff <= 0) return 'Going live soon…'
-  const d = Math.floor(diff / 86400000)
-  const h = Math.floor((diff % 86400000) / 3600000)
-  if (d > 0) return `${d}d ${h}h remaining`
-  const m = Math.floor((diff % 3600000) / 60000)
-  return `${h}h ${m}m remaining`
 }
 
 export default function StudioAlbumsClient({ albums: initial }: { albums: Album[] }) {
@@ -69,9 +60,12 @@ export default function StudioAlbumsClient({ albums: initial }: { albums: Album[
               <div style={{ padding: '12px' }}>
                 <p style={{ color: '#fff', fontSize: '14px', fontWeight: 700, margin: '0 0 3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{album.title}</p>
                 {album.is_scheduled && album.release_date ? (
-                  <p style={{ color: '#fbbf24', fontSize: '12px', fontWeight: 600, margin: '0 0 10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Clock size={11} /> {countdown(album.release_date)}
-                  </p>
+                  <div style={{ margin: '0 0 10px' }}>
+                    <p style={{ color: '#fbbf24', fontSize: '11px', fontWeight: 600, margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <Clock size={10} /> Releases in
+                    </p>
+                    <CountdownBoxes targetDate={album.release_date} compact />
+                  </div>
                 ) : (
                   <p style={{ color: '#555', fontSize: '12px', margin: '0 0 10px' }}>
                     {album.genre} · {album.tracks?.[0]?.count ?? 0} tracks

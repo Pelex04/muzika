@@ -68,9 +68,9 @@ export default function TrackCard({ track, userId, queue }: Props) {
   }
 
   return (
-    <div ref={prefetchRef} className="relative bg-[#181818] rounded-xl overflow-hidden cursor-pointer hover:-translate-y-0.5 transition-all group">
+    <div ref={prefetchRef} className="relative cursor-pointer hover:-translate-y-0.5 transition-all group">
       {/* Art */}
-      <div className="relative aspect-square" onClick={handlePlay}>
+      <div className="relative aspect-square rounded-lg overflow-hidden" onClick={handlePlay}>
         {track.cover_url
           ? <img src={track.cover_url} alt={track.title} className="w-full h-full object-cover" />
           : <AlbumArtPlaceholder genre={track.genre} />
@@ -97,40 +97,40 @@ export default function TrackCard({ track, userId, queue }: Props) {
             <Play className="w-5 h-5 text-black ml-0.5" fill="black" />
           </div>
         </div>
-
-        {/* Context menu */}
-        {menuOpen && (
-          <>
-            <div style={{ position: 'fixed', inset: 0, zIndex: 90 }} onClick={e => { e.stopPropagation(); setMenuOpen(false) }} />
-            <div
-              onClick={e => e.stopPropagation()}
-              style={{
-                position: 'absolute', top: '38px', right: '8px', zIndex: 100,
-                background: '#282828', borderRadius: '12px',
-                boxShadow: '0 8px 24px rgba(0,0,0,.5)',
-                border: '1px solid #3a3a3a',
-                minWidth: '170px', padding: '6px',
-              }}
-            >
-              <button onClick={handleSave} style={menuItemStyle}>
-                <Bookmark size={14} color="#b3b3b3" /> {saved ? 'Unsave' : 'Save'}
-              </button>
-              <button onClick={e => { e.stopPropagation(); setMenuOpen(false); setPlaylistModalOpen(true) }} style={menuItemStyle}>
-                <ListPlus size={14} color="#b3b3b3" /> Add to Playlist
-              </button>
-              <button onClick={handleShare} style={menuItemStyle}>
-                <Share2 size={14} color="#b3b3b3" /> Share
-              </button>
-              <button onClick={handleDownload} style={menuItemStyle}>
-                <Download size={14} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
-              </button>
-            </div>
-          </>
-        )}
       </div>
 
+      {/* Context menu — kept outside the clipped art container so it isn't cut off */}
+      {menuOpen && (
+        <>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 90 }} onClick={e => { e.stopPropagation(); setMenuOpen(false) }} />
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position: 'absolute', top: '38px', right: '8px', zIndex: 100,
+              background: '#282828', borderRadius: '12px',
+              boxShadow: '0 8px 24px rgba(0,0,0,.5)',
+              border: '1px solid #3a3a3a',
+              minWidth: '170px', padding: '6px',
+            }}
+          >
+            <button onClick={handleSave} style={menuItemStyle}>
+              <Bookmark size={14} color="#b3b3b3" /> {saved ? 'Unsave' : 'Save'}
+            </button>
+            <button onClick={e => { e.stopPropagation(); setMenuOpen(false); setPlaylistModalOpen(true) }} style={menuItemStyle}>
+              <ListPlus size={14} color="#b3b3b3" /> Add to Playlist
+            </button>
+            <button onClick={handleShare} style={menuItemStyle}>
+              <Share2 size={14} color="#b3b3b3" /> Share
+            </button>
+            <button onClick={handleDownload} style={menuItemStyle}>
+              <Download size={14} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
+            </button>
+          </div>
+        </>
+      )}
+
       {/* Info */}
-      <div className="px-3 py-2.5">
+      <div className="pt-2 px-0.5">
         <p className="text-[13px] font-bold text-white truncate">{track.title}</p>
         <p className="text-[12px] text-[#b3b3b3] mt-0.5 truncate">{track.artist?.stage_name}</p>
       </div>
