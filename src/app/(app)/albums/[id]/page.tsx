@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getAdminClient } from '@/lib/admin'
 import AlbumDetailClient from './AlbumDetailClient'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AlbumDetailPage({
   params,
 }: {

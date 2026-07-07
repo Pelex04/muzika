@@ -2,6 +2,7 @@
 
 import { Calendar, Music2, Disc3, Clock } from 'lucide-react'
 import CountdownBoxes from '@/components/ui/CountdownBoxes'
+import { useAutoRefreshOnRelease } from '@/hooks/useAutoRefreshOnRelease'
 
 interface ScheduledItem {
   id: string; title: string; genre: string; cover_url: string | null; release_date: string
@@ -9,6 +10,8 @@ interface ScheduledItem {
 
 export default function StudioScheduledClient({ scheduledTracks, scheduledAlbums }: { scheduledTracks: ScheduledItem[]; scheduledAlbums: ScheduledItem[] }) {
   const total = scheduledTracks.length + scheduledAlbums.length
+
+  useAutoRefreshOnRelease([...scheduledTracks, ...scheduledAlbums].map(i => i.release_date))
 
   return (
     <div style={{ padding: '28px 24px 100px', maxWidth: '900px' }}>

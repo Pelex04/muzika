@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getAdminClient } from '@/lib/admin'
 import StudioAlbumsClient from './StudioAlbumsClient'
 
+export const dynamic = 'force-dynamic'
+
 export default async function StudioAlbumsPage() {
   const supabase = await createClient() as any
   const { data: { user } } = await supabase.auth.getUser()

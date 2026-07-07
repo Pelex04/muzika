@@ -9,6 +9,7 @@ import { fetchStreamUrl } from '@/lib/stream-cache'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import TrackRow from '@/components/track/TrackRow'
 import CountdownBoxes from '@/components/ui/CountdownBoxes'
+import { useAutoRefreshOnRelease } from '@/hooks/useAutoRefreshOnRelease'
 import type { Track } from '@/types'
 
 const GENRE_BG: Record<string, string> = {
@@ -34,6 +35,8 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
   const router = useRouter()
   const { play } = usePlayerStore()
   const bg = GENRE_BG[album.genre] ?? GENRE_BG['Afropop']
+
+  useAutoRefreshOnRelease(isScheduled ? [album.release_date] : [])
 
   const playAll = async () => {
     if (tracks.length === 0) return

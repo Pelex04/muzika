@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Trash2, Disc3, Clock } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import CountdownBoxes from '@/components/ui/CountdownBoxes'
+import { useAutoRefreshOnRelease } from '@/hooks/useAutoRefreshOnRelease'
 import Link from 'next/link'
 
 interface Album {
@@ -16,6 +17,9 @@ interface Album {
 export default function StudioAlbumsClient({ albums: initial }: { albums: Album[] }) {
   const [albums, setAlbums] = useState(initial)
   const [confirmId, setConfirmId] = useState<string | null>(null)
+
+  useEffect(() => { setAlbums(initial) }, [initial])
+  useAutoRefreshOnRelease(albums.filter(a => a.is_scheduled).map(a => a.release_date))
 
   const confirmDelete = async () => {
     if (!confirmId) return

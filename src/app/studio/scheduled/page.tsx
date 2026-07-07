@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getAdminClient } from '@/lib/admin'
 import StudioScheduledClient from './StudioScheduledClient'
 
+export const dynamic = 'force-dynamic'
+
 export default async function StudioScheduledPage() {
   const supabase = await createClient() as any
   const { data: { user } } = await supabase.auth.getUser()

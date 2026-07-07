@@ -2,6 +2,7 @@ import { getAdminClient } from '@/lib/admin'
 import Link from 'next/link'
 import { Disc3, Clock } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
+import AlbumsAutoRefresh from './AlbumsAutoRefresh'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Albums · Muzika' }
@@ -34,6 +35,7 @@ export default async function AlbumsPage() {
 
   return (
     <div>
+      <AlbumsAutoRefresh releaseDates={(scheduledAlbums ?? []).map((a: any) => a.release_date)} />
       <MobileTopBar eyebrow="Browse" title="Albums" />
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:block mb-7">
