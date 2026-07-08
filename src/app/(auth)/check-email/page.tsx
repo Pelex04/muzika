@@ -65,13 +65,6 @@ export default function CheckEmailPage({
           <ArrowLeft size={14} />
           Back to sign up
         </Link>
-
-        <div style={{ marginTop: '24px', padding: '14px 16px', background: '#FFFBEB', borderRadius: '10px', border: '1px solid #FDE68A', textAlign: 'left' }}>
-          <p style={{ fontSize: '12px', color: '#92400E', fontWeight: 600, marginBottom: '4px' }}>💡 Developer tip</p>
-          <p style={{ fontSize: '12px', color: '#78350F', lineHeight: 1.5 }}>
-            To skip email confirmation during development: Supabase Dashboard → Authentication → Providers → Email → disable &quot;Confirm email&quot;
-          </p>
-        </div>
       </div>
     </div>
   )
