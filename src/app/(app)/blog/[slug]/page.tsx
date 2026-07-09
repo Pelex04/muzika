@@ -19,8 +19,8 @@ export async function generateMetadata(
 
   if (!post) return { title: 'Post not found' }
 
-  const title = `${post.title} · Muzika Blog`
-  const description = post.excerpt?.slice(0, 155) ?? `Read "${post.title}" on the Muzika blog.`
+  const title = `${post.title} · Playback Blog`
+  const description = post.excerpt?.slice(0, 155) ?? `Read "${post.title}" on the Playback blog.`
   const image = post.cover_url ?? `${BASE_URL}/og-default.png`
 
   return {

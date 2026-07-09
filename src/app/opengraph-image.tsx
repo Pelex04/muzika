@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt = 'Muzika — Stream & Own Malawian Music'
+export const alt = 'Playback — Stream & Own Malawian Music'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -37,7 +37,7 @@ export default function Image() {
         }}>M</div>
 
         <div style={{ fontSize: '64px', fontWeight: 900, color: '#fff', letterSpacing: '-2px', display: 'flex' }}>
-          MUZI<span style={{ color: '#2563eb' }}>KA</span>
+          PLAY<span style={{ color: '#2563eb' }}>BACK</span>
         </div>
 
         <div style={{ fontSize: '22px', color: 'rgba(255,255,255,0.55)', marginTop: '16px', letterSpacing: '0.5px' }}>

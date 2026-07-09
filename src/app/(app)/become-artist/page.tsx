@@ -57,7 +57,7 @@ export default function BecomeArtistPage() {
         setLoading(false)
         return
       }
-      toast.success('Welcome to Muzika as an artist!')
+      toast.success('Welcome to Playback as an artist!')
       router.push('/profile')
       router.refresh()
     } catch {
@@ -107,7 +107,7 @@ export default function BecomeArtistPage() {
             Become an Artist
           </h1>
           <p style={{ fontSize: '14px', color: '#b3b3b3', lineHeight: 1.6 }}>
-            Set up your artist profile to start uploading and selling your music on Muzika.
+            Set up your artist profile to start uploading and selling your music on Playback.
           </p>
         </div>
 

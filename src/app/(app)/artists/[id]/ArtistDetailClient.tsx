@@ -292,7 +292,7 @@ export default function ArtistDetailClient({
             ) : (
               <div className="bg-[#181818] border border-[#2a2a2a] rounded-xl p-4">
                 <p className="text-sm text-[#b3b3b3] mb-4">
-                  Request to have your music featured in the promotional banner on the Muzika home page.
+                  Request to have your music featured in the promotional banner on the Playback home page.
                   Our team will review your request and get back to you.
                 </p>
                 <textarea

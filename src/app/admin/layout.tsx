@@ -54,7 +54,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="admin-topbar-brand">
           <div className="admin-topbar-brand-icon">M</div>
           <span className="admin-topbar-title">
-            Muzika <span style={{ color: '#2563eb' }}>Admin</span>
+            Playback <span style={{ color: '#2563eb' }}>Admin</span>
           </span>
         </div>
         <div className="admin-topbar-right">

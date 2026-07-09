@@ -6,7 +6,7 @@ export default function EnvCheckPage() {
 
   return (
     <div style={{ fontFamily: 'monospace', padding: '40px', maxWidth: '600px' }}>
-      <h1 style={{ marginBottom: '24px', fontSize: '20px' }}>Muzika — Environment Check</h1>
+      <h1 style={{ marginBottom: '24px', fontSize: '20px' }}>Playback — Environment Check</h1>
       <table style={{ borderCollapse: 'collapse', width: '100%' }}>
         <tbody>
           <tr>

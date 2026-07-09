@@ -70,7 +70,7 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
             <Music2 size={18} color="white" />
           </div>
           <span style={{ fontSize: '18px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
-            MUZI<span style={{ color: '#60A5FA' }}>KA</span>
+            PLAY<span style={{ color: '#60A5FA' }}>BACK</span>
           </span>
         </Link>
 

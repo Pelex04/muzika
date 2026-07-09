@@ -36,7 +36,7 @@ export default function BlogPostClient({ post }: { post: BlogPost }) {
         </h1>
 
         <p className="text-sm text-[#717171] mb-6">
-          {post.author?.full_name ?? 'Muzika'} · {format(new Date(post.created_at), 'MMMM d, yyyy')}
+          {post.author?.full_name ?? 'Playback'} · {format(new Date(post.created_at), 'MMMM d, yyyy')}
         </p>
 
         {post.cover_url && (

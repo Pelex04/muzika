@@ -175,7 +175,7 @@ export default function SignUpPage() {
             footer={
               <div style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '14px', padding: '18px' }}>
                 <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '14px' }}>
-                  &ldquo;Muzika gave me my first MK50,000 from music. I uploaded on a Sunday and had sales by Monday.&rdquo;
+                  &ldquo;Playback gave me my first MK50,000 from music. I uploaded on a Sunday and had sales by Monday.&rdquo;
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div style={{ width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(135deg, #4c1d95, #6d28d9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -199,7 +199,7 @@ export default function SignUpPage() {
             <div className="auth-mobile-logo-signup" style={{ display: 'none', alignItems: 'center', gap: '9px', marginBottom: '32px' }}>
               <div style={S.logoMarkSm}><Music2 size={18} color="white" /></div>
               <span style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff' }}>
-                MUZI<span style={{ color: '#2563EB' }}>KA</span>
+                PLAY<span style={{ color: '#2563EB' }}>BACK</span>
               </span>
             </div>
 
@@ -217,7 +217,7 @@ export default function SignUpPage() {
               Create your account
             </h2>
             <p style={{ fontSize: '14px', color: '#b3b3b3', marginBottom: '28px' }}>
-              Join thousands of Malawians already on Muzika.
+              Join thousands of Malawians already on Playback.
             </p>
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -326,7 +326,7 @@ export default function SignUpPage() {
                   </span>
                 </label>
                 <label style={{ fontSize: '13px', color: '#b3b3b3', lineHeight: 1.5, cursor: 'pointer' }}>
-                  I agree to Muzika&apos;s{' '}
+                  I agree to Playback&apos;s{' '}
                   <a style={{ color: '#2563EB', fontWeight: 600 }}>Terms of Service</a>
                   {' '}and{' '}
                   <a style={{ color: '#2563EB', fontWeight: 600 }}>Privacy Policy</a>

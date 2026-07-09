@@ -13,8 +13,8 @@ export async function generateMetadata(
   const { id } = await params
   const artist = await getArtistById(id)
   if (!artist) return { title: 'Artist not found' }
-  const title = `${artist.stage_name} · Muzika`
-  const description = artist.bio?.slice(0, 155) ?? `Stream and download music by ${artist.stage_name} on Muzika.`
+  const title = `${artist.stage_name} · Playback`
+  const description = artist.bio?.slice(0, 155) ?? `Stream and download music by ${artist.stage_name} on Playback.`
   const image = artist.avatar_url ?? `${BASE_URL}/og-default.png`
   return {
     title, description,

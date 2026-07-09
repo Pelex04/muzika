@@ -5,7 +5,7 @@ import MobileTopBar from '@/components/layout/MobileTopBar'
 import AlbumsAutoRefresh from './AlbumsAutoRefresh'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Albums · Muzika' }
+export const metadata: Metadata = { title: 'Albums · Playback' }
 export const dynamic = 'force-dynamic'
 
 export default async function AlbumsPage() {

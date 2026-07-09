@@ -168,7 +168,7 @@ export default function SignInPage() {
                 <Music2 size={18} color="white" />
               </div>
               <span style={{ fontSize:'18px', fontWeight:800, color:'#0D1B3E' }}>
-                MUZI<span style={{ color:'#2563EB' }}>KA</span>
+                PLAY<span style={{ color:'#2563EB' }}>BACK</span>
               </span>
             </div>
 

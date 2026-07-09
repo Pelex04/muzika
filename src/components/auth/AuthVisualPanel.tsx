@@ -11,7 +11,7 @@ interface Props {
 
 // Real concert photography (Unsplash License — free for commercial use,
 // no attribution required) instead of generated/abstract artwork.
-// Photo: blue-lit stage, crowd silhouettes — chosen to match Muzika's
+// Photo: blue-lit stage, crowd silhouettes — chosen to match Playback's
 // navy/blue palette rather than a generic warm-toned festival shot.
 const PHOTO_URL = 'https://images.unsplash.com/photo-1546707012-c46675f12716?auto=format&fit=crop&w=1400&q=80'
 
@@ -56,7 +56,7 @@ export default function AuthVisualPanel({ headline, sub, footer }: Props) {
             <Music2 size={18} color="white" />
           </div>
           <span style={{ fontSize: '20px', fontWeight: 800, color: '#fff', letterSpacing: '-.4px', textShadow: '0 1px 8px rgba(0,0,0,0.3)' }}>
-            MUZI<span style={{ color: '#60A5FA' }}>KA</span>
+            PLAY<span style={{ color: '#60A5FA' }}>BACK</span>
           </span>
         </Link>
 

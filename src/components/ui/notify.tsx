@@ -1,7 +1,7 @@
 'use client'
 
 /**
- * Muzika notification system
+ * Playback notification system
  * Wraps sonner with consistent, premium-feeling toasts.
  */
 

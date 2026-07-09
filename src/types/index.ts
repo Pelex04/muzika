@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────
-//  MUZIKA — Core Types
+//  PLAYBACK — Core Types
 // ─────────────────────────────────────────────────────────
 
 export type UserRole = 'listener' | 'artist' | 'admin'

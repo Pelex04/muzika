@@ -26,7 +26,7 @@ export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
       }}
     >
       <div>
-        <p style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '.7px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 600, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '.7px' }}>
           {eyebrow}
         </p>
         <h1 style={{ fontSize: '22px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px' }}>

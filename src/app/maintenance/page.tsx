@@ -167,7 +167,7 @@ export default function MaintenancePage() {
         <div className="m-card">
           <div className="m-logo">
             <div className="m-logo-mark">M</div>
-            <span className="m-logo-text">MUZI<span>KA</span></span>
+            <span className="m-logo-text">PLAY<span>BACK</span></span>
           </div>
 
           <div className="m-icon-wrap">
@@ -183,7 +183,7 @@ export default function MaintenancePage() {
           <h1 className="m-heading">We'll be back<br />shortly.</h1>
           <p className="m-body">
             We're making improvements to give you a better experience.
-            Muzika will be back online very soon — thank you for your patience.
+            Playback will be back online very soon — thank you for your patience.
           </p>
 
           <div className="m-progress-wrap">
@@ -217,7 +217,7 @@ export default function MaintenancePage() {
         </div>
 
         <div className="m-footer">
-          <p className="m-footer-text">© {new Date().getFullYear()} Muzika · All rights reserved</p>
+          <p className="m-footer-text">© {new Date().getFullYear()} Playback · All rights reserved</p>
           <p style={{ fontSize: '11px', color: 'rgba(107,122,159,0.35)', marginTop: '5px', letterSpacing: '0.3px' }}>
             Powered by <span style={{ color: 'rgba(107,122,159,0.55)', fontWeight: 600 }}>Rasta Kadema</span>
           </p>

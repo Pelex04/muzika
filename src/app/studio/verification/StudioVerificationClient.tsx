@@ -76,7 +76,7 @@ export default function StudioVerificationClient({
           <BadgeCheck size={20} style={{ color: '#3b82f6', flexShrink: 0 }} />
           <div>
             <p style={{ color: '#fff', fontWeight: 700, fontSize: '15px', margin: 0 }}>You're verified!</p>
-            <p style={{ color: '#555', fontSize: '12px', margin: 0 }}>The blue badge now shows on your profile everywhere on Muzika.</p>
+            <p style={{ color: '#555', fontSize: '12px', margin: 0 }}>The blue badge now shows on your profile everywhere on Playback.</p>
           </div>
         </div>
       ) : request ? (

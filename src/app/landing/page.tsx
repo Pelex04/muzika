@@ -357,6 +357,45 @@ export default function LandingPage() {
           gap: 18px;
           border-top: 1px solid rgba(255,255,255,0.05);
         }
+
+        /* ── FOOTER COLUMNS (Company / For Artists / Explore) ── */
+        .lp-footer-columns {
+          padding: 56px 52px 40px;
+          display: grid;
+          grid-template-columns: 1.4fr 1fr 1fr;
+          gap: 40px;
+          border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        @media (max-width: 720px) {
+          .lp-footer-columns { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px 24px; }
+        }
+        .lp-footer-col-title {
+          font-size: 12px;
+          font-weight: 800;
+          letter-spacing: 0.8px;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.35);
+          margin-bottom: 16px;
+        }
+        .lp-footer-col-links {
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .lp-footer-col-links a {
+          font-size: 14px;
+          color: rgba(255,255,255,0.65);
+          text-decoration: none;
+          transition: color 0.15s;
+        }
+        .lp-footer-col-links a:hover { color: #ffffff; }
+        .lp-footer-blurb {
+          font-size: 13px;
+          line-height: 1.7;
+          color: rgba(255,255,255,0.4);
+          max-width: 320px;
+        }
         .lp-footer-copy {
           font-size: 13px;
           color: rgba(255,255,255,0.22);
@@ -470,7 +509,7 @@ export default function LandingPage() {
                 <circle cx="10" cy="10.5" r="2" fill="white"/>
               </svg>
             </div>
-            <span className="lp-logo-text">MUZI<span className="lp-logo-accent">KA</span></span>
+            <span className="lp-logo-text">PLAY<span className="lp-logo-accent">BACK</span></span>
           </Link>
 
           <ul className="lp-nav-links">
@@ -649,11 +688,48 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── FOOTER COLUMNS ── */}
+        <div className="lp-footer-columns">
+          <div>
+            <span className="lp-logo-text" style={{ fontSize: '19px', display: 'inline-block', marginBottom: '14px' }}>
+              PLAY<span className="lp-logo-accent">BACK</span>
+            </span>
+            <p className="lp-footer-blurb">
+              Discover. Share. Connect through music. Playback connects artists and listeners across Malawi and beyond.
+            </p>
+          </div>
+          <div>
+            <p className="lp-footer-col-title">Company</p>
+            <ul className="lp-footer-col-links">
+              <li><Link href="/about">About</Link></li>
+              <li><Link href="/contact">Contact</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="lp-footer-col-title">For Artists</p>
+            <ul className="lp-footer-col-links">
+              <li><Link href="/for-artists/upload">Upload Music</Link></li>
+              <li><Link href="/for-artists/verification">Artist Verification</Link></li>
+            </ul>
+          </div>
+        </div>
+        <div className="lp-footer-columns" style={{ paddingTop: 0, borderTop: 'none', gridTemplateColumns: '1fr' }}>
+          <div>
+            <p className="lp-footer-col-title">Explore</p>
+            <ul className="lp-footer-col-links" style={{ flexDirection: 'row', gap: '28px', flexWrap: 'wrap' }}>
+              <li><Link href="/songs">Songs</Link></li>
+              <li><Link href="/artists">Artists</Link></li>
+              <li><Link href="/charts">Charts</Link></li>
+              <li><Link href="/songs">Genres</Link></li>
+            </ul>
+          </div>
+        </div>
+
         {/* ── FOOTER ── */}
         <footer className="lp-footer">
           <div className="lp-footer-bottom">
             <div>
-              <span className="lp-footer-copy">© 2026 Muzika</span>
+              <span className="lp-footer-copy">© 2026 Playback</span>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px', letterSpacing: '0.3px' }}>
                 Powered by <span style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>Rasta Kadema</span>
               </p>
@@ -665,15 +741,15 @@ export default function LandingPage() {
             </ul>
           </div>
 
-          {/* TODO: replace href="#" with real social URLs once provided by client */}
+          {/* TODO: replace remaining href="#" with real social URLs once provided by client */}
           <div className="lp-footer-social">
-            <a href="#" className="lp-social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.facebook.com/MouseGotRich" className="lp-social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
             </a>
             <a href="#" className="lp-social-icon" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
             </a>
-            <a href="#" className="lp-social-icon" aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer">
+            <a href="https://x.com/playbackcharts" className="lp-social-icon" aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-7-6.2 7H1.5l8.1-9.3L1 2h7l4.9 6.4L18.9 2z"/></svg>
             </a>
             <a href="#" className="lp-social-icon" aria-label="TikTok" target="_blank" rel="noopener noreferrer">

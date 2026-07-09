@@ -2,7 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Mic, ChevronRight, Music2 } from 'lucide-react'
+import { Search, Mic, ChevronRight, Music2, Disc3, ListMusic } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import TrackCard from '@/components/track/TrackCard'
 import TrackRow from '@/components/track/TrackRow'
@@ -12,12 +12,26 @@ import QuickNav from '@/components/layout/QuickNav'
 import Link from 'next/link'
 import type { Track, Artist } from '@/types'
 
+interface Album {
+  id: string; title: string; genre: string; cover_url: string | null
+  artist?: { id: string; stage_name: string; avatar_url: string | null }
+}
+
+interface Playlist {
+  id: string; name: string; cover_url: string | null; description: string | null
+  owner?: { full_name: string; avatar_url: string | null }[]
+  tracks?: { count: number }[]
+}
+
 interface Props {
   trendingTracks: Track[]
   tracks: Track[]
   artists: Artist[]
   popularTracks: Track[]
   recommendedTracks: Track[]
+  continueListening: Track[]
+  topAlbums: Album[]
+  topPlaylists: Playlist[]
   userId: string | null
   profile?: { avatar_url: string | null; full_name: string } | null
   promotion?: {
@@ -121,7 +135,7 @@ function HomeSearch() {
   )
 }
 
-export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, recommendedTracks, userId, profile, promotion }: Props) {
+export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion }: Props) {
   const greeting = getGreeting()
 
   return (
@@ -134,7 +148,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
         {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between mb-7">
           <div>
-            <p className="text-[11px] font-bold text-blue-500 uppercase tracking-[.7px] mb-1">{greeting}</p>
+            <p className="text-[11px] font-bold text-white uppercase tracking-[.7px] mb-1">{greeting}</p>
             <h1 className="text-3xl font-black text-white tracking-tight">Discover</h1>
           </div>
           <Link href="/profile">
@@ -163,7 +177,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[17px] font-black text-white tracking-tight">Trending Now</h2>
-            <Link href="/charts" className="flex items-center gap-0.5 text-sm font-bold text-blue-500 hover:underline">
+            <Link href="/charts" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
               See all <ChevronRight size={15} />
             </Link>
           </div>
@@ -228,7 +242,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[17px] font-black text-white tracking-tight">New Releases</h2>
-            <Link href="/songs" className="flex items-center gap-0.5 text-sm font-bold text-blue-500 hover:underline">
+            <Link href="/songs" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
               See all <ChevronRight size={15} />
             </Link>
           </div>
@@ -241,6 +255,22 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           </HScroll>
         </section>
 
+        {/* ── CONTINUE LISTENING — recently played, logged-in users only ── */}
+        {continueListening.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[17px] font-black text-white tracking-tight">Continue Listening</h2>
+            </div>
+            <HScroll>
+              {continueListening.map(track => (
+                <div key={track.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
+                  <TrackCard track={track} userId={userId} queue={continueListening} />
+                </div>
+              ))}
+            </HScroll>
+          </section>
+        )}
+
         {/* ── RECOMMENDED FOR YOU — real genre-based recommendations ── */}
         {recommendedTracks.length > 0 && (
           <section className="mb-10">
@@ -249,7 +279,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
                 <h2 className="text-[17px] font-black text-white tracking-tight">Recommended For You</h2>
                 <p className="text-[11px] text-[#717171] mt-0.5">Based on what you listen to</p>
               </div>
-              <Link href="/songs" className="flex items-center gap-0.5 text-sm font-bold text-blue-500 hover:underline">
+              <Link href="/songs" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
                 See all <ChevronRight size={15} />
               </Link>
             </div>
@@ -258,6 +288,35 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
                 <div key={track.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
                   <TrackCard track={track} userId={userId} queue={recommendedTracks} />
                 </div>
+              ))}
+            </HScroll>
+          </section>
+        )}
+
+        {/* ── TOP PLAYLISTS — public playlists, ranked by track count ── */}
+        {topPlaylists.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[17px] font-black text-white tracking-tight">Top Playlists</h2>
+              <Link href="/library" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
+                See all <ChevronRight size={15} />
+              </Link>
+            </div>
+            <HScroll>
+              {topPlaylists.map(playlist => (
+                <Link key={playlist.id} href={`/library/${playlist.id}`} className="flex-shrink-0 w-[160px] sm:w-[180px] group">
+                  <div className="aspect-square rounded-lg overflow-hidden bg-[#0d1b3e] grid place-items-center mb-2">
+                    {playlist.cover_url
+                      ? <img src={playlist.cover_url} alt={playlist.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      : <ListMusic size={36} className="text-[#2a2a2a]" />
+                    }
+                  </div>
+                  <p className="text-[13px] font-bold text-white truncate">{playlist.name}</p>
+                  <p className="text-[12px] text-[#717171] mt-0.5 truncate">
+                    {playlist.tracks?.[0]?.count ?? 0} track{(playlist.tracks?.[0]?.count ?? 0) === 1 ? '' : 's'}
+                    {playlist.owner?.[0]?.full_name ? ` · ${playlist.owner[0].full_name}` : ''}
+                  </p>
+                </Link>
               ))}
             </HScroll>
           </section>
@@ -278,11 +337,37 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           </div>
         </section>
 
+        {/* ── TOP ALBUMS — ranked by aggregate plays across tracks ── */}
+        {topAlbums.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[17px] font-black text-white tracking-tight">Top Albums</h2>
+              <Link href="/albums" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
+                See all <ChevronRight size={15} />
+              </Link>
+            </div>
+            <HScroll>
+              {topAlbums.map(album => (
+                <Link key={album.id} href={`/albums/${album.id}`} className="flex-shrink-0 w-[160px] sm:w-[180px] group">
+                  <div className="aspect-square rounded-lg overflow-hidden bg-[#0d1b3e] grid place-items-center mb-2">
+                    {album.cover_url
+                      ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      : <Disc3 size={36} className="text-[#2a2a2a]" />
+                    }
+                  </div>
+                  <p className="text-[13px] font-bold text-white truncate">{album.title}</p>
+                  <p className="text-[12px] text-[#717171] mt-0.5 truncate">{album.artist?.stage_name}</p>
+                </Link>
+              ))}
+            </HScroll>
+          </section>
+        )}
+
         {/* ── FEATURED ARTISTS — horizontal scroll ── */}
         <section className="mb-10">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-[17px] font-black text-white tracking-tight">Featured Artists</h2>
-            <Link href="/artists" className="flex items-center gap-0.5 text-sm font-bold text-blue-500 hover:underline">
+            <Link href="/artists" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
               See all <ChevronRight size={15} />
             </Link>
           </div>
@@ -295,6 +380,33 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           </HScroll>
         </section>
 
+        {/* ── FOOTER LINKS — Company / For Artists / Explore ── */}
+        <div className="border-t border-[#2a2a2a] pt-8 pb-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
+          <div>
+            <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">Company</p>
+            <ul className="flex flex-col gap-3">
+              <li><Link href="/about" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">About</Link></li>
+              <li><Link href="/contact" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Contact</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">For Artists</p>
+            <ul className="flex flex-col gap-3">
+              <li><Link href="/for-artists/upload" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Upload Music</Link></li>
+              <li><Link href="/for-artists/verification" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Artist Verification</Link></li>
+            </ul>
+          </div>
+          <div className="col-span-2 sm:col-span-1">
+            <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">Explore</p>
+            <ul className="flex flex-col gap-3">
+              <li><Link href="/songs" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Songs</Link></li>
+              <li><Link href="/artists" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Artists</Link></li>
+              <li><Link href="/charts" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Charts</Link></li>
+              <li><Link href="/songs" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Genres</Link></li>
+            </ul>
+          </div>
+        </div>
+
         {/* ── FOOTER ── */}
         <footer className="border-t border-[#2a2a2a] pt-8 pb-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -304,7 +416,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
                 <Music2 size={16} color="white" />
               </div>
               <span className="text-white font-black text-lg tracking-tight">
-                MUZI<span className="text-blue-400">KA</span>
+                PLAY<span className="text-blue-400">BACK</span>
               </span>
             </div>
 
@@ -320,14 +432,14 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
                   </svg>
                 </a>
                 {/* X / Twitter */}
-                <a href="https://x.com" target="_blank" rel="noopener noreferrer"
+                <a href="https://x.com/playbackcharts" target="_blank" rel="noopener noreferrer"
                   className="w-9 h-9 rounded-full bg-[#181818] border border-[#2a2a2a] grid place-items-center text-[#b3b3b3] hover:text-sky-400 hover:border-sky-400 transition-colors">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                   </svg>
                 </a>
                 {/* Facebook */}
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+                <a href="https://www.facebook.com/MouseGotRich" target="_blank" rel="noopener noreferrer"
                   className="w-9 h-9 rounded-full bg-[#181818] border border-[#2a2a2a] grid place-items-center text-[#b3b3b3] hover:text-blue-500 hover:border-blue-500 transition-colors">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -346,7 +458,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
             {/* Copyright */}
             <div className="text-center">
               <p className="text-[#717171] text-xs">
-                © {new Date().getFullYear()} Muzika · All rights reserved
+                © {new Date().getFullYear()} Playback · All rights reserved
               </p>
               <p style={{ fontSize: '11px', color: 'rgba(113,113,113,0.55)', marginTop: '4px', letterSpacing: '0.3px' }}>
                 Powered by <span style={{ color: 'rgba(113,113,113,0.8)', fontWeight: 600 }}>Rasta Kadema</span>

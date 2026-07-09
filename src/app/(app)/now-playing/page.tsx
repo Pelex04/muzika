@@ -123,7 +123,7 @@ export default function NowPlayingPage() {
     const shareUrl = `${window.location.origin}/songs?track=${currentTrack.id}`
     const shareData = {
       title: currentTrack.title,
-      text: `Listen to "${currentTrack.title}" by ${currentTrack.artist?.stage_name ?? 'an artist'} on Muzika`,
+      text: `Listen to "${currentTrack.title}" by ${currentTrack.artist?.stage_name ?? 'an artist'} on Playback`,
       url: shareUrl,
     }
     if (navigator.share) {

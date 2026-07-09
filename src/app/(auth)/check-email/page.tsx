@@ -16,7 +16,7 @@ export default function CheckEmailPage({
             <Music2 size={18} color="white" />
           </div>
           <span style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px' }}>
-            MUZI<span style={{ color: '#2563EB' }}>KA</span>
+            PLAY<span style={{ color: '#2563EB' }}>BACK</span>
           </span>
         </div>
 

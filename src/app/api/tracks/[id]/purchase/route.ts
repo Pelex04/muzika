@@ -53,7 +53,7 @@ export async function POST(
     payment_status: 'pending',
   })
 
-  const nameParts = (profile?.full_name || 'Muzika User').split(' ')
+  const nameParts = (profile?.full_name || 'Playback User').split(' ')
 
   try {
     const payment = await initiatePayment({

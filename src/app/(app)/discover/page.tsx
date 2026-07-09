@@ -6,7 +6,7 @@ import DiscoverClient from './DiscoverClient'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Discover · Muzika',
+  title: 'Discover · Playback',
   description: 'Discover trending Malawian music, new releases, and featured artists — all in one place.',
 }
 
@@ -37,20 +37,51 @@ export default async function DiscoverPage() {
 
   const promotion = promoRows?.[0] ?? null
 
+  // ── TOP ALBUMS — ranked by aggregate plays across their tracks ──
+  const { data: topAlbumsRaw } = await db.rpc('get_top_albums', { limit_count: 10 })
+  let topAlbums: any[] = []
+  if (topAlbumsRaw?.length) {
+    const albumIds = topAlbumsRaw.map((a: any) => a.id)
+    const { data: albumsWithArtist } = await db
+      .from('albums')
+      .select('id, title, genre, cover_url, created_at, artist:artists(id, stage_name, avatar_url)')
+      .in('id', albumIds)
+    const byId = new Map((albumsWithArtist ?? []).map((a: any) => [a.id, a]))
+    topAlbums = albumIds.map((id: string) => byId.get(id)).filter(Boolean)
+  }
+
+  // ── TOP PLAYLISTS — public playlists, ranked by track count ──
+  const { data: playlistsRaw } = await db
+    .from('playlists')
+    .select('id, name, cover_url, description, owner:profiles(full_name, avatar_url), tracks:playlist_tracks(count)')
+    .eq('is_public', true)
+    .order('created_at', { ascending: false })
+    .limit(30)
+  const topPlaylists = (playlistsRaw ?? [])
+    .sort((a: any, b: any) => (b.tracks?.[0]?.count ?? 0) - (a.tracks?.[0]?.count ?? 0))
+    .slice(0, 10)
+
   let purchasedIds: string[] = []
   let savedIds: string[] = []
   let profile: any = null
   let recommendedTracks: typeof tracks = []
+  let continueListening: any[] = []
 
   if (user) {
-    const [purchasesRes, savedRes, profileRes] = await Promise.all([
+    const [purchasesRes, savedRes, profileRes, historyRes] = await Promise.all([
       supabase.from('purchases').select('track_id').eq('user_id', user.id).eq('payment_status', 'completed'),
       supabase.from('saved_tracks').select('track_id').eq('user_id', user.id),
       supabase.from('profiles').select('avatar_url, full_name').eq('id', user.id).single(),
+      db.from('listening_history')
+        .select('last_played_at, track:tracks(*, artist:artists(id, stage_name, genre, location, verified, avatar_url))')
+        .eq('user_id', user.id)
+        .order('last_played_at', { ascending: false })
+        .limit(10),
     ])
     purchasedIds = (purchasesRes.data ?? []).map((p: any) => p.track_id)
     savedIds    = (savedRes.data    ?? []).map((s: any) => s.track_id)
     profile     = profileRes.data
+    continueListening = (historyRes.data ?? []).map((h: any) => h.track).filter(Boolean)
 
     // ── Real recommendations ─────────────────────────────────────────
     // Signal: genres of tracks the user has saved or purchased
@@ -114,6 +145,9 @@ export default async function DiscoverPage() {
       artists={artists}
       popularTracks={withState(popularTracks)}
       recommendedTracks={withState(recommendedTracks)}
+      continueListening={withState(continueListening)}
+      topAlbums={topAlbums}
+      topPlaylists={topPlaylists}
       userId={user?.id ?? null}
       profile={profile}
       promotion={promotion}

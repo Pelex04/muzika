@@ -43,7 +43,7 @@ export default function StudioBannerClient({ bannerRequest: initial }: { bannerR
       {/* How it works */}
       <div style={{ background: '#161616', border: '1px solid #1f1f1f', borderRadius: '14px', padding: '18px', marginBottom: '20px' }}>
         <p style={{ color: '#b3b3b3', fontSize: '13px', lineHeight: 1.7, margin: 0 }}>
-          The promotional banner on the Muzika home page is seen by all users. Submit a request and tell us about your latest release — our team reviews all requests and will feature the most compelling ones.
+          The promotional banner on the Playback home page is seen by all users. Submit a request and tell us about your latest release — our team reviews all requests and will feature the most compelling ones.
         </p>
       </div>
 

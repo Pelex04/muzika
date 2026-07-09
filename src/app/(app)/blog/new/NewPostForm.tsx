@@ -119,7 +119,7 @@ export default function NewPostForm() {
           Write a new post
         </h1>
         <p style={{ fontSize: '14px', color: '#717171', marginBottom: '24px' }}>
-          Share news, an artist update, or an interview with the Muzika community.
+          Share news, an artist update, or an interview with the Playback community.
         </p>
 
         <form onSubmit={handleSubmit}>
