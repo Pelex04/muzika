@@ -126,7 +126,7 @@ export default function SignUpPage() {
       password: data.password,
       options: {
         data: { full_name: data.full_name, phone: data.phone },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/api/auth/callback`,
       },
     })
     if (error) {
@@ -141,7 +141,7 @@ export default function SignUpPage() {
   const signUpWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
     })
   }
 
