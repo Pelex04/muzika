@@ -13,7 +13,7 @@ export default async function AlbumsPage() {
 
   const { data: publishedAlbums } = await db
     .from('albums')
-    .select('id, title, genre, cover_url, created_at, artist:artists(id, stage_name, avatar_url)')
+    .select('id, title, genre, cover_url, created_at, release_type, artist:artists(id, stage_name, avatar_url)')
     .eq('published', true)
     .order('created_at', { ascending: false })
     .limit(60)
@@ -22,7 +22,7 @@ export default async function AlbumsPage() {
   // link to a countdown page, not their tracks (which stay hidden until release).
   const { data: scheduledAlbums } = await db
     .from('albums')
-    .select('id, title, genre, cover_url, release_date, artist:artists(id, stage_name, avatar_url)')
+    .select('id, title, genre, cover_url, release_date, release_type, artist:artists(id, stage_name, avatar_url)')
     .eq('is_scheduled', true)
     .gt('release_date', new Date().toISOString())
     .order('release_date', { ascending: true })
@@ -61,6 +61,11 @@ export default async function AlbumsPage() {
                     {album._scheduled && (
                       <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-amber-400 text-[10px] font-bold px-2 py-1 rounded-md">
                         <Clock size={10} /> Coming Soon
+                      </div>
+                    )}
+                    {album.release_type === 'ep' && (
+                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-md tracking-wide">
+                        EP
                       </div>
                     )}
                   </div>

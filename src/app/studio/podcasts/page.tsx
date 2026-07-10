@@ -1,9 +1,11 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminClient } from '@/lib/admin'
-import StudioTracksClient from './StudioTracksClient'
+import StudioPodcastsClient from './StudioPodcastsClient'
 
-export default async function StudioTracksPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function StudioPodcastsPage() {
   const supabase = await createClient() as any
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/signin')
@@ -12,13 +14,11 @@ export default async function StudioTracksPage() {
   const { data: artist } = await db.from('artists').select('id').eq('profile_id', user.id).single()
   if (!artist) redirect('/become-artist')
 
-  const { data: tracks } = await db
-    .from('tracks')
-    .select('id, title, genre, cover_url, play_count, download_count, published, created_at, producers, featured_artists, lyrics')
+  const { data: podcasts } = await db
+    .from('podcasts')
+    .select('id, title, description, cover_url, category, published, created_at, episodes:tracks(count)')
     .eq('artist_id', artist.id)
-    .eq('content_type', 'track')
-    .eq('is_scheduled', false)
     .order('created_at', { ascending: false })
 
-  return <StudioTracksClient tracks={tracks ?? []} artistId={artist.id} />
+  return <StudioPodcastsClient podcasts={podcasts ?? []} />
 }

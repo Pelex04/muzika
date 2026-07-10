@@ -24,6 +24,7 @@ export async function getTracks({
       )
     `)
     .eq('published', true)
+    .eq('content_type', 'track')
     .order(orderBy, { ascending: false })
     .range(offset, offset + limit - 1)
 
@@ -47,6 +48,7 @@ export async function getTrackById(id: string): Promise<Track | null> {
     `)
     .eq('id', id)
     .eq('published', true)
+    .eq('content_type', 'track')
     .single()
 
   if (error) return null

@@ -54,6 +54,9 @@ export interface Track {
   published: boolean
   album_id?: string | null
   track_number?: number | null
+  content_type?: 'track' | 'podcast_episode'
+  podcast_id?: string | null
+  episode_number?: number | null
   created_at: string
   updated_at: string
   // joined
@@ -70,6 +73,7 @@ export interface Album {
   title: string
   cover_url: string | null
   genre: TrackGenre
+  release_type?: 'album' | 'ep'
   published: boolean
   created_at: string
   updated_at: string

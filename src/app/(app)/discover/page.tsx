@@ -112,6 +112,7 @@ export default async function DiscoverPage() {
           .from('tracks')
           .select('*, artist:artists(id, stage_name, genre, location, verified, avatar_url)')
           .eq('published', true)
+          .eq('content_type', 'track')
           .in('genre', topGenres)
           .not('id', 'in', `(${exclude})`)
           .order('play_count', { ascending: false })

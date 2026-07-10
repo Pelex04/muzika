@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Upload, Music2, Disc3, Calendar, Megaphone, BadgeCheck, UserCircle, LogOut, Headphones } from 'lucide-react'
+import { LayoutDashboard, Upload, Music2, Disc3, Mic2, Calendar, Megaphone, BadgeCheck, UserCircle, LogOut, Headphones } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -11,6 +11,7 @@ const NAV = [
   { href: '/studio/upload',       label: 'Upload',     icon: Upload },
   { href: '/studio/tracks',       label: 'My Tracks',  icon: Music2 },
   { href: '/studio/albums',       label: 'My Albums',  icon: Disc3 },
+  { href: '/studio/podcasts',     label: 'My Podcasts', icon: Mic2 },
   { href: '/studio/scheduled',    label: 'Scheduled',  icon: Calendar },
   { href: '/studio/banner',       label: 'Banner',     icon: Megaphone },
   { href: '/studio/verification', label: 'Verification', icon: BadgeCheck },

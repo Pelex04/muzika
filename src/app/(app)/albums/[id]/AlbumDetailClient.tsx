@@ -76,7 +76,7 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
                 Releases {new Date(album.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </p>
             ) : (
-              <p className="text-sm text-[#717171] mt-1 mb-3">{tracks.length} track{tracks.length === 1 ? '' : 's'} · {album.genre}</p>
+              <p className="text-sm text-[#717171] mt-1 mb-3">{album.release_type === 'ep' ? 'EP' : 'Album'} · {tracks.length} track{tracks.length === 1 ? '' : 's'} · {album.genre}</p>
             )}
             {!isScheduled && (
               <button

@@ -1,16 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, Users, Music, Disc, BookOpen, Newspaper } from 'lucide-react'
+import { Home, Users, Music, Disc, Disc3, BookOpen, Newspaper, Mic2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
-  { href: '/discover', label: 'Home',    icon: Home },
-  { href: '/artists',  label: 'Artists', icon: Users },
-  { href: '/songs',    label: 'Songs',   icon: Music },
-  { href: '/charts',   label: 'Charts',  icon: Disc },
-  { href: '/library',  label: 'Library', icon: BookOpen },
-  { href: '/blog',     label: 'Blog',    icon: Newspaper },
+  { href: '/discover', label: 'Home',     icon: Home },
+  { href: '/artists',  label: 'Artists',  icon: Users },
+  { href: '/songs',    label: 'Songs',    icon: Music },
+  { href: '/albums',   label: 'Albums',   icon: Disc3 },
+  { href: '/podcasts', label: 'Podcasts', icon: Mic2 },
+  { href: '/charts',   label: 'Charts',   icon: Disc },
+  { href: '/library',  label: 'Library',  icon: BookOpen },
+  { href: '/blog',     label: 'Blog',     icon: Newspaper },
 ]
 
 export default function QuickNav({ active }: { active: string }) {

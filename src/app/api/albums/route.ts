@@ -14,11 +14,12 @@ export async function POST(req: NextRequest) {
 
   if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
 
-  const { title, genre, coverPath, releaseDate } = await req.json() as {
+  const { title, genre, coverPath, releaseDate, releaseType } = await req.json() as {
     title: string
     genre: string
     coverPath?: string | null
     releaseDate?: string | null
+    releaseType?: 'album' | 'ep'
   }
 
   if (!title?.trim() || !genre) {
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
       genre,
       cover_url: coverUrl,
       release_date: releaseDate ?? null,
+      release_type: releaseType === 'ep' ? 'ep' : 'album',
       is_scheduled: isScheduled,
       published: !isScheduled,
     })

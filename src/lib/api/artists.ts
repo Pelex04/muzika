@@ -51,6 +51,7 @@ export async function getArtistTracks(artistId: string): Promise<Track[]> {
     .select('*')
     .eq('artist_id', artistId)
     .eq('published', true)
+    .eq('content_type', 'track')
     .order('created_at', { ascending: false })
 
   if (error) throw error

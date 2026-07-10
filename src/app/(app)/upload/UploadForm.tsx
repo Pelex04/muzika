@@ -22,7 +22,7 @@ interface PendingTrack {
   lyrics: string
 }
 
-type UploadMode = 'single' | 'album'
+type UploadMode = 'single' | 'album' | 'podcast'
 
 // ── Tag input helper ──────────────────────────────────────────────
 function TagInput({
@@ -82,7 +82,14 @@ function TagInput({
   )
 }
 
-export default function UploadForm() {
+interface ExistingPodcast {
+  id: string
+  title: string
+  cover_url: string | null
+  category: string | null
+}
+
+export default function UploadForm({ existingPodcasts = [] }: { existingPodcasts?: ExistingPodcast[] }) {
   const router = useRouter()
   const [mode, setMode] = useState<UploadMode>('single')
 
@@ -99,10 +106,24 @@ export default function UploadForm() {
   // ── ALBUM STATE ──
   const [albumTitle, setAlbumTitle] = useState('')
   const [albumGenre, setAlbumGenre] = useState('')
+  const [albumReleaseType, setAlbumReleaseType] = useState<'album' | 'ep'>('album')
   const [albumReleaseDate, setAlbumReleaseDate] = useState('')
   const [albumScheduled, setAlbumScheduled] = useState(false)
   const [pendingTracks, setPendingTracks] = useState<PendingTrack[]>([])
   const [expandedTrack, setExpandedTrack] = useState<string | null>(null)
+
+  // ── PODCAST STATE ──
+  const [podcasts, setPodcasts] = useState<ExistingPodcast[]>(existingPodcasts)
+  const [selectedPodcastId, setSelectedPodcastId] = useState<string>(existingPodcasts[0]?.id ?? 'new')
+  const [newPodcastTitle, setNewPodcastTitle] = useState('')
+  const [newPodcastDescription, setNewPodcastDescription] = useState('')
+  const [newPodcastCategory, setNewPodcastCategory] = useState('')
+  const [episodeAudioFile, setEpisodeAudioFile] = useState<File | null>(null)
+  const [episodeTitle, setEpisodeTitle] = useState('')
+  const [episodeDescription, setEpisodeDescription] = useState('')
+  const [episodeNumber, setEpisodeNumber] = useState('')
+  const [episodeReleaseDate, setEpisodeReleaseDate] = useState('')
+  const [episodeScheduled, setEpisodeScheduled] = useState(false)
 
   // ── SHARED STATE ──
   const [coverFile, setCoverFile] = useState<File | null>(null)
@@ -157,6 +178,19 @@ export default function UploadForm() {
     onDrop: onAlbumTracksDrop,
     accept: { 'audio/*': ['.mp3', '.wav', '.flac', '.aac', '.m4a'] },
     multiple: true,
+  })
+
+  const onEpisodeAudioDrop = useCallback((files: File[]) => {
+    const file = files[0]
+    if (!file) return
+    if (!validateAudio(file)) return
+    setEpisodeAudioFile(file)
+  }, [])
+
+  const episodeDropzone = useDropzone({
+    onDrop: onEpisodeAudioDrop,
+    accept: { 'audio/*': ['.mp3', '.wav', '.flac', '.aac', '.m4a'] },
+    maxFiles: 1,
   })
 
   const onCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -255,6 +289,7 @@ export default function UploadForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: albumTitle.trim(), genre: albumGenre, coverPath,
+          releaseType: albumReleaseType,
           releaseDate: albumScheduled && albumReleaseDate ? new Date(albumReleaseDate).toISOString() : null,
         }),
       })
@@ -285,6 +320,67 @@ export default function UploadForm() {
       setProgress(100)
       notify.success(albumScheduled ? 'Album scheduled!' : `Album published with ${pendingTracks.length} tracks!`)
       setTimeout(() => router.push('/profile'), 1200)
+    } catch (err: any) {
+      notify.error(err?.message ?? 'Upload failed')
+      setUploading(false)
+    }
+  }
+
+  const onSubmitPodcast = async () => {
+    if (!episodeAudioFile) { notify.error('Please add an audio file for the episode'); return }
+    if (!episodeTitle.trim()) { notify.error('Episode title is required'); return }
+    if (selectedPodcastId === 'new' && !newPodcastTitle.trim()) { notify.error('Podcast show title is required'); return }
+    if (episodeScheduled && !episodeReleaseDate) { notify.error('Set a release date or uncheck "Schedule release"'); return }
+
+    setUploading(true)
+    try {
+      let podcastId = selectedPodcastId
+
+      if (selectedPodcastId === 'new') {
+        let coverPath: string | null = null
+        if (coverFile) {
+          setProgressLabel('Uploading show cover…'); setProgress(10)
+          coverPath = await uploadFileDirect(coverFile, 'cover')
+        }
+        setProgressLabel('Creating podcast show…'); setProgress(20)
+        const showRes = await fetch('/api/podcasts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: newPodcastTitle.trim(),
+            description: newPodcastDescription.trim() || null,
+            category: newPodcastCategory.trim() || null,
+            coverPath,
+          }),
+        })
+        const showResult = await showRes.json()
+        if (!showRes.ok) { notify.error(showResult.error ?? 'Could not create podcast'); setUploading(false); return }
+        podcastId = showResult.podcast.id
+        setPodcasts(prev => [showResult.podcast, ...prev])
+        setSelectedPodcastId(podcastId)
+      }
+
+      setProgressLabel('Uploading episode audio…'); setProgress(50)
+      const audioPath = await uploadFileDirect(episodeAudioFile, 'audio')
+
+      setProgressLabel('Publishing episode…'); setProgress(85)
+      const epRes = await fetch(`/api/podcasts/${podcastId}/episodes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: episodeTitle.trim(),
+          description: episodeDescription.trim() || null,
+          audioPath,
+          episodeNumber: episodeNumber ? Number(episodeNumber) : null,
+          releaseDate: episodeScheduled && episodeReleaseDate ? new Date(episodeReleaseDate).toISOString() : null,
+        }),
+      })
+      const epResult = await epRes.json()
+      if (!epRes.ok) { notify.error(epResult.error ?? 'Could not publish episode'); setUploading(false); return }
+
+      setProgress(100)
+      notify.success(episodeScheduled ? 'Episode scheduled!' : 'Episode published!')
+      setTimeout(() => router.push('/studio/podcasts'), 1200)
     } catch (err: any) {
       notify.error(err?.message ?? 'Upload failed')
       setUploading(false)
@@ -349,6 +445,7 @@ export default function UploadForm() {
         <div className="flex gap-1 bg-[#181818] rounded-xl p-1 mb-6">
           {modeTab('single', 'Single Track', <Music size={15} />)}
           {modeTab('album', 'Album', <Disc3 size={15} />)}
+          {modeTab('podcast', 'Podcast', <Mic2 size={15} />)}
         </div>
 
         {mode === 'single' ? (
@@ -405,21 +502,43 @@ export default function UploadForm() {
               </button>
             </div>
           </div>
-        ) : (
+        ) : mode === 'album' ? (
           <div className="space-y-5">
             <div>
-              <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Album Title</label>
-              <input value={albumTitle} onChange={e => setAlbumTitle(e.target.value)}
-                className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#181818] focus:outline-none focus:border-blue-500 transition-all"
-                placeholder="Album name…" />
+              <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Release Type</label>
+              <div className="flex gap-2">
+                {(['album', 'ep'] as const).map(t => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setAlbumReleaseType(t)}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-bold border-[1.5px] transition-all ${
+                      albumReleaseType === t
+                        ? 'bg-white text-black border-white'
+                        : 'bg-[#181818] text-[#b3b3b3] border-[#2a2a2a] hover:border-[#3a3a3a]'
+                    }`}
+                  >
+                    {t === 'album' ? 'Album' : 'EP'}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <CoverArtPicker coverPreview={coverPreview} coverFile={coverFile} onCoverChange={onCoverChange} label="Album Cover" />
+            <div>
+              <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">
+                {albumReleaseType === 'ep' ? 'EP Title' : 'Album Title'}
+              </label>
+              <input value={albumTitle} onChange={e => setAlbumTitle(e.target.value)}
+                className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#181818] focus:outline-none focus:border-blue-500 transition-all"
+                placeholder={albumReleaseType === 'ep' ? 'EP name…' : 'Album name…'} />
+            </div>
+
+            <CoverArtPicker coverPreview={coverPreview} coverFile={coverFile} onCoverChange={onCoverChange} label={albumReleaseType === 'ep' ? 'EP Cover' : 'Album Cover'} />
             <GenrePicker selected={albumGenre} onSelect={setAlbumGenre} />
             <SchedulerField
               scheduled={albumScheduled} onToggle={() => setAlbumScheduled(s => !s)}
               date={albumReleaseDate} onDate={setAlbumReleaseDate}
-              label="Album Release Date & Time" />
+              label={albumReleaseType === 'ep' ? 'EP Release Date & Time' : 'Album Release Date & Time'} />
 
             {/* Tracks */}
             <div>
@@ -484,6 +603,100 @@ export default function UploadForm() {
               <button type="button" onClick={onSubmitAlbum} disabled={uploading}
                 className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-60">
                 {uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : <><Disc3 className="w-4 h-4" /> {albumScheduled ? 'Schedule Album' : `Publish Album (${pendingTracks.length} track${pendingTracks.length === 1 ? '' : 's'})`}</>}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            <div>
+              <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Podcast Show</label>
+              <select
+                value={selectedPodcastId}
+                onChange={e => setSelectedPodcastId(e.target.value)}
+                className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#181818] focus:outline-none focus:border-blue-500 transition-all"
+              >
+                {podcasts.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
+                <option value="new">+ Create a new show…</option>
+              </select>
+            </div>
+
+            {selectedPodcastId === 'new' && (
+              <div className="space-y-5 bg-[#181818] border border-[#2a2a2a] rounded-xl p-4">
+                <p className="text-[11px] font-bold text-blue-400 uppercase tracking-[.7px]">New Show Details</p>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Show Title</label>
+                  <input value={newPodcastTitle} onChange={e => setNewPodcastTitle(e.target.value)}
+                    className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#121212] focus:outline-none focus:border-blue-500 transition-all"
+                    placeholder="Show name…" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Description</label>
+                  <textarea value={newPodcastDescription} onChange={e => setNewPodcastDescription(e.target.value)} rows={3}
+                    className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#121212] focus:outline-none focus:border-blue-500 transition-all resize-none"
+                    placeholder="What's this show about?" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Category</label>
+                  <input value={newPodcastCategory} onChange={e => setNewPodcastCategory(e.target.value)}
+                    className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#121212] focus:outline-none focus:border-blue-500 transition-all"
+                    placeholder="e.g. Music, Comedy, News…" />
+                </div>
+                <CoverArtPicker coverPreview={coverPreview} coverFile={coverFile} onCoverChange={onCoverChange} label="Show Cover" />
+              </div>
+            )}
+
+            {/* Episode audio */}
+            <div {...episodeDropzone.getRootProps()}
+              className={cn('border-[2.5px] border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all bg-[#181818]',
+                episodeDropzone.isDragActive ? 'border-blue-500 bg-blue-950/30' : 'border-[#3a3a3a] hover:border-blue-400 hover:bg-blue-950/20',
+              )}>
+              <input {...episodeDropzone.getInputProps()} />
+              {episodeAudioFile ? (
+                <div className="flex items-center justify-center gap-2 text-white">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  <span className="text-sm font-semibold">{episodeAudioFile.name}</span>
+                </div>
+              ) : (
+                <>
+                  <Mic2 className="w-8 h-8 text-[#717171] mx-auto mb-3" />
+                  <p className="text-sm font-semibold text-white mb-1">Drop episode audio, or click to browse</p>
+                  <p className="text-xs text-[#717171]">MP3, WAV, FLAC, AAC, M4A — up to {MAX_AUDIO_MB}MB</p>
+                </>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Episode Title</label>
+              <input value={episodeTitle} onChange={e => setEpisodeTitle(e.target.value)}
+                className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#181818] focus:outline-none focus:border-blue-500 transition-all"
+                placeholder="Episode title…" />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Show Notes</label>
+              <textarea value={episodeDescription} onChange={e => setEpisodeDescription(e.target.value)} rows={4}
+                className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#181818] focus:outline-none focus:border-blue-500 transition-all resize-none"
+                placeholder="What's this episode about?" />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Episode Number <span className="text-[#555] normal-case font-normal">(optional)</span></label>
+              <input type="number" min={1} value={episodeNumber} onChange={e => setEpisodeNumber(e.target.value)}
+                className="w-full px-4 py-3 border-[1.5px] border-[#2a2a2a] rounded-xl text-sm text-white bg-[#181818] focus:outline-none focus:border-blue-500 transition-all"
+                placeholder="e.g. 12" />
+            </div>
+
+            <SchedulerField
+              scheduled={episodeScheduled} onToggle={() => setEpisodeScheduled(s => !s)}
+              date={episodeReleaseDate} onDate={setEpisodeReleaseDate}
+              label="Episode Release Date & Time" />
+
+            {uploading && <ProgressBar progress={progress} label={progressLabel} />}
+
+            <div className="sticky bottom-0 pt-3 pb-1 bg-[#121212]">
+              <button type="button" onClick={onSubmitPodcast} disabled={uploading}
+                className="w-full py-4 bg-white text-black rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors disabled:opacity-60">
+                {uploading ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</> : <><Mic2 className="w-4 h-4" /> {episodeScheduled ? 'Schedule Episode' : 'Publish Episode'}</>}
               </button>
             </div>
           </div>

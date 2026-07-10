@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
         artist:artists(id, stage_name, genre, location, verified)
       `)
       .eq('published', true)
+      .eq('content_type', 'track')
       .ilike('title', `%${q}%`)
       .limit(20),
     supabase
@@ -50,6 +51,7 @@ export async function GET(req: NextRequest) {
         .from('tracks')
         .select(`*, artist:artists(id, stage_name, genre, location, verified)`)
         .eq('published', true)
+        .eq('content_type', 'track')
         .in('artist_id', artistIds)
         .limit(20),
       supabase

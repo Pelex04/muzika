@@ -22,5 +22,11 @@ export default async function UploadPage() {
 
   if (!artist) redirect('/become-artist')
 
-  return <UploadForm />
+  const { data: podcasts } = await supabase
+    .from('podcasts')
+    .select('id, title, cover_url, category')
+    .eq('artist_id', artist.id)
+    .order('created_at', { ascending: false })
+
+  return <UploadForm existingPodcasts={podcasts ?? []} />
 }
