@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useProfile } from '@/lib/profile-context'
+import NotificationBell from './NotificationBell'
 
 interface Props {
   eyebrow: string
@@ -35,6 +36,7 @@ export default function MobileTopBar({ eyebrow, title, rightSlot }: Props) {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {rightSlot}
+        <NotificationBell size={36} />
         {!onSearchPage && (
           <Link
             href="/search"

@@ -1,6 +1,21 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Artist, Track } from '@/types'
 
+/**
+ * Matches free-text featured-artist names (whatever an uploader typed)
+ * against real artist accounts by stage name, case-insensitive. Used both
+ * to render "tagged" credits on Now Playing and to notify a matched
+ * artist that they were credited. Any db client works (user-scoped or
+ * admin) since this only reads the artists table.
+ */
+export async function matchFeaturedArtists(db: any, names: string[]): Promise<{ id: string; stage_name: string; profile_id: string }[]> {
+  if (!names.length) return []
+  const orFilter = names.map(n => `stage_name.ilike.${n.replace(/[,()]/g, '')}`).join(',')
+  const { data } = await db.from('artists').select('id, stage_name, profile_id').or(orFilter)
+  const nameSet = new Set(names.map(n => n.toLowerCase()))
+  return (data ?? []).filter((a: any) => nameSet.has(a.stage_name.toLowerCase()))
+}
+
 export async function getArtists({
   limit = 20,
   offset = 0,

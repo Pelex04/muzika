@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { matchFeaturedArtists } from '@/lib/api/artists'
 
 // Called AFTER the browser has already uploaded the audio (and optional
 // cover) directly to Supabase Storage via the signed URL from
@@ -13,7 +14,7 @@ export async function POST(req: NextRequest) {
 
   const { data: artist } = await supabase
     .from('artists')
-    .select('id')
+    .select('id, stage_name')
     .eq('profile_id', user.id)
     .single()
 
@@ -78,6 +79,22 @@ export async function POST(req: NextRequest) {
     .from('artists')
     .update({ track_count: (currentArtist?.track_count ?? 0) + 1 })
     .eq('id', artist.id)
+
+  // ── Notify any featured artist who has a real Playback account ──
+  if (featuredArtists?.length) {
+    const matches = await matchFeaturedArtists(supabase, featuredArtists)
+    if (matches.length) {
+      await supabase.from('notifications').insert(
+        matches.map(m => ({
+          user_id: m.profile_id,
+          type: 'featured_credit',
+          title: 'You were tagged as a featured artist',
+          body: `${artist.stage_name} credited you as a featured artist on "${title.trim()}"`,
+          link: `/artists/${artist.id}`,
+        }))
+      )
+    }
+  }
 
   return NextResponse.json({ track }, { status: 201 })
 }

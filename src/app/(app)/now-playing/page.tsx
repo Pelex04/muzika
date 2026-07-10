@@ -42,6 +42,9 @@ export default function NowPlayingPage() {
   const [moreByArtist, setMoreByArtist] = useState<Track[]>([])
   const [related, setRelated] = useState<Track[]>([])
   const [lyrics, setLyrics] = useState<string | null>(null)
+  const [producers, setProducers] = useState<string[]>([])
+  const [featuredArtists, setFeaturedArtists] = useState<{ name: string; artist_id: string | null; avatar_url?: string; verified?: boolean; is_following?: boolean }[]>([])
+  const [featuredFollowLoading, setFeaturedFollowLoading] = useState<string | null>(null)
   const [contextLoading, setContextLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'related' | 'lyrics'>('related')
 
@@ -55,6 +58,8 @@ export default function NowPlayingPage() {
       setMoreByArtist(data.moreByArtist ?? [])
       setRelated(data.related ?? [])
       setLyrics(data.lyrics ?? null)
+      setProducers(data.producers ?? [])
+      setFeaturedArtists(data.featuredArtists ?? [])
       // Auto-switch to lyrics tab if available
       if (data.lyrics) setActiveTab('lyrics')
       else setActiveTab('related')
@@ -117,6 +122,18 @@ export default function NowPlayingPage() {
       notify.error('Could not update follow status')
     }
     setFollowLoading(false)
+  }
+
+  const handleFollowFeatured = async (artistId: string) => {
+    setFeaturedFollowLoading(artistId)
+    try {
+      const res = await fetch(`/api/artists/${artistId}/follow`, { method: 'POST' })
+      const data = await res.json()
+      setFeaturedArtists(prev => prev.map(f => f.artist_id === artistId ? { ...f, is_following: data.following } : f))
+    } catch {
+      notify.error('Could not update follow status')
+    }
+    setFeaturedFollowLoading(null)
   }
 
   const handleShare = async () => {
@@ -306,6 +323,98 @@ export default function NowPlayingPage() {
                   </button>
                 </div>
               </Link>
+            )}
+
+            {/* Credits */}
+            {(artist || featuredArtists.length > 0 || producers.length > 0) && (
+              <div className="bg-[#181818] rounded-2xl p-4 mb-5">
+                <p className="text-[15px] font-bold text-white mb-4">Credits</p>
+                <div className="flex flex-col gap-4">
+                  {artist && (
+                    <div className="flex items-center gap-3">
+                      <Link href={`/artists/${artist.id}`} className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden bg-[#0d1b3e] grid place-items-center">
+                          {artist.avatar_url
+                            ? <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover" />
+                            : <span className="text-sm font-black text-white/60">{artist.stage_name.charAt(0).toUpperCase()}</span>
+                          }
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1">
+                            <p className="text-sm font-bold text-white truncate">{artist.stage_name}</p>
+                            {artist.verified && <BadgeCheck size={12} className="text-blue-500 flex-shrink-0" />}
+                          </div>
+                          <p className="text-xs text-[#717171]">Main Artist</p>
+                        </div>
+                      </Link>
+                      <button
+                        onClick={handleFollow}
+                        disabled={followLoading}
+                        className={cn('px-4 py-1.5 rounded-full text-xs font-bold flex-shrink-0 transition-all',
+                          artist.is_following ? 'bg-transparent border border-[#3a3a3a] text-white' : 'bg-transparent border border-white text-white hover:bg-white hover:text-black'
+                        )}
+                      >
+                        {followLoading ? '…' : artist.is_following ? 'Following' : 'Follow'}
+                      </button>
+                    </div>
+                  )}
+
+                  {featuredArtists.map((f, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      {f.artist_id ? (
+                        <>
+                          <Link href={`/artists/${f.artist_id}`} className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden bg-[#0d1b3e] grid place-items-center">
+                              {f.avatar_url
+                                ? <img src={f.avatar_url} alt={f.name} className="w-full h-full object-cover" />
+                                : <span className="text-sm font-black text-white/60">{f.name.charAt(0).toUpperCase()}</span>
+                              }
+                            </div>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1">
+                                <p className="text-sm font-bold text-white truncate">{f.name}</p>
+                                {f.verified && <BadgeCheck size={12} className="text-blue-500 flex-shrink-0" />}
+                              </div>
+                              <p className="text-xs text-[#717171]">Featured Artist</p>
+                            </div>
+                          </Link>
+                          <button
+                            onClick={() => handleFollowFeatured(f.artist_id!)}
+                            disabled={featuredFollowLoading === f.artist_id}
+                            className={cn('px-4 py-1.5 rounded-full text-xs font-bold flex-shrink-0 transition-all',
+                              f.is_following ? 'bg-transparent border border-[#3a3a3a] text-white' : 'bg-transparent border border-white text-white hover:bg-white hover:text-black'
+                            )}
+                          >
+                            {featuredFollowLoading === f.artist_id ? '…' : f.is_following ? 'Following' : 'Follow'}
+                          </button>
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="w-10 h-10 rounded-full flex-shrink-0 bg-[#2a2a2a] grid place-items-center">
+                            <span className="text-sm font-black text-white/40">{f.name.charAt(0).toUpperCase()}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-white truncate">{f.name}</p>
+                            <p className="text-xs text-[#717171]">Featured Artist</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {producers.map((name, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full flex-shrink-0 bg-[#2a2a2a] grid place-items-center">
+                        <span className="text-sm font-black text-white/40">{name.charAt(0).toUpperCase()}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-white truncate">{name}</p>
+                        <p className="text-xs text-[#717171]">Producer</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Tab switcher */}

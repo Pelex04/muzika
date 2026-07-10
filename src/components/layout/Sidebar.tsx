@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut, BookOpen, Search, Disc3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import NotificationBell from './NotificationBell'
 import type { Profile } from '@/types'
 
 const NAV = [
@@ -65,14 +66,17 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
       }}>
 
         {/* Logo */}
-        <Link href="/discover" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '26px 22px 22px', textDecoration: 'none' }}>
-          <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'linear-gradient(135deg,#3B82F6,#1d4ed8)', display: 'grid', placeItems: 'center', boxShadow: '0 2px 8px rgba(59,130,246,.35)', flexShrink: 0 }}>
-            <Music2 size={18} color="white" />
-          </div>
-          <span style={{ fontSize: '18px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
-            PLAY<span style={{ color: '#60A5FA' }}>BACK</span>
-          </span>
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '26px 22px 22px' }}>
+          <Link href="/discover" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+            <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'linear-gradient(135deg,#3B82F6,#1d4ed8)', display: 'grid', placeItems: 'center', boxShadow: '0 2px 8px rgba(59,130,246,.35)', flexShrink: 0 }}>
+              <Music2 size={18} color="white" />
+            </div>
+            <span style={{ fontSize: '18px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
+              PLAY<span style={{ color: '#60A5FA' }}>BACK</span>
+            </span>
+          </Link>
+          <NotificationBell size={32} />
+        </div>
 
         {/* Main nav */}
         <nav style={{ flex: 1, padding: '0 10px 16px', overflowY: 'auto' }}>
