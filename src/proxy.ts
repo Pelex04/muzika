@@ -7,6 +7,18 @@ export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
   const { pathname } = request.nextUrl
 
+  // Supabase may refresh the session token during getUser() below, which
+  // sets fresh cookies onto supabaseResponse via setAll(). A bare
+  // `NextResponse.redirect(url)` is a brand new response object and does
+  // NOT carry those cookies -- the browser would keep resending the old,
+  // stale session cookie forever. Every redirect must go through this so
+  // the refreshed session actually reaches the browser.
+  const redirectTo = (url: URL | string) => {
+    const res = NextResponse.redirect(url)
+    supabaseResponse.cookies.getAll().forEach(cookie => res.cookies.set(cookie))
+    return res
+  }
+
   // ── Maintenance mode ─────────────────────────────────────────────
   // Toggle: set MAINTENANCE_MODE=true in Vercel env vars (server only,
   // no NEXT_PUBLIC_ prefix). Then redeploy — or use Vercel's
@@ -26,8 +38,8 @@ export async function proxy(request: NextRequest) {
       const url = request.nextUrl.clone()
       url.searchParams.delete('bypass')
       const res = url.pathname === '/maintenance'
-        ? NextResponse.redirect(new URL('/discover', request.url))
-        : NextResponse.redirect(url)
+        ? redirectTo(new URL('/discover', request.url))
+        : redirectTo(url)
       res.cookies.set('muzika_admin_bypass', secret, {
         httpOnly: false,
         path: '/',
@@ -44,13 +56,13 @@ export async function proxy(request: NextRequest) {
     if (!isAdminBypass) {
       const url = request.nextUrl.clone()
       url.pathname = '/maintenance'
-      return NextResponse.redirect(url)
+      return redirectTo(url)
     }
   }
   if (isMaintenancePage && !maintenance) {
     const url = request.nextUrl.clone()
     url.pathname = '/landing'
-    return NextResponse.redirect(url)
+    return redirectTo(url)
   }
   if (isMaintenancePage) return NextResponse.next({ request })
 
@@ -93,7 +105,7 @@ export async function proxy(request: NextRequest) {
       url.pathname = '/signin'
       url.searchParams.set('error', 'too_many_attempts')
       url.searchParams.set('retry_after', String(retryAfterSec))
-      return NextResponse.redirect(url)
+      return redirectTo(url)
     }
   }
 
@@ -105,7 +117,7 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/') {
     const url = request.nextUrl.clone()
     url.pathname = '/landing'
-    return NextResponse.redirect(url)
+    return redirectTo(url)
   }
 
   if (isPublic || isApi || isStatic) {
@@ -131,7 +143,7 @@ export async function proxy(request: NextRequest) {
         if (user && (pathname === '/signin' || pathname === '/signup' || pathname === '/landing')) {
           const url = request.nextUrl.clone()
           url.pathname = '/discover'
-          return NextResponse.redirect(url)
+          return redirectTo(url)
         }
       } catch {}
     }
@@ -163,7 +175,7 @@ export async function proxy(request: NextRequest) {
       const url = request.nextUrl.clone()
       url.pathname = '/signin'
       url.searchParams.set('redirectTo', pathname)
-      return NextResponse.redirect(url)
+      return redirectTo(url)
     }
 
     // ── Role + suspension check via service-role (cannot be spoofed) ──
@@ -183,7 +195,7 @@ export async function proxy(request: NextRequest) {
     if (profile?.suspended_at && pathname !== '/suspended') {
       const url = request.nextUrl.clone()
       url.pathname = '/suspended'
-      return NextResponse.redirect(url)
+      return redirectTo(url)
     }
 
     // /studio routes — only artists allowed
@@ -196,7 +208,7 @@ export async function proxy(request: NextRequest) {
       if (!artistCheck) {
         const url = request.nextUrl.clone()
         url.pathname = '/become-artist'
-        return NextResponse.redirect(url)
+        return redirectTo(url)
       }
     }
 
@@ -204,7 +216,7 @@ export async function proxy(request: NextRequest) {
     if (pathname.startsWith('/admin') && profile?.role !== 'admin') {
       const url = request.nextUrl.clone()
       url.pathname = '/discover'
-      return NextResponse.redirect(url)
+      return redirectTo(url)
     }
 
     // Non-admin users hitting signin after login → discover
@@ -212,14 +224,14 @@ export async function proxy(request: NextRequest) {
     if (pathname === '/discover' && profile?.role === 'admin') {
       const url = request.nextUrl.clone()
       url.pathname = '/admin'
-      return NextResponse.redirect(url)
+      return redirectTo(url)
     }
 
     return supabaseResponse
   } catch {
     const url = request.nextUrl.clone()
     url.pathname = '/signin'
-    return NextResponse.redirect(url)
+    return redirectTo(url)
   }
 }
 
