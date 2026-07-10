@@ -12,11 +12,9 @@ export default function CheckEmailPage({
 
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '36px' }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'linear-gradient(135deg, #3B82F6, #1d4ed8)', display: 'grid', placeItems: 'center' }}>
-            <Music2 size={18} color="white" />
-          </div>
-          <span style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.4px' }}>
-            PLAY<span style={{ color: '#2563EB' }}>BACK</span>
+          <img src="/logo.png" alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
+          <span className="font-wordmark" style={{ fontSize: '21px', fontWeight: 700, color: '#ffffff' }}>
+            playback
           </span>
         </div>
 

@@ -164,11 +164,9 @@ export default function SignInPage() {
         <div className="auth-right">
           <div className="auth-form">
             <div className="auth-mobile-logo">
-              <div style={{ width:'36px', height:'36px', borderRadius:'9px', background:'#0D1B3E', display:'grid', placeItems:'center' }}>
-                <Music2 size={18} color="white" />
-              </div>
-              <span style={{ fontSize:'18px', fontWeight:800, color:'#0D1B3E' }}>
-                PLAY<span style={{ color:'#2563EB' }}>BACK</span>
+              <img src="/logo.png" alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '9px' }} />
+              <span className="font-wordmark" style={{ fontSize:'19px', fontWeight:700, color:'#0D1B3E' }}>
+                playback
               </span>
             </div>
 

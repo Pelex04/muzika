@@ -28,11 +28,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         .admin-topbar-brand { display: flex; align-items: center; gap: 8px; }
         .admin-topbar-brand-icon {
           width: 26px; height: 26px; border-radius: 7px;
-          background: linear-gradient(135deg, #2563eb, #1d4ed8);
+          overflow: hidden;
           display: flex; align-items: center; justify-content: center;
-          font-size: 12px; font-weight: 900; color: #fff; flex-shrink: 0;
+          flex-shrink: 0;
         }
-        .admin-topbar-title { font-weight: 800; font-size: 14px; letter-spacing: -0.3px; }
+        .admin-topbar-brand-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .admin-topbar-title { font-family: 'Outfit', 'Inter', system-ui, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: -0.02em; }
         .admin-topbar-right { display: flex; align-items: center; gap: 8px; }
         .admin-topbar-email { font-size: 12px; color: #555; display: none; }
         @media (min-width: 640px) { .admin-topbar-email { display: block; } }
@@ -52,9 +53,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       <div className="admin-topbar">
         <div className="admin-topbar-brand">
-          <div className="admin-topbar-brand-icon">M</div>
+          <div className="admin-topbar-brand-icon"><img src="/logo.png" alt="Playback" /></div>
           <span className="admin-topbar-title">
-            Playback <span style={{ color: '#2563eb' }}>Admin</span>
+            playback <span style={{ color: '#2563eb' }}>Admin</span>
           </span>
         </div>
         <div className="admin-topbar-right">

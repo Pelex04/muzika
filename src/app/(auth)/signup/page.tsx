@@ -197,9 +197,9 @@ export default function SignUpPage() {
 
             {/* Mobile logo */}
             <div className="auth-mobile-logo-signup" style={{ display: 'none', alignItems: 'center', gap: '9px', marginBottom: '32px' }}>
-              <div style={S.logoMarkSm}><Music2 size={18} color="white" /></div>
-              <span style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff' }}>
-                PLAY<span style={{ color: '#2563EB' }}>BACK</span>
+              <img src="/logo.png" alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
+              <span className="font-wordmark" style={{ fontSize: '19px', fontWeight: 700, color: '#ffffff' }}>
+                playback
               </span>
             </div>
 

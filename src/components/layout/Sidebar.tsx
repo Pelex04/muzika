@@ -68,11 +68,9 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '26px 22px 22px' }}>
           <Link href="/discover" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <div style={{ width: '34px', height: '34px', borderRadius: '9px', background: 'linear-gradient(135deg,#3B82F6,#1d4ed8)', display: 'grid', placeItems: 'center', boxShadow: '0 2px 8px rgba(59,130,246,.35)', flexShrink: 0 }}>
-              <Music2 size={18} color="white" />
-            </div>
-            <span style={{ fontSize: '18px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
-              PLAY<span style={{ color: '#60A5FA' }}>BACK</span>
+            <img src="/logo.png" alt="Playback" style={{ width: '34px', height: '34px', borderRadius: '9px', flexShrink: 0 }} />
+            <span className="font-wordmark" style={{ fontSize: '19px', fontWeight: 700, color: '#fff' }}>
+              playback
             </span>
           </Link>
           <NotificationBell size={32} />

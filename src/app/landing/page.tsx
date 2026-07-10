@@ -40,15 +40,17 @@ export default function LandingPage() {
           width: 36px;
           height: 36px;
           border-radius: 10px;
-          background: #1d4ed8;
+          overflow: hidden;
           display: grid;
           place-items: center;
         }
+        .lp-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
         .lp-logo-text {
+          font-family: 'Outfit', 'Inter', system-ui, sans-serif;
           font-size: 18px;
-          font-weight: 800;
+          font-weight: 700;
           color: #fff;
-          letter-spacing: -0.5px;
+          letter-spacing: -0.02em;
         }
         .lp-logo-accent { color: #60a5fa; }
         .lp-nav-links {
@@ -504,12 +506,9 @@ export default function LandingPage() {
         <nav className="lp-nav">
           <Link href="/landing" className="lp-nav-logo">
             <div className="lp-logo-mark">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-                <path d="M10 2.5C10 2.5 5 5.5 5 10.5a5 5 0 0010 0C15 5.5 10 2.5 10 2.5z" fill="white" opacity="0.9"/>
-                <circle cx="10" cy="10.5" r="2" fill="white"/>
-              </svg>
+              <img src="/logo.png" alt="Playback" />
             </div>
-            <span className="lp-logo-text">PLAY<span className="lp-logo-accent">BACK</span></span>
+            <span className="lp-logo-text">playback</span>
           </Link>
 
           <ul className="lp-nav-links">
@@ -692,7 +691,7 @@ export default function LandingPage() {
         <div className="lp-footer-columns">
           <div>
             <span className="lp-logo-text" style={{ fontSize: '19px', display: 'inline-block', marginBottom: '14px' }}>
-              PLAY<span className="lp-logo-accent">BACK</span>
+              playback
             </span>
             <p className="lp-footer-blurb">
               Discover. Share. Connect through music. Playback connects artists and listeners across Malawi and beyond.

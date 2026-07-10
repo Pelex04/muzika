@@ -5,7 +5,9 @@ export const alt = 'Playback — Stream & Own Malawian Music'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default function Image() {
+export default async function Image() {
+  const logoData = await fetch(new URL('../../public/logo.png', import.meta.url)).then(res => res.arrayBuffer())
+
   return new ImageResponse(
     (
       <div
@@ -27,17 +29,14 @@ export default function Image() {
         }} />
 
         {/* Logo mark */}
-        <div style={{
-          width: '80px', height: '80px', borderRadius: '20px',
-          background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '40px', fontWeight: 900, color: '#fff',
-          marginBottom: '24px',
-          boxShadow: '0 0 40px rgba(37,99,235,0.5)',
-        }}>M</div>
+        <img
+          src={logoData as any}
+          width={80} height={80}
+          style={{ borderRadius: '20px', marginBottom: '24px', boxShadow: '0 0 40px rgba(37,99,235,0.5)' }}
+        />
 
-        <div style={{ fontSize: '64px', fontWeight: 900, color: '#fff', letterSpacing: '-2px', display: 'flex' }}>
-          PLAY<span style={{ color: '#2563eb' }}>BACK</span>
+        <div style={{ fontSize: '58px', fontWeight: 700, color: '#fff', letterSpacing: '-1px', display: 'flex' }}>
+          playback
         </div>
 
         <div style={{ fontSize: '22px', color: 'rgba(255,255,255,0.55)', marginTop: '16px', letterSpacing: '0.5px' }}>

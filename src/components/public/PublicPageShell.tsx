@@ -16,11 +16,9 @@ export default function PublicPageShell({
         position: 'sticky', top: 0, background: '#121212', zIndex: 10,
       }}>
         <Link href="/landing" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <div style={{ width: '32px', height: '32px', borderRadius: '9px', background: 'linear-gradient(135deg,#3B82F6,#1d4ed8)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-            <Music2 size={16} color="white" />
-          </div>
-          <span style={{ fontSize: '17px', fontWeight: 800, color: '#fff', letterSpacing: '-0.3px' }}>
-            PLAY<span style={{ color: '#60A5FA' }}>BACK</span>
+          <img src="/logo.png" alt="Playback" style={{ width: '32px', height: '32px', borderRadius: '9px' }} />
+          <span className="font-wordmark" style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>
+            playback
           </span>
         </Link>
         <Link href={backHref} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#717171', textDecoration: 'none' }}>

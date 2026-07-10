@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+.font-wordmark {
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.02em;
+}
+
 :root {
   /* Spotify-style dark theme tokens */
   --bg-page: #121212;

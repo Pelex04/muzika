@@ -412,11 +412,9 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             {/* Brand */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 grid place-items-center">
-                <Music2 size={16} color="white" />
-              </div>
-              <span className="text-white font-black text-lg tracking-tight">
-                PLAY<span className="text-blue-400">BACK</span>
+              <img src="/logo.png" alt="Playback" className="w-8 h-8 rounded-lg" />
+              <span className="font-wordmark text-white font-bold text-lg">
+                playback
               </span>
             </div>
 

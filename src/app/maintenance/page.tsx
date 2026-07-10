@@ -66,13 +66,14 @@ export default function MaintenancePage() {
         }
         .m-logo-mark {
           width: 36px; height: 36px; border-radius: 10px;
-          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          overflow: hidden;
           display: flex; align-items: center; justify-content: center;
-          font-size: 16px; font-weight: 900; color: #fff;
           box-shadow: 0 0 24px rgba(37,99,235,0.4);
         }
+        .m-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
         .m-logo-text {
-          font-size: 20px; font-weight: 900; letter-spacing: -0.5px; color: #fff;
+          font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+          font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: #fff;
         }
         .m-logo-text span { color: #2563eb; }
 
@@ -166,8 +167,8 @@ export default function MaintenancePage() {
 
         <div className="m-card">
           <div className="m-logo">
-            <div className="m-logo-mark">M</div>
-            <span className="m-logo-text">PLAY<span>BACK</span></span>
+            <div className="m-logo-mark"><img src="/logo.png" alt="Playback" /></div>
+            <span className="m-logo-text">playback</span>
           </div>
 
           <div className="m-icon-wrap">
