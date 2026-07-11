@@ -17,6 +17,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (!profile || profile.role !== 'admin') redirect('/discover')
 
+  const { data: settings } = await db.from('site_settings').select('logo_url').eq('id', 1).single()
+  const logoUrl = settings?.logo_url ?? '/logo.png'
+
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: "'Inter', system-ui, sans-serif" }}>
       <style>{`
@@ -53,7 +56,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       <div className="admin-topbar">
         <div className="admin-topbar-brand">
-          <div className="admin-topbar-brand-icon"><img src="/logo.png" alt="Playback" /></div>
+          <div className="admin-topbar-brand-icon"><img src={logoUrl} alt="Playback" /></div>
           <span className="admin-topbar-title">
             playback <span style={{ color: '#2563eb' }}>Admin</span>
           </span>
@@ -69,6 +72,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="admin-subnav">
         <a href="/admin" className="admin-subnav-link">Dashboard</a>
         <a href="/admin/promotions" className="admin-subnav-link">Promotions</a>
+        <a href="/admin/branding" className="admin-subnav-link">Branding</a>
         <a href="/blog/new" className="admin-subnav-link">Write Post</a>
       </div>
 

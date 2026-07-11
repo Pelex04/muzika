@@ -9,6 +9,7 @@ import TrackRow from '@/components/track/TrackRow'
 import ArtistCard from '@/components/artist/ArtistCard'
 import HeroBanner from '@/components/track/HeroBanner'
 import QuickNav from '@/components/layout/QuickNav'
+import { useLogo } from '@/lib/logo-context'
 import Link from 'next/link'
 import type { Track, Artist } from '@/types'
 
@@ -136,6 +137,7 @@ function HomeSearch() {
 }
 
 export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion }: Props) {
+  const logoUrl = useLogo()
   const greeting = getGreeting()
 
   return (
@@ -412,7 +414,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             {/* Brand */}
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Playback" className="w-8 h-8 rounded-lg" />
+              <img src={logoUrl} alt="Playback" className="w-8 h-8 rounded-lg" />
               <span className="font-wordmark text-white font-bold text-lg">
                 playback
               </span>

@@ -10,6 +10,7 @@ import { notify } from '@/components/ui/notify'
 import { Eye, EyeOff, Mail, Lock, User, Phone, Music2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import AuthVisualPanel from '@/components/auth/AuthVisualPanel'
+import { useLogo } from '@/lib/logo-context'
 
 const schema = z.object({
   full_name: z.string().min(2, 'Enter your full name'),
@@ -105,6 +106,7 @@ const S: Record<string, React.CSSProperties> = {
 }
 
 export default function SignUpPage() {
+  const logoUrl = useLogo()
   const router = useRouter()
   const supabase = createClient()
   const [showPassword, setShowPassword] = useState(false)
@@ -197,7 +199,7 @@ export default function SignUpPage() {
 
             {/* Mobile logo */}
             <div className="auth-mobile-logo-signup" style={{ display: 'none', alignItems: 'center', gap: '9px', marginBottom: '32px' }}>
-              <img src="/logo.png" alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
+              <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
               <span className="font-wordmark" style={{ fontSize: '19px', fontWeight: 700, color: '#ffffff' }}>
                 playback
               </span>

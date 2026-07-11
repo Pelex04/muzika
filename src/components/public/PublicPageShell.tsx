@@ -1,5 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { Music2, ArrowLeft } from 'lucide-react'
+import { useLogo } from '@/lib/logo-context'
 
 export default function PublicPageShell({
   children,
@@ -8,6 +11,7 @@ export default function PublicPageShell({
   children: React.ReactNode
   backHref?: string
 }) {
+  const logoUrl = useLogo()
   return (
     <div style={{ minHeight: '100vh', background: '#121212' }}>
       <header style={{
@@ -16,7 +20,7 @@ export default function PublicPageShell({
         position: 'sticky', top: 0, background: '#121212', zIndex: 10,
       }}>
         <Link href="/landing" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <img src="/logo.png" alt="Playback" style={{ width: '32px', height: '32px', borderRadius: '9px' }} />
+          <img src={logoUrl} alt="Playback" style={{ width: '32px', height: '32px', borderRadius: '9px' }} />
           <span className="font-wordmark" style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>
             playback
           </span>

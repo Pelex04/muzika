@@ -1,18 +1,22 @@
 import Link from 'next/link'
 import { Music2, Mail, ArrowLeft } from 'lucide-react'
+import { getAdminClient } from '@/lib/admin'
 
-export default function CheckEmailPage({
+export default async function CheckEmailPage({
   searchParams,
 }: {
   searchParams: Promise<{ email?: string }>
 }) {
+  const db = getAdminClient()
+  const { data: settings } = await db.from('site_settings').select('logo_url').eq('id', 1).single()
+  const logoUrl = settings?.logo_url ?? '/logo.png'
   return (
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', background: '#121212', padding: '24px' }}>
       <div style={{ background: '#181818', borderRadius: '20px', padding: '48px 40px', maxWidth: '460px', width: '100%', textAlign: 'center', boxShadow: '0 4px 6px rgba(0,0,0,.3), 0 12px 40px rgba(0,0,0,.4)' }}>
 
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '36px' }}>
-          <img src="/logo.png" alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
+          <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
           <span className="font-wordmark" style={{ fontSize: '21px', fontWeight: 700, color: '#ffffff' }}>
             playback
           </span>

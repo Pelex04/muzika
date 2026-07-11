@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
+import { getAdminClient } from '@/lib/admin'
+import { LogoProvider } from '@/lib/logo-context'
 import './globals.css'
 
 const BASE_URL = 'https://muziqa.vercel.app'
@@ -50,7 +52,10 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const db = getAdminClient()
+  const { data: settings } = await db.from('site_settings').select('logo_url').eq('id', 1).single()
+
   return (
     <html lang="en">
       <head>
@@ -59,7 +64,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
-        {children}
+        <LogoProvider logoUrl={settings?.logo_url ?? null}>
+          {children}
+        </LogoProvider>
         <Toaster
           position="bottom-right"
           toastOptions={{

@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { notify } from '@/components/ui/notify'
 import { Eye, EyeOff, Mail, Lock, Music2 } from 'lucide-react'
+import { useLogo } from '@/lib/logo-context'
 import { createClient } from '@/lib/supabase/client'
 import AuthVisualPanel from '@/components/auth/AuthVisualPanel'
 
@@ -18,6 +19,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export default function SignInPage() {
+  const logoUrl = useLogo()
   const router = useRouter()
   const supabase = createClient()
   const [showPassword, setShowPassword] = useState(false)
@@ -164,7 +166,7 @@ export default function SignInPage() {
         <div className="auth-right">
           <div className="auth-form">
             <div className="auth-mobile-logo">
-              <img src="/logo.png" alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '9px' }} />
+              <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '9px' }} />
               <span className="font-wordmark" style={{ fontSize:'19px', fontWeight:700, color:'#0D1B3E' }}>
                 playback
               </span>

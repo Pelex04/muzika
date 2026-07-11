@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { getAdminClient } from '@/lib/admin'
 
 export const runtime = 'edge'
 export const alt = 'Playback — Stream & Own Malawian Music'
@@ -6,7 +7,12 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image() {
-  const logoData = await fetch(new URL('../../public/logo.png', import.meta.url)).then(res => res.arrayBuffer())
+  const db = getAdminClient()
+  const { data: settings } = await db.from('site_settings').select('logo_url').eq('id', 1).single()
+
+  const logoData = settings?.logo_url
+    ? await fetch(settings.logo_url).then(res => res.arrayBuffer())
+    : await fetch(new URL('../../public/logo.png', import.meta.url)).then(res => res.arrayBuffer())
 
   return new ImageResponse(
     (

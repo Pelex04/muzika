@@ -1,6 +1,10 @@
 import Link from 'next/link'
+import { getAdminClient } from '@/lib/admin'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const db = getAdminClient()
+  const { data: settings } = await db.from('site_settings').select('logo_url').eq('id', 1).single()
+  const logoUrl = settings?.logo_url ?? '/logo.png'
   return (
     <>
       <style>{`
@@ -506,7 +510,7 @@ export default function LandingPage() {
         <nav className="lp-nav">
           <Link href="/landing" className="lp-nav-logo">
             <div className="lp-logo-mark">
-              <img src="/logo.png" alt="Playback" />
+              <img src={logoUrl} alt="Playback" />
             </div>
             <span className="lp-logo-text">playback</span>
           </Link>

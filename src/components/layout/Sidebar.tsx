@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut, BookOpen, Search, Disc3 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import NotificationBell from './NotificationBell'
+import { useLogo } from '@/lib/logo-context'
 import type { Profile } from '@/types'
 
 const NAV = [
@@ -24,6 +25,7 @@ const ARTIST_NAV = [
 ]
 
 export default function Sidebar({ profile }: { profile: Profile | null }) {
+  const logoUrl = useLogo()
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -68,7 +70,7 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '26px 22px 22px' }}>
           <Link href="/discover" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-            <img src="/logo.png" alt="Playback" style={{ width: '34px', height: '34px', borderRadius: '9px', flexShrink: 0 }} />
+            <img src={logoUrl} alt="Playback" style={{ width: '34px', height: '34px', borderRadius: '9px', flexShrink: 0 }} />
             <span className="font-wordmark" style={{ fontSize: '19px', fontWeight: 700, color: '#fff' }}>
               playback
             </span>
