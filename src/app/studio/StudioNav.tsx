@@ -6,25 +6,34 @@ import { LayoutDashboard, Upload, Music2, Disc3, Mic2, Calendar, Megaphone, Badg
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
-const NAV = [
+const ARTIST_NAV = [
   { href: '/studio',              label: 'Dashboard',  icon: LayoutDashboard, exact: true },
   { href: '/studio/upload',       label: 'Upload',     icon: Upload },
   { href: '/studio/tracks',       label: 'My Tracks',  icon: Music2 },
   { href: '/studio/albums',       label: 'My Albums',  icon: Disc3 },
-  { href: '/studio/podcasts',     label: 'My Podcasts', icon: Mic2 },
   { href: '/studio/scheduled',    label: 'Scheduled',  icon: Calendar },
   { href: '/studio/banner',       label: 'Banner',     icon: Megaphone },
   { href: '/studio/verification', label: 'Verification', icon: BadgeCheck },
   { href: '/studio/profile',      label: 'My Profile', icon: UserCircle },
 ]
 
+const PODCAST_NAV = [
+  { href: '/studio',              label: 'Dashboard',  icon: LayoutDashboard, exact: true },
+  { href: '/studio/upload',       label: 'Upload',     icon: Upload },
+  { href: '/studio/podcasts',     label: 'My Podcasts', icon: Mic2 },
+  { href: '/studio/verification', label: 'Verification', icon: BadgeCheck },
+  { href: '/studio/profile',      label: 'My Profile', icon: UserCircle },
+]
+
 interface Props {
-  artist: { id: string; stage_name: string; avatar_url: string | null; track_count: number; follower_count: number }
+  artist: { id: string; stage_name: string; avatar_url: string | null; track_count: number; follower_count: number; creator_type?: 'artist' | 'podcast_creator' }
 }
 
 export default function StudioNav({ artist }: Props) {
   const pathname = usePathname()
   const router = useRouter()
+  const isPodcast = artist.creator_type === 'podcast_creator'
+  const NAV = isPodcast ? PODCAST_NAV : ARTIST_NAV
 
   const isActive = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
@@ -65,7 +74,7 @@ export default function StudioNav({ artist }: Props) {
             </div>
             <div style={{ minWidth: 0 }}>
               <p style={{ color: '#fff', fontSize: '13px', fontWeight: 700, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{artist.stage_name}</p>
-              <p style={{ color: '#555', fontSize: '11px', margin: 0 }}>{artist.track_count ?? 0} tracks · {artist.follower_count ?? 0} followers</p>
+              <p style={{ color: '#555', fontSize: '11px', margin: 0 }}>{artist.track_count ?? 0} {isPodcast ? 'episodes' : 'tracks'} · {artist.follower_count ?? 0} followers</p>
             </div>
           </div>
         </div>
@@ -95,13 +104,18 @@ export default function StudioNav({ artist }: Props) {
 
       {/* Mobile bottom bar */}
       <div className="studio-mobile-bar">
-        {[
+        {(isPodcast ? [
+          { href: '/studio',           icon: LayoutDashboard, label: 'Dash',    exact: true },
+          { href: '/studio/upload',    icon: Upload,          label: 'Upload' },
+          { href: '/studio/podcasts',  icon: Mic2,            label: 'Podcasts' },
+          { href: '/studio/profile',   icon: UserCircle,      label: 'Profile' },
+        ] : [
           { href: '/studio',           icon: LayoutDashboard, label: 'Dash',    exact: true },
           { href: '/studio/upload',    icon: Upload,          label: 'Upload' },
           { href: '/studio/tracks',    icon: Music2,          label: 'Tracks' },
           { href: '/studio/albums',    icon: Disc3,           label: 'Albums' },
           { href: '/studio/profile',   icon: UserCircle,      label: 'Profile' },
-        ].map(({ href, icon: Icon, label, exact }) => {
+        ]).map(({ href, icon: Icon, label, exact }) => {
           const active = isActive(href, exact)
           return (
             <Link key={href} href={href} style={{

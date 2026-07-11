@@ -12,11 +12,14 @@ export async function POST(
 
   const { data: artist } = await supabase
     .from('artists')
-    .select('id')
+    .select('id, creator_type')
     .eq('profile_id', user.id)
     .single()
 
-  if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
+  if (!artist) return NextResponse.json({ error: 'Podcast creator profile required' }, { status: 403 })
+  if (artist.creator_type !== 'podcast_creator') {
+    return NextResponse.json({ error: 'Only podcast creators can upload episodes' }, { status: 403 })
+  }
 
   // Confirm this artist actually owns the podcast show being added to
   const { data: podcast } = await supabase

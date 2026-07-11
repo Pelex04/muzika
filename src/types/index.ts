@@ -30,6 +30,7 @@ export interface Artist {
   verified: boolean
   follower_count: number
   track_count: number
+  creator_type?: 'artist' | 'podcast_creator'
   created_at: string
   // joined from profile
   profile?: Profile

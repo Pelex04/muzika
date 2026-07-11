@@ -8,11 +8,14 @@ export async function POST(req: NextRequest) {
 
   const { data: artist } = await supabase
     .from('artists')
-    .select('id')
+    .select('id, creator_type')
     .eq('profile_id', user.id)
     .single()
 
   if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
+  if (artist.creator_type === 'podcast_creator') {
+    return NextResponse.json({ error: 'Podcast creators cannot create albums' }, { status: 403 })
+  }
 
   const { title, genre, coverPath, releaseDate, releaseType } = await req.json() as {
     title: string

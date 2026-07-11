@@ -26,11 +26,14 @@ export async function POST(req: NextRequest) {
 
   const { data: artist } = await supabase
     .from('artists')
-    .select('id')
+    .select('id, creator_type')
     .eq('profile_id', user.id)
     .single()
 
-  if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
+  if (!artist) return NextResponse.json({ error: 'Podcast creator profile required' }, { status: 403 })
+  if (artist.creator_type !== 'podcast_creator') {
+    return NextResponse.json({ error: 'Only podcast creators can create podcast shows. Artists cannot also be podcast creators.' }, { status: 403 })
+  }
 
   const { title, description, coverPath, category } = await req.json() as {
     title: string

@@ -11,7 +11,7 @@ export default async function StudioPage() {
   const db = getAdminClient()
   const { data: artist } = await db
     .from('artists')
-    .select('id, stage_name, avatar_url, track_count, follower_count, genre, location, bio, social_links')
+    .select('id, stage_name, avatar_url, track_count, follower_count, genre, location, bio, social_links, creator_type')
     .eq('profile_id', user.id)
     .single()
 

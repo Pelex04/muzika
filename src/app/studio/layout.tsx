@@ -12,7 +12,7 @@ export default async function StudioLayout({ children }: { children: React.React
   const db = getAdminClient()
   const { data: artist } = await db
     .from('artists')
-    .select('id, stage_name, avatar_url, track_count, follower_count')
+    .select('id, stage_name, avatar_url, track_count, follower_count, creator_type')
     .eq('profile_id', user.id)
     .single()
 

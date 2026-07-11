@@ -6,6 +6,7 @@ import { notify } from '@/components/ui/notify'
 import type { Profile, Artist } from '@/types'
 
 const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Dancehall', 'Amapiano']
+const PODCAST_CATEGORIES = ['Music', 'Comedy', 'News', 'Education', 'Sports', 'Culture', 'Business', 'Religion', 'Other']
 const CITIES = ['Blantyre', 'Lilongwe', 'Mzuzu', 'Zomba', 'Kasungu', 'Balaka', 'Mangochi', 'Other']
 
 interface Props {
@@ -17,6 +18,8 @@ interface Props {
 
 export default function EditProfileModal({ profile, artist, onClose, onSaved }: Props) {
   const isArtist = !!artist
+  const isPodcastCreator = artist?.creator_type === 'podcast_creator'
+  const CATEGORY_OPTIONS = isPodcastCreator ? PODCAST_CATEGORIES : GENRES
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [fullName, setFullName] = useState(profile.full_name ?? '')
@@ -213,18 +216,18 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
           <>
             <div style={{ height: '1px', background: '#2a2a2a', margin: '20px 0' }} />
             <p style={{ fontSize: '11px', fontWeight: 700, color: '#717171', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '14px' }}>
-              Artist Profile
+              {isPodcastCreator ? 'Podcast Creator Profile' : 'Artist Profile'}
             </p>
 
             <div style={{ marginBottom: '16px' }}>
-              <label style={labelStyle}>Stage Name</label>
+              <label style={labelStyle}>{isPodcastCreator ? 'Creator/Show Name' : 'Stage Name'}</label>
               <input value={stageName} onChange={e => setStageName(e.target.value)} style={inputStyle} onFocus={focus} onBlur={blur} />
             </div>
 
             <div style={{ marginBottom: '16px' }}>
-              <label style={labelStyle}>Genre</label>
+              <label style={labelStyle}>{isPodcastCreator ? 'Category' : 'Genre'}</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px' }}>
-                {GENRES.map(g => (
+                {CATEGORY_OPTIONS.map(g => (
                   <button
                     key={g} type="button"
                     onClick={() => setGenre(g)}

@@ -22,12 +22,7 @@ export default function QuickNav({ active }: { active: string }) {
         const isActive = label.toLowerCase() === active
         return (
           <Link key={href} href={href} className="flex flex-col items-center gap-1.5 min-w-[62px]">
-            <div className={cn(
-              'w-[52px] h-[52px] rounded-full flex items-center justify-center transition-all border-2',
-              isActive
-                ? 'bg-white text-black border-blue-500'
-                : 'bg-[#282828] text-[#b3b3b3] border-transparent hover:bg-[#3a3a3a]'
-            )}>
+            <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center transition-all bg-[#282828] text-[#b3b3b3] hover:bg-[#3a3a3a]">
               <Icon className="w-5 h-5" />
             </div>
             <span className={cn(

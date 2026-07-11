@@ -16,7 +16,7 @@ export default async function UploadPage() {
 
   const { data: artist } = await supabase
     .from('artists')
-    .select('id')
+    .select('id, creator_type')
     .eq('profile_id', user.id)
     .single()
 
@@ -28,5 +28,5 @@ export default async function UploadPage() {
     .eq('artist_id', artist.id)
     .order('created_at', { ascending: false })
 
-  return <UploadForm existingPodcasts={podcasts ?? []} />
+  return <UploadForm existingPodcasts={podcasts ?? []} creatorType={artist.creator_type ?? 'artist'} />
 }

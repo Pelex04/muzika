@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Upload, ChevronRight, Mic, Play, Download, DollarSign, Music2, Heart, ShoppingBag, Trash2, LogOut, Pencil } from 'lucide-react'
+import { Upload, ChevronRight, Mic, Mic2, Play, Download, DollarSign, Music2, Heart, ShoppingBag, Trash2, LogOut, Pencil } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { formatMWK, formatCount } from '@/lib/utils'
@@ -30,7 +30,9 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [confirmId, setConfirmId] = useState<string | null>(null)
   const [tracks, setTracks] = useState<Track[]>(initialTracks)
-  const isArtist = !!artist
+  const isArtist = !!artist && artist.creator_type !== 'podcast_creator'
+  const isPodcastCreator = !!artist && artist.creator_type === 'podcast_creator'
+  const isCreator = isArtist || isPodcastCreator
   const [editOpen, setEditOpen] = useState(false)
 
   const signOut = async () => {
@@ -57,9 +59,9 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
     setDeletingId(null)
   }
 
-  const displayName = isArtist ? artist.stage_name : profile?.full_name
+  const displayName = isCreator ? artist!.stage_name : profile?.full_name
   const initial = displayName?.charAt(0)?.toUpperCase() ?? '?'
-  const avatarUrl = isArtist ? artist?.avatar_url : profile?.avatar_url
+  const avatarUrl = isCreator ? artist?.avatar_url : profile?.avatar_url
 
   return (
     <>
@@ -257,7 +259,7 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
         {/* ── PROFILE HEADER ── */}
         <div className="prof-header">
           <div className="prof-top-row">
-            <div className={`prof-avatar ${isArtist ? 'prof-avatar-artist' : ''}`}>
+            <div className={`prof-avatar ${isCreator ? 'prof-avatar-artist' : ''}`}>
               {avatarUrl
                 ? <img src={avatarUrl} alt={displayName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 : initial
@@ -265,25 +267,32 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
             </div>
             <div className="prof-info">
               <div className="prof-name">{displayName}</div>
-              {isArtist
-                ? <div className="prof-genre">{artist.genre} · {artist.location}</div>
+              {isCreator
+                ? <div className="prof-genre">{artist!.genre} · {artist!.location}</div>
                 : <div className="prof-email">{profile?.email}</div>
               }
               {isArtist && (
                 <div className="prof-badge"><Mic size={9}/> Artist</div>
               )}
+              {isPodcastCreator && (
+                <div className="prof-badge" style={{ background: 'rgba(10,186,181,0.15)', color: '#0abab5' }}><Mic2 size={9}/> Podcast Creator</div>
+              )}
             </div>
           </div>
 
-          {isArtist && artist.bio && (
-            <p className="prof-bio">{artist.bio}</p>
+          {isCreator && artist!.bio && (
+            <p className="prof-bio">{artist!.bio}</p>
           )}
 
-          <div className="prof-actions" style={{ marginTop: isArtist && artist.bio ? '12px' : '0', paddingTop: '12px' }}>
-            {isArtist
-              ? <Link href="/upload" className="btn-prof-primary"><Upload size={13}/> Upload Track</Link>
-              : <Link href="/become-artist" className="btn-prof-blue"><Mic size={13}/> Become an Artist</Link>
-            }
+          <div className="prof-actions" style={{ marginTop: isCreator && artist!.bio ? '12px' : '0', paddingTop: '12px' }}>
+            {isArtist && <Link href="/upload" className="btn-prof-primary"><Upload size={13}/> Upload Track</Link>}
+            {isPodcastCreator && <Link href="/upload" className="btn-prof-primary"><Upload size={13}/> Upload Episode</Link>}
+            {!isCreator && (
+              <>
+                <Link href="/become-artist" className="btn-prof-blue"><Mic size={13}/> Become an Artist</Link>
+                <Link href="/become-artist?type=podcast" className="btn-prof-blue" style={{ background: '#0abab5' }}><Mic2 size={13}/> Become a Podcast Creator</Link>
+              </>
+            )}
             <button onClick={() => setEditOpen(true)} className="btn-prof-ghost">
               <Pencil size={13}/> Edit Profile
             </button>
@@ -302,7 +311,7 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
           />
         )}
 
-        {/* ── ARTIST STATS ── */}
+        {/* ── CREATOR STATS ── */}
         {isArtist && (
           <div className="stats-grid">
             {[
@@ -310,6 +319,20 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
               { label: 'Plays',     value: formatCount(totalPlays), icon: <Play size={16} color="#10B981"/>, bg: '#D1FAE5' },
               { label: 'Downloads', value: formatCount(tracks.reduce((s, t) => s + (t.download_count || 0), 0)), icon: <Download size={16} color="#F59E0B"/>, bg: '#FEF3C7' },
               { label: 'Earnings',  value: formatMWK(totalEarnings), icon: <DollarSign size={16} color="#8B5CF6"/>, bg: '#EDE9FE' },
+            ].map(({ label, value, icon, bg }) => (
+              <div key={label} className="stat-box">
+                <div className="stat-box-icon" style={{ background: bg, width: '30px', height: '30px', borderRadius: '8px', display: 'grid', placeItems: 'center', margin: '0 auto 8px' }}>{icon}</div>
+                <div className="stat-box-val">{value}</div>
+                <div className="stat-box-label">{label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {isPodcastCreator && (
+          <div className="stats-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+            {[
+              { label: 'Episodes', value: String(tracks.length), icon: <Mic2 size={16} color="#0abab5"/>, bg: 'rgba(10,186,181,0.15)' },
+              { label: 'Plays',    value: formatCount(totalPlays), icon: <Play size={16} color="#10B981"/>, bg: '#D1FAE5' },
             ].map(({ label, value, icon, bg }) => (
               <div key={label} className="stat-box">
                 <div className="stat-box-icon" style={{ background: bg, width: '30px', height: '30px', borderRadius: '8px', display: 'grid', placeItems: 'center', margin: '0 auto 8px' }}>{icon}</div>
@@ -328,6 +351,11 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
               My Tracks ({tracks.length})
             </button>
           )}
+          {isPodcastCreator && (
+            <button className={`tab-btn ${activeTab === 'tracks' ? 'on' : ''}`} onClick={() => setActiveTab('tracks')}>
+              My Episodes ({tracks.length})
+            </button>
+          )}
           <button className={`tab-btn ${activeTab === 'saved' ? 'on' : ''}`} onClick={() => setActiveTab('saved')}>
             Saved ({savedTracks.length})
           </button>
@@ -339,51 +367,63 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
         {/* ── OVERVIEW ── */}
         {activeTab === 'overview' && (
           <>
-            {!isArtist && (
-              <div className="become-card">
-                <div>
-                  <p className="become-eyebrow">For creators</p>
-                  <p className="become-title">Share your music with Malawi</p>
-                  <p className="become-sub">Upload your tracks, get discovered, and build your fanbase — completely free.</p>
+            {!isCreator && (
+              <>
+                <div className="become-card" style={{ marginBottom: '10px' }}>
+                  <div>
+                    <p className="become-eyebrow">For creators</p>
+                    <p className="become-title">Share your music with Malawi</p>
+                    <p className="become-sub">Upload your tracks, get discovered, and build your fanbase — completely free.</p>
+                  </div>
+                  <Link href="/become-artist" className="btn-become">
+                    <Mic size={14}/> Get started <ChevronRight size={13}/>
+                  </Link>
                 </div>
-                <Link href="/become-artist" className="btn-become">
-                  <Mic size={14}/> Get started <ChevronRight size={13}/>
-                </Link>
-              </div>
+                <div className="become-card">
+                  <div>
+                    <p className="become-eyebrow">For creators</p>
+                    <p className="become-title">Share your podcast with Malawi</p>
+                    <p className="become-sub">Upload your episodes, get discovered, and build your audience — completely free.</p>
+                  </div>
+                  <Link href="/become-artist?type=podcast" className="btn-become" style={{ background: '#0abab5' }}>
+                    <Mic2 size={14}/> Get started <ChevronRight size={13}/>
+                  </Link>
+                </div>
+              </>
             )}
-            {isArtist && tracks.length > 0 && (
+            {isCreator && tracks.length > 0 && (
               <div className="tab-card">
                 <div className="tab-card-header">
-                  <span className="tab-card-title">Recent Tracks</span>
+                  <span className="tab-card-title">{isPodcastCreator ? 'Recent Episodes' : 'Recent Tracks'}</span>
                   <button className="tab-card-action" onClick={() => setActiveTab('tracks')}>See all</button>
                 </div>
                 {tracks.slice(0, 4).map(t => <TrackRow key={t.id} track={t} onDelete={deleteTrack} deleting={deletingId === t.id} showStats />)}
               </div>
             )}
-            {isArtist && tracks.length === 0 && (
+            {isCreator && tracks.length === 0 && (
               <div className="tab-card">
                 <div className="empty">
                   <div className="empty-icon" style={{ background: '#DBEAFE' }}><Upload size={20} color="#2563EB"/></div>
-                  <p className="empty-title">No tracks yet</p>
-                  <p className="empty-sub">Upload your first track and start getting discovered.</p>
-                  <Link href="/upload" className="btn-empty"><Upload size={13}/> Upload Track</Link>
+                  <p className="empty-title">{isPodcastCreator ? 'No episodes yet' : 'No tracks yet'}</p>
+                  <p className="empty-sub">{isPodcastCreator ? 'Upload your first episode and start getting discovered.' : 'Upload your first track and start getting discovered.'}</p>
+                  <Link href="/upload" className="btn-empty"><Upload size={13}/> {isPodcastCreator ? 'Upload Episode' : 'Upload Track'}</Link>
                 </div>
               </div>
             )}
           </>
         )}
 
-        {/* ── MY TRACKS ── */}
-        {activeTab === 'tracks' && isArtist && (
+        {/* ── MY TRACKS / EPISODES ── */}
+        {activeTab === 'tracks' && isCreator && (
           <div className="tab-card">
             <div className="tab-card-header">
-              <span className="tab-card-title">All Tracks</span>
+              <span className="tab-card-title">{isPodcastCreator ? 'All Episodes' : 'All Tracks'}</span>
               <Link href="/upload" style={{ display:'inline-flex', alignItems:'center', gap:'5px', padding:'7px 13px', background:'#ffffff', color:'#000000', borderRadius:'7px', fontSize:'12px', fontWeight:700, textDecoration:'none' }}>
                 <Upload size={11}/> Upload
               </Link>
             </div>
             {tracks.length === 0
-              ? <p style={{ textAlign:'center', padding:'28px 0', color:'#717171', fontSize:'14px' }}>No tracks yet.</p>
+              ? <p style={{ textAlign:'center', padding:'28px 0', color:'#717171', fontSize:'14px' }}>{isPodcastCreator ? 'No episodes yet.' : 'No tracks yet.'}</p>
               : tracks.map(t => <TrackRow key={t.id} track={t} onDelete={deleteTrack} deleting={deletingId === t.id} showStats />)
             }
           </div>

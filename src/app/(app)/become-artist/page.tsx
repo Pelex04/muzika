@@ -1,27 +1,38 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Music2, Mic, MapPin, FileText, ChevronRight, Loader2 } from 'lucide-react'
+import { Music2, Mic, Mic2, MapPin, FileText, ChevronRight, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Dancehall', 'Amapiano']
+const PODCAST_CATEGORIES = ['Music', 'Comedy', 'News', 'Education', 'Sports', 'Culture', 'Business', 'Religion', 'Other']
 const CITIES = ['Blantyre', 'Lilongwe', 'Mzuzu', 'Zomba', 'Kasungu', 'Balaka', 'Mangochi', 'Other']
 
 const schema = z.object({
-  stage_name: z.string().min(2, 'Stage name must be at least 2 characters').max(50),
-  genre: z.string().min(1, 'Select a genre'),
+  stage_name: z.string().min(2, 'Must be at least 2 characters').max(50),
+  genre: z.string().min(1, 'Please make a selection'),
   location: z.string().min(1, 'Select your city'),
   bio: z.string().max(300, 'Bio must be under 300 characters').optional(),
 })
 type FormData = z.infer<typeof schema>
 
 export default function BecomeArtistPage() {
+  return (
+    <Suspense fallback={null}>
+      <BecomeArtistForm />
+    </Suspense>
+  )
+}
+
+function BecomeArtistForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const isPodcast = searchParams.get('type') === 'podcast'
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1)
 
@@ -49,7 +60,7 @@ export default function BecomeArtistPage() {
       const res = await fetch('/api/become-artist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, creatorType: isPodcast ? 'podcast_creator' : 'artist' }),
       })
       const result = await res.json()
       if (!res.ok) {
@@ -57,7 +68,7 @@ export default function BecomeArtistPage() {
         setLoading(false)
         return
       }
-      toast.success('Welcome to Playback as an artist!')
+      toast.success(isPodcast ? 'Welcome to Playback as a podcast creator!' : 'Welcome to Playback as an artist!')
       router.push('/profile')
       router.refresh()
     } catch {
@@ -100,14 +111,16 @@ export default function BecomeArtistPage() {
       <div style={S.card}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'grid', placeItems: 'center', margin: '0 auto 16px' }}>
-            <Mic size={26} color="white" />
+          <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: isPodcast ? 'linear-gradient(135deg,#0f766e,#0abab5)' : 'linear-gradient(135deg,#1e3a8a,#2563eb)', display: 'grid', placeItems: 'center', margin: '0 auto 16px' }}>
+            {isPodcast ? <Mic2 size={26} color="white" /> : <Mic size={26} color="white" />}
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.5px', marginBottom: '6px' }}>
-            Become an Artist
+            {isPodcast ? 'Become a Podcast Creator' : 'Become an Artist'}
           </h1>
           <p style={{ fontSize: '14px', color: '#b3b3b3', lineHeight: 1.6 }}>
-            Set up your artist profile to start uploading and selling your music on Playback.
+            {isPodcast
+              ? 'Set up your podcast creator profile to start publishing episodes on Playback.'
+              : 'Set up your artist profile to start uploading and selling your music on Playback.'}
           </p>
         </div>
 
@@ -115,13 +128,18 @@ export default function BecomeArtistPage() {
         <div style={{ background: '#121212', borderRadius: '12px', padding: '16px 18px', marginBottom: '28px' }}>
           <p style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>What you unlock</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {[
+            {(isPodcast ? [
+              'Upload unlimited podcast episodes',
+              'Create and manage podcast shows',
+              'Podcast creator profile page with stats',
+              'Write blog posts & show updates',
+            ] : [
               'Upload unlimited tracks',
               'Set your own MWK download prices',
               'Receive 85% of every sale directly',
               'Artist profile page with stats',
               'Write blog posts & artist updates',
-            ].map((item) => (
+            ]).map((item) => (
               <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#b3b3b3' }}>
                 <div style={{ width: '18px', height: '18px', borderRadius: '50%', background: '#DBEAFE', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="3">
@@ -137,19 +155,19 @@ export default function BecomeArtistPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Stage Name */}
           <div style={{ marginBottom: '18px' }}>
-            <label style={S.label}>Stage Name</label>
+            <label style={S.label}>{isPodcast ? 'Show Name' : 'Stage Name'}</label>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <span style={S.iconWrap}><Mic size={15} color="#717171" /></span>
-              <input {...register('stage_name')} type="text" placeholder="Your artist name" style={S.input} onFocus={focus} onBlur={blur} />
+              <span style={S.iconWrap}>{isPodcast ? <Mic2 size={15} color="#717171" /> : <Mic size={15} color="#717171" />}</span>
+              <input {...register('stage_name')} type="text" placeholder={isPodcast ? 'Your podcast name' : 'Your artist name'} style={S.input} onFocus={focus} onBlur={blur} />
             </div>
             {errors.stage_name && <p style={{ color: '#EF4444', fontSize: '12px', marginTop: '4px' }}>{errors.stage_name.message}</p>}
           </div>
 
-          {/* Genre */}
+          {/* Genre / Category */}
           <div style={{ marginBottom: '18px' }}>
-            <label style={S.label}>Primary Genre</label>
+            <label style={S.label}>{isPodcast ? 'Primary Category' : 'Primary Genre'}</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {GENRES.map(g => (
+              {(isPodcast ? PODCAST_CATEGORIES : GENRES).map(g => (
                 <button
                   key={g} type="button"
                   onClick={() => setValue('genre', g)}
@@ -235,7 +253,7 @@ export default function BecomeArtistPage() {
           >
             {loading
               ? <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Setting up profile…</>
-              : <><ChevronRight size={16} /> Create Artist Profile</>
+              : <><ChevronRight size={16} /> {isPodcast ? 'Create Podcast Creator Profile' : 'Create Artist Profile'}</>
             }
           </button>
 

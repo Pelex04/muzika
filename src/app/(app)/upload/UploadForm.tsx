@@ -89,9 +89,9 @@ interface ExistingPodcast {
   category: string | null
 }
 
-export default function UploadForm({ existingPodcasts = [] }: { existingPodcasts?: ExistingPodcast[] }) {
+export default function UploadForm({ existingPodcasts = [], creatorType = 'artist' }: { existingPodcasts?: ExistingPodcast[]; creatorType?: 'artist' | 'podcast_creator' }) {
   const router = useRouter()
-  const [mode, setMode] = useState<UploadMode>('single')
+  const [mode, setMode] = useState<UploadMode>(creatorType === 'podcast_creator' ? 'podcast' : 'single')
 
   // ── SINGLE TRACK STATE ──
   const [audioFile, setAudioFile] = useState<File | null>(null)
@@ -443,9 +443,9 @@ export default function UploadForm({ existingPodcasts = [] }: { existingPodcasts
 
         {/* Mode toggle */}
         <div className="flex gap-1 bg-[#181818] rounded-xl p-1 mb-6">
-          {modeTab('single', 'Single Track', <Music size={15} />)}
-          {modeTab('album', 'Album', <Disc3 size={15} />)}
-          {modeTab('podcast', 'Podcast', <Mic2 size={15} />)}
+          {creatorType === 'artist' && modeTab('single', 'Single Track', <Music size={15} />)}
+          {creatorType === 'artist' && modeTab('album', 'Album', <Disc3 size={15} />)}
+          {creatorType === 'podcast_creator' && modeTab('podcast', 'Podcast', <Mic2 size={15} />)}
         </div>
 
         {mode === 'single' ? (

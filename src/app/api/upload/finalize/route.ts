@@ -14,11 +14,14 @@ export async function POST(req: NextRequest) {
 
   const { data: artist } = await supabase
     .from('artists')
-    .select('id, stage_name')
+    .select('id, stage_name, creator_type')
     .eq('profile_id', user.id)
     .single()
 
   if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
+  if (artist.creator_type === 'podcast_creator') {
+    return NextResponse.json({ error: 'Podcast creators upload episodes, not tracks. Use the Podcast tab.' }, { status: 403 })
+  }
 
   const { title, genre, audioPath, coverPath, albumId, producers, featuredArtists, lyrics, releaseDate } = await req.json() as {
     title: string

@@ -11,8 +11,9 @@ export default async function StudioScheduledPage() {
   if (!user) redirect('/signin')
 
   const db = getAdminClient()
-  const { data: artist } = await db.from('artists').select('id').eq('profile_id', user.id).single()
+  const { data: artist } = await db.from('artists').select('id, creator_type').eq('profile_id', user.id).single()
   if (!artist) redirect('/become-artist')
+  if (artist.creator_type === 'podcast_creator') redirect('/studio/podcasts')
 
   const [tracksRes, albumsRes] = await Promise.all([
     db.from('tracks').select('id, title, genre, cover_url, release_date, created_at').eq('artist_id', artist.id).eq('is_scheduled', true).order('release_date', { ascending: true }),

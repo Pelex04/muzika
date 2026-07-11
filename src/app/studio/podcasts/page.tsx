@@ -11,8 +11,9 @@ export default async function StudioPodcastsPage() {
   if (!user) redirect('/signin')
 
   const db = getAdminClient()
-  const { data: artist } = await db.from('artists').select('id').eq('profile_id', user.id).single()
+  const { data: artist } = await db.from('artists').select('id, creator_type').eq('profile_id', user.id).single()
   if (!artist) redirect('/become-artist')
+  if (artist.creator_type !== 'podcast_creator') redirect('/studio/tracks')
 
   const { data: podcasts } = await db
     .from('podcasts')
