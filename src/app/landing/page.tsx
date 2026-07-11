@@ -512,7 +512,6 @@ export default async function LandingPage() {
             <div className="lp-logo-mark">
               <img src={logoUrl} alt="Playback" />
             </div>
-            <span className="lp-logo-text">playback</span>
           </Link>
 
           <ul className="lp-nav-links">
@@ -694,9 +693,7 @@ export default async function LandingPage() {
         {/* ── FOOTER COLUMNS ── */}
         <div className="lp-footer-columns">
           <div>
-            <span className="lp-logo-text" style={{ fontSize: '19px', display: 'inline-block', marginBottom: '14px' }}>
-              playback
-            </span>
+            <img src={logoUrl} alt="Playback" style={{ width: '40px', height: '40px', borderRadius: '11px', display: 'block', marginBottom: '14px' }} />
             <p className="lp-footer-blurb">
               Discover. Share. Connect through music. Playback connects artists and listeners across Malawi and beyond.
             </p>

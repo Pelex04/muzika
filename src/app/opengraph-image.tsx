@@ -37,15 +37,11 @@ export default async function Image() {
         {/* Logo mark */}
         <img
           src={logoData as any}
-          width={80} height={80}
-          style={{ borderRadius: '20px', marginBottom: '24px', boxShadow: '0 0 40px rgba(37,99,235,0.5)' }}
+          width={100} height={100}
+          style={{ borderRadius: '24px', marginBottom: '24px', boxShadow: '0 0 40px rgba(37,99,235,0.5)' }}
         />
 
-        <div style={{ fontSize: '58px', fontWeight: 700, color: '#fff', letterSpacing: '-1px', display: 'flex' }}>
-          playback
-        </div>
-
-        <div style={{ fontSize: '22px', color: 'rgba(255,255,255,0.55)', marginTop: '16px', letterSpacing: '0.5px' }}>
+        <div style={{ fontSize: '22px', color: 'rgba(255,255,255,0.55)', marginTop: '4px', letterSpacing: '0.5px' }}>
           Stream &amp; Own Malawian Music
         </div>
       </div>

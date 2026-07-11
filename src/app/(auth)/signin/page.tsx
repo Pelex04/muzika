@@ -167,9 +167,6 @@ export default function SignInPage() {
           <div className="auth-form">
             <div className="auth-mobile-logo">
               <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '9px' }} />
-              <span className="font-wordmark" style={{ fontSize:'19px', fontWeight:700, color:'#0D1B3E' }}>
-                playback
-              </span>
             </div>
 
             <h2 style={{ fontSize:'26px', fontWeight:800, color:'#0D1B3E', letterSpacing:'-.5px', marginBottom:'4px' }}>Welcome back</h2>

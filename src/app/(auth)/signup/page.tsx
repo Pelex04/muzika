@@ -200,9 +200,6 @@ export default function SignUpPage() {
             {/* Mobile logo */}
             <div className="auth-mobile-logo-signup" style={{ display: 'none', alignItems: 'center', gap: '9px', marginBottom: '32px' }}>
               <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
-              <span className="font-wordmark" style={{ fontSize: '19px', fontWeight: 700, color: '#ffffff' }}>
-                playback
-              </span>
             </div>
 
             {/* Step row */}

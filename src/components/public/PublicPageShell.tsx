@@ -21,9 +21,6 @@ export default function PublicPageShell({
       }}>
         <Link href="/landing" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <img src={logoUrl} alt="Playback" style={{ width: '32px', height: '32px', borderRadius: '9px' }} />
-          <span className="font-wordmark" style={{ fontSize: '18px', fontWeight: 700, color: '#fff' }}>
-            playback
-          </span>
         </Link>
         <Link href={backHref} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#717171', textDecoration: 'none' }}>
           <ArrowLeft size={14} /> Back

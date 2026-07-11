@@ -55,9 +55,6 @@ export default function AuthVisualPanel({ headline, sub, footer }: Props) {
       <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', height: '100%', minHeight: '100vh', padding: '44px', boxSizing: 'border-box' }}>
         <Link href="/landing" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
           <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
-          <span className="font-wordmark" style={{ fontSize: '21px', fontWeight: 700, color: '#fff', textShadow: '0 1px 8px rgba(0,0,0,0.3)' }}>
-            playback
-          </span>
         </Link>
 
         <div style={{ flex: 1 }} />

@@ -415,9 +415,6 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
             {/* Brand */}
             <div className="flex items-center gap-2">
               <img src={logoUrl} alt="Playback" className="w-8 h-8 rounded-lg" />
-              <span className="font-wordmark text-white font-bold text-lg">
-                playback
-              </span>
             </div>
 
             {/* Social links */}

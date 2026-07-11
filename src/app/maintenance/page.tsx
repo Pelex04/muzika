@@ -168,7 +168,6 @@ export default function MaintenancePage() {
         <div className="m-card">
           <div className="m-logo">
             <div className="m-logo-mark"><img src="/logo.png" alt="Playback" /></div>
-            <span className="m-logo-text">playback</span>
           </div>
 
           <div className="m-icon-wrap">

@@ -71,9 +71,6 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '26px 22px 22px' }}>
           <Link href="/discover" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <img src={logoUrl} alt="Playback" style={{ width: '34px', height: '34px', borderRadius: '9px', flexShrink: 0 }} />
-            <span className="font-wordmark" style={{ fontSize: '19px', fontWeight: 700, color: '#fff' }}>
-              playback
-            </span>
           </Link>
           <NotificationBell size={32} />
         </div>

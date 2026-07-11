@@ -17,9 +17,6 @@ export default async function CheckEmailPage({
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '36px' }}>
           <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '10px' }} />
-          <span className="font-wordmark" style={{ fontSize: '21px', fontWeight: 700, color: '#ffffff' }}>
-            playback
-          </span>
         </div>
 
         {/* Email icon */}
