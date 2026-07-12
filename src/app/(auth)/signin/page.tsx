@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { notify } from '@/components/ui/notify'
 import { Eye, EyeOff, Mail, Lock, Music2 } from 'lucide-react'
-import { useLogo } from '@/lib/logo-context'
 import { createClient } from '@/lib/supabase/client'
 import AuthVisualPanel from '@/components/auth/AuthVisualPanel'
 
@@ -19,7 +18,6 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export default function SignInPage() {
-  const logoUrl = useLogo()
   const router = useRouter()
   const supabase = createClient()
   const [showPassword, setShowPassword] = useState(false)
@@ -165,11 +163,7 @@ export default function SignInPage() {
         {/* RIGHT */}
         <div className="auth-right">
           <div className="auth-form">
-            <div className="auth-mobile-logo">
-              <img src={logoUrl} alt="Playback" style={{ width: '36px', height: '36px', borderRadius: '9px' }} />
-            </div>
-
-            <h2 style={{ fontSize:'26px', fontWeight:800, color:'#0D1B3E', letterSpacing:'-.5px', marginBottom:'4px' }}>Welcome back</h2>
+            <h2 style={{ fontSize:'26px', fontWeight:800, color:'#ffffff', letterSpacing:'-.5px', marginBottom:'4px' }}>Welcome back</h2>
             <p style={{ fontSize:'14px', color:'#b3b3b3', marginBottom:'28px' }}>Sign in to continue your music journey.</p>
 
             <form onSubmit={handleSubmit(onSubmit)}>
