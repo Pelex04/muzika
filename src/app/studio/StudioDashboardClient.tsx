@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Upload, Music2, Mic2, Disc3, TrendingUp, Users, Play, DollarSign, ChevronRight } from 'lucide-react'
+import { Upload, Music2, Mic2, Disc3, TrendingUp, Users, Play, DollarSign, ChevronRight, ExternalLink } from 'lucide-react'
 
 interface Props {
   artist: { id: string; stage_name: string; genre: string; creator_type?: 'artist' | 'podcast_creator' }
@@ -25,9 +25,18 @@ export default function StudioDashboardClient({ artist, topTracks, stats }: Prop
   return (
     <div style={{ padding: '28px 24px 100px', maxWidth: '900px' }}>
       {/* Header */}
-      <div style={{ marginBottom: '28px' }}>
-        <p style={{ color: '#555', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Welcome back</p>
-        <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: 900, letterSpacing: '-0.5px', margin: 0 }}>{artist.stage_name}</h1>
+      <div style={{ marginBottom: '28px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+        <div>
+          <p style={{ color: '#555', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Welcome back</p>
+          <h1 style={{ color: '#fff', fontSize: '26px', fontWeight: 900, letterSpacing: '-0.5px', margin: 0 }}>{artist.stage_name}</h1>
+        </div>
+        <Link
+          href={`/artists/${artist.id}`}
+          target="_blank"
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', color: isPodcast ? '#0abab5' : '#60a5fa', fontSize: '13px', fontWeight: 600, textDecoration: 'none', paddingBottom: '4px' }}
+        >
+          View Public Profile <ExternalLink size={13} />
+        </Link>
       </div>
 
       {/* Stats */}

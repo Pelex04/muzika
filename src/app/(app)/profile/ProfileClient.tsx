@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Upload, ChevronRight, Mic, Mic2, Play, Download, DollarSign, Music2, Heart, ShoppingBag, Trash2, LogOut, Pencil } from 'lucide-react'
+import { Upload, ChevronRight, Mic, Mic2, Play, Download, DollarSign, Music2, Heart, ShoppingBag, Trash2, LogOut, Pencil, ExternalLink } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { formatMWK, formatCount } from '@/lib/utils'
@@ -287,6 +287,7 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
           <div className="prof-actions" style={{ marginTop: isCreator && artist!.bio ? '12px' : '0', paddingTop: '12px' }}>
             {isArtist && <Link href="/upload" className="btn-prof-primary"><Upload size={13}/> Upload Track</Link>}
             {isPodcastCreator && <Link href="/upload" className="btn-prof-primary"><Upload size={13}/> Upload Episode</Link>}
+            {isCreator && <Link href={`/artists/${artist!.id}`} target="_blank" className="btn-prof-ghost"><ExternalLink size={13}/> View Public Profile</Link>}
             {!isCreator && (
               <>
                 <Link href="/become-artist" className="btn-prof-blue"><Mic size={13}/> Become an Artist</Link>
