@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, BadgeCheck, Play, Music2, Disc3, Clock, Globe, ExternalLink, Megaphone, Calendar } from 'lucide-react'
+import { ChevronLeft, BadgeCheck, Play, Music2, Disc3, Mic2, Clock, Globe, ExternalLink, Megaphone, Calendar } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
@@ -26,9 +26,10 @@ const GENRE_BG: Record<string, string> = {
 }
 
 interface Props {
-  artist: Artist & { is_following?: boolean; social_links?: Record<string, string> }
+  artist: Artist & { is_following?: boolean; social_links?: Record<string, string>; creator_type?: 'artist' | 'podcast_creator' }
   tracks: Track[]
   albums: any[]
+  podcasts?: any[]
   scheduledTracks?: any[]
   scheduledAlbums?: any[]
   bannerRequest?: any
@@ -60,11 +61,12 @@ const SOCIAL_META: Record<string, { icon: () => React.ReactElement; color: strin
 }
 
 export default function ArtistDetailClient({
-  artist, tracks, albums, scheduledTracks = [], scheduledAlbums = [],
+  artist, tracks, albums, podcasts = [], scheduledTracks = [], scheduledAlbums = [],
   bannerRequest, isOwnProfile, userId,
 }: Props) {
   const router = useRouter()
   const { play } = usePlayerStore()
+  const isPodcastCreator = artist.creator_type === 'podcast_creator'
   const [following, setFollowing] = useState(artist.is_following ?? false)
   const [followLoading, setFollowLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<'tracks' | 'albums'>('tracks')
@@ -114,7 +116,7 @@ export default function ArtistDetailClient({
 
   return (
     <div>
-      <MobileTopBar eyebrow="Artist" title={artist.stage_name} />
+      <MobileTopBar eyebrow={isPodcastCreator ? 'Podcast Creator' : 'Artist'} title={artist.stage_name} />
 
       <div className="max-w-[760px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <Link href="/artists" className="hidden md:inline-flex items-center gap-1.5 text-[#b3b3b3] hover:text-white text-sm font-semibold mb-6">
@@ -197,7 +199,7 @@ export default function ArtistDetailClient({
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-white truncate">{item.title}</p>
                       <p className="text-xs text-amber-400 font-medium mt-0.5 flex items-center gap-1">
-                        <Clock size={10} /> {item._type === 'album' ? 'Album' : 'Track'} · Goes live {new Date(item.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        <Clock size={10} /> {item._type === 'album' ? 'Album' : isPodcastCreator ? 'Episode' : 'Track'} · Goes live {new Date(item.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
                   </div>
@@ -213,52 +215,80 @@ export default function ArtistDetailClient({
               className={cn('flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all',
                 activeTab === tab ? 'bg-white text-black' : 'text-[#b3b3b3] hover:text-white'
               )}>
-              {tab === 'tracks' ? <Music2 size={14} /> : <Disc3 size={14} />}
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab === 'tracks'
+                ? (isPodcastCreator ? <Mic2 size={14} /> : <Music2 size={14} />)
+                : (isPodcastCreator ? <Mic2 size={14} /> : <Disc3 size={14} />)
+              }
+              {tab === 'tracks' ? (isPodcastCreator ? 'Episodes' : 'Tracks') : (isPodcastCreator ? 'Podcasts' : 'Albums')}
               <span className="text-xs opacity-60">
-                {tab === 'tracks' ? tracks.length : albums.length}
+                {tab === 'tracks' ? tracks.length : (isPodcastCreator ? podcasts.length : albums.length)}
               </span>
             </button>
           ))}
         </div>
 
-        {/* Tracks tab */}
+        {/* Tracks/Episodes tab */}
         {activeTab === 'tracks' && (
           tracks.length === 0
-            ? <div className="text-center py-12 text-[#555] text-sm">No tracks yet</div>
+            ? <div className="text-center py-12 text-[#555] text-sm">{isPodcastCreator ? 'No episodes yet' : 'No tracks yet'}</div>
             : <div className="space-y-1">
                 {tracks.map((t, i) => <TrackRow key={t.id} track={t} rank={i + 1} userId={userId} queue={tracks} showRank={false} />)}
               </div>
         )}
 
-        {/* Albums tab */}
+        {/* Albums/Podcasts tab */}
         {activeTab === 'albums' && (
-          albums.length === 0
-            ? <div className="text-center py-12 text-[#555] text-sm">No albums yet</div>
-            : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {albums.map(album => (
-                  <Link key={album.id} href={`/albums/${album.id}`}>
-                    <div className="bg-[#181818] rounded-xl overflow-hidden hover:bg-[#202020] transition-colors cursor-pointer">
-                      <div className="aspect-square bg-[#0d1b3e] grid place-items-center overflow-hidden">
-                        {album.cover_url
-                          ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover" />
-                          : <Disc3 size={36} className="text-[#2a2a2a]" />
-                        }
+          isPodcastCreator ? (
+            podcasts.length === 0
+              ? <div className="text-center py-12 text-[#555] text-sm">No podcasts yet</div>
+              : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {podcasts.map(podcast => (
+                    <Link key={podcast.id} href={`/podcasts/${podcast.id}`}>
+                      <div className="bg-[#181818] rounded-xl overflow-hidden hover:bg-[#202020] transition-colors cursor-pointer">
+                        <div className="aspect-square bg-[#0d1b3e] grid place-items-center overflow-hidden">
+                          {podcast.cover_url
+                            ? <img src={podcast.cover_url} alt={podcast.title} className="w-full h-full object-cover" />
+                            : <Mic2 size={36} className="text-[#2a2a2a]" />
+                          }
+                        </div>
+                        <div className="p-3">
+                          <p className="text-sm font-bold text-white truncate">{podcast.title}</p>
+                          <p className="text-xs text-[#717171] mt-0.5">
+                            {podcast.episodes?.[0]?.count ?? 0} episodes · {new Date(podcast.created_at).getFullYear()}
+                          </p>
+                        </div>
                       </div>
-                      <div className="p-3">
-                        <p className="text-sm font-bold text-white truncate">{album.title}</p>
-                        <p className="text-xs text-[#717171] mt-0.5">
-                          {album.tracks?.[0]?.count ?? 0} tracks · {new Date(album.created_at).getFullYear()}
-                        </p>
+                    </Link>
+                  ))}
+                </div>
+          ) : (
+            albums.length === 0
+              ? <div className="text-center py-12 text-[#555] text-sm">No albums yet</div>
+              : <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {albums.map(album => (
+                    <Link key={album.id} href={`/albums/${album.id}`}>
+                      <div className="bg-[#181818] rounded-xl overflow-hidden hover:bg-[#202020] transition-colors cursor-pointer">
+                        <div className="aspect-square bg-[#0d1b3e] grid place-items-center overflow-hidden">
+                          {album.cover_url
+                            ? <img src={album.cover_url} alt={album.title} className="w-full h-full object-cover" />
+                            : <Disc3 size={36} className="text-[#2a2a2a]" />
+                          }
+                        </div>
+                        <div className="p-3">
+                          <p className="text-sm font-bold text-white truncate">{album.title}</p>
+                          <p className="text-xs text-[#717171] mt-0.5">
+                            {album.tracks?.[0]?.count ?? 0} tracks · {new Date(album.created_at).getFullYear()}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+                    </Link>
+                  ))}
+                </div>
+          )
         )}
 
-        {/* Banner request section — only for own artist */}
-        {isOwnProfile && (
+        {/* Banner request section — artists only; podcast promotion isn't part of this feature yet */}
+        {isOwnProfile && !isPodcastCreator && (
           <div className="mt-10 border-t border-[#1f1f1f] pt-8">
             <div className="flex items-center gap-2.5 mb-4">
               <Megaphone size={16} className="text-blue-400" />

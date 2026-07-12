@@ -14,7 +14,11 @@ export async function generateMetadata(
   const artist = await getArtistById(id)
   if (!artist) return { title: 'Artist not found' }
   const title = `${artist.stage_name} · Playback`
-  const description = artist.bio?.slice(0, 155) ?? `Stream and download music by ${artist.stage_name} on Playback.`
+  const description = artist.bio?.slice(0, 155) ?? (
+    artist.creator_type === 'podcast_creator'
+      ? `Listen to podcasts by ${artist.stage_name} on Playback.`
+      : `Stream and download music by ${artist.stage_name} on Playback.`
+  )
   const image = artist.avatar_url ?? `${BASE_URL}/og-default.png`
   return {
     title, description,
@@ -46,13 +50,27 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ i
     isFollowing = !!follow
   }
 
-  // Published albums
-  const { data: albums } = await supabase
-    .from('albums')
-    .select('*, tracks:tracks(count)')
-    .eq('artist_id', id)
-    .eq('published', true)
-    .order('created_at', { ascending: false })
+  // Published albums (artists) or podcast shows (podcast creators)
+  const isPodcastCreator = artist.creator_type === 'podcast_creator'
+  let albums: any[] = []
+  let podcasts: any[] = []
+  if (isPodcastCreator) {
+    const { data } = await supabase
+      .from('podcasts')
+      .select('*, episodes:tracks(count)')
+      .eq('artist_id', id)
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+    podcasts = data ?? []
+  } else {
+    const { data } = await supabase
+      .from('albums')
+      .select('*, tracks:tracks(count)')
+      .eq('artist_id', id)
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+    albums = data ?? []
+  }
 
   // Scheduled releases (only visible to own artist)
   let scheduledTracks: any[] = []
@@ -74,7 +92,8 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ i
     <ArtistDetailClient
       artist={{ ...artist, is_following: isFollowing }}
       tracks={tracksWithArtist}
-      albums={albums ?? []}
+      albums={albums}
+      podcasts={podcasts}
       scheduledTracks={scheduledTracks}
       scheduledAlbums={scheduledAlbums}
       bannerRequest={bannerRequest}
