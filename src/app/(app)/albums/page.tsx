@@ -1,5 +1,6 @@
 import { getAdminClient } from '@/lib/admin'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Disc3, Clock } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import AlbumsAutoRefresh from './AlbumsAutoRefresh'
@@ -50,10 +51,12 @@ export default async function AlbumsPage() {
                 <div className="rounded-lg overflow-hidden">
                   <div className="relative aspect-square bg-[#0d1b3e] grid place-items-center overflow-hidden rounded-lg">
                     {album.cover_url
-                      ? <img
+                      ? <Image
                           src={album.cover_url}
                           alt={album.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          fill
+                          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 22vw, 200px"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
                           style={album._scheduled ? { filter: 'grayscale(0.4) brightness(0.6)' } : undefined}
                         />
                       : <Disc3 size={40} className="text-[#2a2a2a]" />

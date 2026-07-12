@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient() as any
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { allowed } = rateLimit(`album-create:${user.id}`, 10, 60 * 60 * 1000)
+  if (!allowed) return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 })
 
   const { data: artist } = await supabase
     .from('artists')

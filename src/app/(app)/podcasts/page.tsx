@@ -1,5 +1,6 @@
 import { getAdminClient } from '@/lib/admin'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Mic2 } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import type { Metadata } from 'next'
@@ -30,9 +31,9 @@ export default async function PodcastsPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {(podcasts ?? []).map((p: any) => (
               <Link key={p.id} href={`/podcasts/${p.id}`} className="group block">
-                <div className="aspect-square rounded-lg overflow-hidden bg-[#0d1b3e] grid place-items-center mb-2">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-[#0d1b3e] grid place-items-center mb-2">
                   {p.cover_url
-                    ? <img src={p.cover_url} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ? <Image src={p.cover_url} alt={p.title} fill sizes="(max-width: 640px) 45vw, (max-width: 1024px) 22vw, 200px" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                     : <Mic2 size={40} className="text-[#2a2a2a]" />
                   }
                 </div>

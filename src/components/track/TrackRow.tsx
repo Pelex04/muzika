@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Play, Pause, MoreVertical, TrendingUp, TrendingDown, Bookmark, ListPlus, Share2, Download, X } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { formatCount } from '@/lib/utils'
@@ -121,7 +122,7 @@ export default function TrackRow({
       {/* Art */}
       <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-[#0D1B3E]">
         {track.cover_url
-          ? <img src={track.cover_url} alt={track.title} className="w-full h-full object-cover"/>
+          ? <Image src={track.cover_url} alt={track.title} width={44} height={44} className="w-full h-full object-cover"/>
           : <ArtPlaceholder genre={track.genre} small />
         }
       </div>

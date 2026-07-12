@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(
   req: NextRequest,
@@ -10,6 +11,11 @@ export async function POST(
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // Cheap, scriptable action -- cap it so someone can't spam
+  // follow/unfollow to inflate or grief follower counts.
+  const { allowed } = rateLimit(`follow:${user.id}`, 30, 60 * 1000)
+  if (!allowed) return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 })
 
   // Check existing follow
   const { data: existing } = await supabase

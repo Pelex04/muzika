@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { matchFeaturedArtists } from '@/lib/api/artists'
+import { rateLimit } from '@/lib/rate-limit'
 
 // Called AFTER the browser has already uploaded the audio (and optional
 // cover) directly to Supabase Storage via the signed URL from
@@ -11,6 +12,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient() as any
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { allowed } = rateLimit(`upload:${user.id}`, 20, 60 * 60 * 1000)
+  if (!allowed) return NextResponse.json({ error: 'Upload limit reached. Please try again later.' }, { status: 429 })
 
   const { data: artist } = await supabase
     .from('artists')

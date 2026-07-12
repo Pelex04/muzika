@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Play, Bookmark, MoreVertical, ListPlus, Share2, Download, Check } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
@@ -72,7 +73,7 @@ export default function TrackCard({ track, userId, queue }: Props) {
       {/* Art */}
       <div className="relative aspect-square rounded-lg overflow-hidden" onClick={handlePlay}>
         {track.cover_url
-          ? <img src={track.cover_url} alt={track.title} className="w-full h-full object-cover" />
+          ? <Image src={track.cover_url} alt={track.title} fill sizes="(max-width: 640px) 45vw, 200px" className="object-cover" />
           : <AlbumArtPlaceholder genre={track.genre} />
         }
 
