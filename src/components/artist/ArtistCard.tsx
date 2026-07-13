@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import { BadgeCheck } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import { formatCount } from '@/lib/utils'
@@ -53,7 +52,7 @@ export default function ArtistCard({ artist, userId }: Props) {
             gradientClass
           )}>
             {artist.avatar_url
-              ? <Image src={artist.avatar_url} alt={artist.stage_name} fill sizes="120px" className="object-cover"/>
+              ? <img src={artist.avatar_url} alt={artist.stage_name} className="w-full h-full object-cover"/>
               : (
                 <div className="w-full h-full flex items-center justify-center">
                   <span className="text-4xl font-black text-white/40">

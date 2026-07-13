@@ -28,6 +28,8 @@ interface Props {
   trendingTracks: Track[]
   tracks: Track[]
   artists: Artist[]
+  podcastCreators?: Artist[]
+  recentEpisodes?: Track[]
   popularTracks: Track[]
   recommendedTracks: Track[]
   continueListening: Track[]
@@ -136,7 +138,7 @@ function HomeSearch() {
   )
 }
 
-export default function DiscoverClient({ trendingTracks, tracks, artists, popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion }: Props) {
+export default function DiscoverClient({ trendingTracks, tracks, artists, podcastCreators = [], recentEpisodes = [], popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion }: Props) {
   const logoUrl = useLogo()
   const greeting = getGreeting()
 
@@ -256,6 +258,25 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
             ))}
           </HScroll>
         </section>
+
+        {/* ── NEW PODCAST EPISODES ── */}
+        {recentEpisodes.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[17px] font-black text-white tracking-tight">New Podcast Episodes</h2>
+              <Link href="/podcasts" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
+                See all <ChevronRight size={15} />
+              </Link>
+            </div>
+            <HScroll>
+              {recentEpisodes.map(ep => (
+                <div key={ep.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
+                  <TrackCard track={ep} userId={userId} queue={recentEpisodes} />
+                </div>
+              ))}
+            </HScroll>
+          </section>
+        )}
 
         {/* ── CONTINUE LISTENING — recently played, logged-in users only ── */}
         {continueListening.length > 0 && (
@@ -381,6 +402,25 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, popula
             ))}
           </HScroll>
         </section>
+
+        {/* ── FEATURED PODCAST CREATORS ── */}
+        {podcastCreators.length > 0 && (
+          <section className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[17px] font-black text-white tracking-tight">Featured Podcast Creators</h2>
+              <Link href="/podcasts" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
+                See all <ChevronRight size={15} />
+              </Link>
+            </div>
+            <HScroll>
+              {podcastCreators.slice(0, 10).map(creator => (
+                <div key={creator.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
+                  <ArtistCard artist={creator} userId={userId} />
+                </div>
+              ))}
+            </HScroll>
+          </section>
+        )}
 
         {/* ── FOOTER LINKS — Company / For Artists / Explore ── */}
         <div className="border-t border-[#2a2a2a] pt-8 pb-8 grid grid-cols-2 sm:grid-cols-3 gap-8">

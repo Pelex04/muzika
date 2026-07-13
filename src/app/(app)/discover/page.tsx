@@ -18,12 +18,22 @@ export default async function DiscoverPage() {
   const now = new Date().toISOString()
   const db = getAdminClient()
 
-  const [tracks, artists, trendingTracks, popularTracks] = await Promise.all([
+  const [tracks, artists, trendingTracks, popularTracks, podcastCreators, recentEpisodesRaw] = await Promise.all([
     getTracks({ limit: 12, orderBy: 'created_at' }),
     getArtists({ limit: 12 }),
     getTracks({ limit: 7, orderBy: 'play_count' }),
     getTracks({ limit: 8, orderBy: 'play_count' }),
+    getArtists({ limit: 12, creatorType: 'podcast_creator' }),
+    db
+      .from('tracks')
+      .select('*, artist:artists(id, stage_name, genre, location, verified, avatar_url)')
+      .eq('published', true)
+      .eq('content_type', 'podcast_episode')
+      .order('created_at', { ascending: false })
+      .limit(10),
   ])
+  const recentEpisodes = (recentEpisodesRaw as any)?.data ?? []
+
 
   // Fetch active promotion
   const { data: promoRows } = await db
@@ -144,6 +154,8 @@ export default async function DiscoverPage() {
       trendingTracks={withState(trendingTracks)}
       tracks={withState(tracks)}
       artists={artists}
+      podcastCreators={podcastCreators}
+      recentEpisodes={withState(recentEpisodes)}
       popularTracks={withState(popularTracks)}
       recommendedTracks={withState(recommendedTracks)}
       continueListening={withState(continueListening)}

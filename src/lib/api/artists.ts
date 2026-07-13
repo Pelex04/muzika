@@ -19,11 +19,13 @@ export async function matchFeaturedArtists(db: any, names: string[]): Promise<{ 
 export async function getArtists({
   limit = 20,
   offset = 0,
-}: { limit?: number; offset?: number } = {}): Promise<Artist[]> {
+  creatorType = 'artist',
+}: { limit?: number; offset?: number; creatorType?: 'artist' | 'podcast_creator' } = {}): Promise<Artist[]> {
   const supabase = await createClient() as any
   const { data, error } = await supabase
     .from('artists')
     .select(`*, profile:profiles(full_name, email, avatar_url)`)
+    .eq('creator_type', creatorType)
     .order('verified', { ascending: false })
     .order('follower_count', { ascending: false })
     .range(offset, offset + limit - 1)
