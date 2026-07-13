@@ -48,3 +48,16 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ request: data })
 }
+
+export async function DELETE() {
+  const supabase = await createClient() as any
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { data: artist } = await supabase.from('artists').select('id').eq('profile_id', user.id).single()
+  if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
+
+  const { error } = await supabase.from('verification_requests').delete().eq('artist_id', artist.id)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ deleted: true })
+}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BadgeCheck, CheckCircle2, XCircle, Clock, Link2, Globe } from 'lucide-react'
+import { BadgeCheck, CheckCircle2, XCircle, Clock, Link2, Globe, Trash2 } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import Link from 'next/link'
 
@@ -31,8 +31,22 @@ export default function StudioVerificationClient({
   const [pressLink, setPressLink] = useState(initial?.press_link ?? '')
   const [message, setMessage] = useState(initial?.message ?? '')
   const [submitting, setSubmitting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const hasSocialLinks = Object.values(socialLinks).some(Boolean)
+
+  const deleteRequest = async () => {
+    setDeleting(true)
+    const res = await fetch('/api/verification-request', { method: 'DELETE' })
+    setDeleting(false)
+    if (res.ok) {
+      setRequest(null)
+      notify.success('Request deleted')
+    } else {
+      const data = await res.json().catch(() => ({}))
+      notify.error(data.error ?? 'Could not delete request')
+    }
+  }
 
   const submit = async () => {
     if (!legalName.trim()) { notify.error('Legal name is required'); return }
@@ -117,9 +131,14 @@ export default function StudioVerificationClient({
             </div>
           )}
           {request.status === 'rejected' && (
-            <button onClick={() => setRequest(null)} style={{ marginTop: '14px', background: 'none', border: '1px solid #2a2a2a', borderRadius: '8px', color: '#60a5fa', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit' }}>
-              Submit new request
-            </button>
+            <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
+              <button onClick={() => setRequest(null)} style={{ background: 'none', border: '1px solid #2a2a2a', borderRadius: '8px', color: '#60a5fa', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit' }}>
+                Submit new request
+              </button>
+              <button onClick={deleteRequest} disabled={deleting} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid #2a2a2a', borderRadius: '8px', color: '#ef4444', padding: '8px 16px', cursor: deleting ? 'not-allowed' : 'pointer', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', opacity: deleting ? 0.6 : 1 }}>
+                <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete request'}
+              </button>
+            </div>
           )}
         </div>
       ) : (

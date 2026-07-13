@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Megaphone, CheckCircle2, XCircle, Clock } from 'lucide-react'
+import { Megaphone, CheckCircle2, XCircle, Clock, Trash2 } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 
 interface BannerRequest {
@@ -12,6 +12,7 @@ export default function StudioBannerClient({ bannerRequest: initial }: { bannerR
   const [request, setRequest] = useState(initial)
   const [message, setMessage] = useState(initial?.message ?? '')
   const [submitting, setSubmitting] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   const submit = async () => {
     setSubmitting(true)
@@ -27,6 +28,20 @@ export default function StudioBannerClient({ bannerRequest: initial }: { bannerR
       notify.success('Request submitted', 'Our team will review it shortly.')
     } else {
       notify.error(data.error ?? 'Could not submit request')
+    }
+  }
+
+  const deleteRequest = async () => {
+    setDeleting(true)
+    const res = await fetch('/api/banner-request', { method: 'DELETE' })
+    setDeleting(false)
+    if (res.ok) {
+      setRequest(null)
+      setMessage('')
+      notify.success('Request deleted')
+    } else {
+      const data = await res.json().catch(() => ({}))
+      notify.error(data.error ?? 'Could not delete request')
     }
   }
 
@@ -72,11 +87,14 @@ export default function StudioBannerClient({ bannerRequest: initial }: { bannerR
               <p style={{ color: '#b3b3b3', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{request.admin_note}</p>
             </div>
           )}
-          {request.status === 'rejected' && (
-            <button onClick={() => setRequest(null)} style={{ marginTop: '14px', background: 'none', border: '1px solid #2a2a2a', borderRadius: '8px', color: '#60a5fa', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit' }}>
+          <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
+            <button onClick={() => setRequest(null)} style={{ background: 'none', border: '1px solid #2a2a2a', borderRadius: '8px', color: '#60a5fa', padding: '8px 16px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit' }}>
               Submit new request
             </button>
-          )}
+            <button onClick={deleteRequest} disabled={deleting} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid #2a2a2a', borderRadius: '8px', color: '#ef4444', padding: '8px 16px', cursor: deleting ? 'not-allowed' : 'pointer', fontSize: '13px', fontWeight: 600, fontFamily: 'inherit', opacity: deleting ? 0.6 : 1 }}>
+              <Trash2 size={13} /> {deleting ? 'Deleting…' : 'Delete request'}
+            </button>
+          </div>
         </div>
       ) : (
         <div style={{ background: '#161616', border: '1px solid #1f1f1f', borderRadius: '14px', padding: '20px' }}>
