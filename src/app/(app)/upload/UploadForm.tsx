@@ -20,6 +20,8 @@ interface PendingTrack {
   producers: string
   featuredArtists: string
   lyrics: string
+  scheduled: boolean
+  releaseDate: string
 }
 
 type UploadMode = 'single' | 'album' | 'podcast'
@@ -164,6 +166,8 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
         producers: '',
         featuredArtists: '',
         lyrics: '',
+        scheduled: false,
+        releaseDate: '',
       })),
     ])
   }, [])
@@ -206,7 +210,7 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
   const removePendingTrack = (id: string) =>
     setPendingTracks(prev => prev.filter(t => t.id !== id).map((t, i) => ({ ...t, trackNumber: i + 1 })))
 
-  const updatePendingTrack = (id: string, key: keyof PendingTrack, val: string) =>
+  const updatePendingTrack = (id: string, key: keyof PendingTrack, val: string | boolean) =>
     setPendingTracks(prev => prev.map(t => t.id === id ? { ...t, [key]: val } : t))
 
   const uploadFileDirect = async (file: File, kind: 'audio' | 'cover'): Promise<string> => {
@@ -312,7 +316,9 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
             producers: parseTags(t.producers),
             featuredArtists: parseTags(t.featuredArtists),
             lyrics: t.lyrics.trim() || null,
-            releaseDate: albumScheduled && albumReleaseDate ? new Date(albumReleaseDate).toISOString() : null,
+            releaseDate: t.scheduled && t.releaseDate
+              ? new Date(t.releaseDate).toISOString()
+              : (albumScheduled && albumReleaseDate ? new Date(albumReleaseDate).toISOString() : null),
           }),
         })
       }
@@ -588,6 +594,31 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
                             <textarea value={t.lyrics} onChange={e => updatePendingTrack(t.id, 'lyrics', e.target.value)} rows={4}
                               className="w-full px-3 py-2.5 border border-[#2a2a2a] rounded-lg text-xs text-white bg-[#111] focus:outline-none focus:border-blue-500 transition-all resize-none"
                               placeholder="Paste lyrics…" />
+                          </div>
+                          <div className="border-t border-[#2a2a2a] pt-3">
+                            <label className="flex items-center gap-2 cursor-pointer mb-2">
+                              <input
+                                type="checkbox"
+                                checked={t.scheduled}
+                                onChange={e => updatePendingTrack(t.id, 'scheduled', e.target.checked)}
+                                className="w-4 h-4 accent-blue-500"
+                              />
+                              <span className="text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px]">
+                                Give this song its own release date
+                              </span>
+                            </label>
+                            {t.scheduled ? (
+                              <input
+                                type="datetime-local"
+                                value={t.releaseDate}
+                                onChange={e => updatePendingTrack(t.id, 'releaseDate', e.target.value)}
+                                className="w-full px-3 py-2.5 border border-[#2a2a2a] rounded-lg text-xs text-white bg-[#111] focus:outline-none focus:border-blue-500 transition-all"
+                              />
+                            ) : (
+                              <p className="text-[11px] text-[#555]">
+                                {albumScheduled ? 'Releases with the album' : 'Releases immediately with the album'}
+                              </p>
+                            )}
                           </div>
                         </div>
                       )}
