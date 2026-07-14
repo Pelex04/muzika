@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminClient } from '@/lib/admin'
 
+export async function GET() {
+  const supabase = await createClient() as any
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ isCreator: false })
+
+  const { data } = await supabase.from('artists').select('creator_type').eq('profile_id', user.id).single()
+  return NextResponse.json({ isCreator: !!data, creatorType: data?.creator_type ?? null })
+}
+
 export async function POST(req: NextRequest) {
   const supabase = await createClient() as any
   const { data: { user } } = await supabase.auth.getUser()

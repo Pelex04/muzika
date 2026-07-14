@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,6 +35,15 @@ function BecomeArtistForm() {
   const isPodcast = searchParams.get('type') === 'podcast'
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1)
+
+  useEffect(() => {
+    fetch('/api/become-artist').then(res => res.json()).then(data => {
+      if (data.isCreator) {
+        toast.info(`You're already ${data.creatorType === 'podcast_creator' ? 'a podcast creator' : 'an artist'} on Playback.`)
+        router.replace('/profile')
+      }
+    }).catch(() => {})
+  }, [router])
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),

@@ -37,6 +37,7 @@ interface Props {
   topPlaylists: Playlist[]
   userId: string | null
   profile?: { avatar_url: string | null; full_name: string } | null
+  isCreator?: boolean
   promotion?: {
     label: string; title: string; subtitle: string;
     cta_text: string; cta_url: string; gradient: string
@@ -138,7 +139,7 @@ function HomeSearch() {
   )
 }
 
-export default function DiscoverClient({ trendingTracks, tracks, artists, podcastCreators = [], recentEpisodes = [], popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion }: Props) {
+export default function DiscoverClient({ trendingTracks, tracks, artists, podcastCreators = [], recentEpisodes = [], popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion, isCreator = false }: Props) {
   const logoUrl = useLogo()
   const greeting = getGreeting()
 
@@ -204,7 +205,10 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
         </section>
 
         {/* ── PROMOTION BANNER — dynamic, managed from /admin/promotions ── */}
-        {(() => {
+        {/* The generic "become an artist" fallback only makes sense for
+            people who aren't creators yet -- an admin-configured custom
+            promotion (unrelated to signup) still shows to everyone. */}
+        {(promotion || !isCreator) && (() => {
           const p = promotion ?? {
             label: '🎵 Limited Offer',
             title: 'Upload Your Music Free',
