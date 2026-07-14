@@ -425,7 +425,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
           <section className="mb-10">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-[17px] font-black text-white tracking-tight">Featured Podcast Creators</h2>
-              <Link href="/podcasts" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
+              <Link href="/artists?type=podcast" className="flex items-center gap-0.5 text-sm font-bold text-white hover:underline">
                 See all <ChevronRight size={15} />
               </Link>
             </div>

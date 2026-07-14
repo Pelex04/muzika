@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Sidebar from '@/components/layout/Sidebar'
 import MiniPlayer from '@/components/player/MiniPlayer'
 import BottomTabs from '@/components/layout/BottomTabs'
+import ScrollRestoration from '@/components/layout/ScrollRestoration'
 import { ProfileProvider } from '@/lib/profile-context'
 import StudioSwitcher from '@/components/layout/StudioSwitcher'
 
@@ -29,6 +30,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <ProfileProvider avatarUrl={avatarUrl} avatarInitial={avatarInitial}>
+      <ScrollRestoration />
       <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: '#121212' }}>
         <style>{`
           .muzika-main { padding-bottom: 76px; }

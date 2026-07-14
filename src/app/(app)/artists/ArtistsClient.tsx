@@ -6,9 +6,9 @@ import MobileTopBar from '@/components/layout/MobileTopBar'
 import ArtistCard from '@/components/artist/ArtistCard'
 import type { Artist } from '@/types'
 
-interface Props { artists: Artist[]; userId: string | null }
+interface Props { artists: Artist[]; userId: string | null; isPodcast?: boolean }
 
-export default function ArtistsClient({ artists, userId }: Props) {
+export default function ArtistsClient({ artists, userId, isPodcast = false }: Props) {
   const [search, setSearch] = useState('')
 
   const filtered = artists.filter(a =>
@@ -20,12 +20,12 @@ export default function ArtistsClient({ artists, userId }: Props) {
 
   return (
     <div>
-      <MobileTopBar eyebrow="Browse" title="Artists" />
+      <MobileTopBar eyebrow="Browse" title={isPodcast ? 'Podcast Creators' : 'Artists'} />
 
       <div className="max-w-[1080px] mx-auto px-5 md:px-9 py-5 md:py-8">
         <div className="hidden md:block mb-7">
           <p className="text-[11px] font-bold text-blue-600 uppercase tracking-[.7px] mb-1">Browse</p>
-          <h1 className="text-3xl font-black text-white tracking-tight">Artists</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight">{isPodcast ? 'Podcast Creators' : 'Artists'}</h1>
         </div>
 
         <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">

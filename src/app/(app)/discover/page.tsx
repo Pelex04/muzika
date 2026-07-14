@@ -26,13 +26,16 @@ export default async function DiscoverPage() {
     getArtists({ limit: 12, creatorType: 'podcast_creator' }),
     db
       .from('tracks')
-      .select('*, artist:artists(id, stage_name, genre, location, verified, avatar_url)')
+      .select('*, artist:artists(id, stage_name, genre, location, verified, avatar_url), podcast:podcasts(cover_url)')
       .eq('published', true)
       .eq('content_type', 'podcast_episode')
       .order('created_at', { ascending: false })
       .limit(10),
   ])
-  const recentEpisodes = (recentEpisodesRaw as any)?.data ?? []
+  const recentEpisodes = ((recentEpisodesRaw as any)?.data ?? []).map((ep: any) => ({
+    ...ep,
+    cover_url: ep.cover_url ?? ep.podcast?.cover_url ?? null,
+  }))
 
 
   // Fetch active promotion
