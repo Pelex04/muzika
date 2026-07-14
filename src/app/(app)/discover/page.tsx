@@ -77,6 +77,7 @@ export default async function DiscoverPage() {
   let recommendedTracks: typeof tracks = []
   let continueListening: any[] = []
   let isCreator = false
+  let creatorType: 'artist' | 'podcast_creator' | null = null
 
   if (user) {
     const [purchasesRes, savedRes, profileRes, historyRes, artistCheckRes] = await Promise.all([
@@ -88,13 +89,14 @@ export default async function DiscoverPage() {
         .eq('user_id', user.id)
         .order('last_played_at', { ascending: false })
         .limit(10),
-      supabase.from('artists').select('id').eq('profile_id', user.id).single(),
+      supabase.from('artists').select('id, creator_type').eq('profile_id', user.id).single(),
     ])
     purchasedIds = (purchasesRes.data ?? []).map((p: any) => p.track_id)
     savedIds    = (savedRes.data    ?? []).map((s: any) => s.track_id)
     profile     = profileRes.data
     continueListening = (historyRes.data ?? []).map((h: any) => h.track).filter(Boolean)
     isCreator = !!artistCheckRes.data
+    creatorType = (artistCheckRes.data as any)?.creator_type ?? null
 
     // ── Real recommendations ─────────────────────────────────────────
     // Signal: genres of tracks the user has saved or purchased
@@ -168,6 +170,7 @@ export default async function DiscoverPage() {
       profile={profile}
       promotion={promotion}
       isCreator={isCreator}
+      creatorType={creatorType}
     />
   )
 }

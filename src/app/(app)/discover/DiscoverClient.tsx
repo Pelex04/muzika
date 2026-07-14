@@ -38,6 +38,7 @@ interface Props {
   userId: string | null
   profile?: { avatar_url: string | null; full_name: string } | null
   isCreator?: boolean
+  creatorType?: 'artist' | 'podcast_creator' | null
   promotion?: {
     label: string; title: string; subtitle: string;
     cta_text: string; cta_url: string; gradient: string
@@ -139,7 +140,7 @@ function HomeSearch() {
   )
 }
 
-export default function DiscoverClient({ trendingTracks, tracks, artists, podcastCreators = [], recentEpisodes = [], popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion, isCreator = false }: Props) {
+export default function DiscoverClient({ trendingTracks, tracks, artists, podcastCreators = [], recentEpisodes = [], popularTracks, recommendedTracks, continueListening, topAlbums, topPlaylists, userId, profile, promotion, isCreator = false, creatorType = null }: Props) {
   const logoUrl = useLogo()
   const greeting = getGreeting()
 
@@ -205,18 +206,30 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
         </section>
 
         {/* ── PROMOTION BANNER — dynamic, managed from /admin/promotions ── */}
-        {/* The generic "become an artist" fallback only makes sense for
-            people who aren't creators yet -- an admin-configured custom
-            promotion (unrelated to signup) still shows to everyone. */}
-        {(promotion || !isCreator) && (() => {
-          const p = promotion ?? {
-            label: '🎵 Limited Offer',
-            title: 'Upload Your Music Free',
-            subtitle: 'Share your sound with thousands of listeners across Malawi.',
-            cta_text: 'Get Started',
-            cta_url: '/become-artist',
-            gradient: 'linear-gradient(130deg,#0f2460 0%,#1a3a8f 50%,#2563eb 100%)',
-          }
+        {/* An admin-configured custom promotion always shows to everyone.
+            The fallback default adapts to who's looking: non-creators get
+            the 'become an artist' pitch, existing creators get a nudge
+            back to Upload instead of a repeat signup prompt. */}
+        {(() => {
+          const p = promotion ?? (
+            isCreator ? {
+              label: creatorType === 'podcast_creator' ? '🎙️ Keep it going' : '🎵 Keep it going',
+              title: creatorType === 'podcast_creator' ? 'Ready for your next episode?' : 'Ready to drop your next track?',
+              subtitle: creatorType === 'podcast_creator' ? 'Upload a new episode and keep your audience coming back.' : 'Upload a new track or album and reach more listeners across Malawi.',
+              cta_text: 'Upload Now',
+              cta_url: '/upload',
+              gradient: creatorType === 'podcast_creator'
+                ? 'linear-gradient(130deg,#064e48 0%,#0d7d74 50%,#0abab5 100%)'
+                : 'linear-gradient(130deg,#0f2460 0%,#1a3a8f 50%,#2563eb 100%)',
+            } : {
+              label: '🎵 Limited Offer',
+              title: 'Upload Your Music Free',
+              subtitle: 'Share your sound with thousands of listeners across Malawi.',
+              cta_text: 'Get Started',
+              cta_url: '/become-artist',
+              gradient: 'linear-gradient(130deg,#0f2460 0%,#1a3a8f 50%,#2563eb 100%)',
+            }
+          )
           return (
             <div
               className="relative rounded-2xl overflow-hidden mb-10 p-6 flex items-center justify-between gap-4"
