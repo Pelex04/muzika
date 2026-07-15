@@ -32,7 +32,7 @@ export default function ArtistsClient({ artists, userId, isPodcast = false }: Pr
           <Search className="w-4 h-4 text-[#717171] flex-shrink-0" />
           <input
             className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#717171]"
-            placeholder="Search artists…"
+            placeholder={isPodcast ? 'Search podcast creators…' : 'Search artists…'}
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -40,13 +40,13 @@ export default function ArtistsClient({ artists, userId, isPodcast = false }: Pr
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[17px] font-black text-white tracking-tight">Latest Artists</h2>
-          <span className="text-sm text-[#717171]">{filtered.length} artists</span>
+          <h2 className="text-[17px] font-black text-white tracking-tight">{isPodcast ? 'Latest Podcast Creators' : 'Latest Artists'}</h2>
+          <span className="text-sm text-[#717171]">{filtered.length} {isPodcast ? 'creators' : 'artists'}</span>
         </div>
 
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-[#717171]">
-            <p className="text-lg font-semibold">No artists found</p>
+            <p className="text-lg font-semibold">{isPodcast ? 'No podcast creators found' : 'No artists found'}</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5">
