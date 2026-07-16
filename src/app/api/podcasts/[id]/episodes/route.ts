@@ -77,5 +77,20 @@ export async function POST(
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Same track_count column doubles as "episode count" for podcast
+  // creators (dashboard/profile stats all read from it) -- the regular
+  // track upload route already does this, this route never did.
+  const { data: currentArtist } = await supabase
+    .from('artists')
+    .select('track_count')
+    .eq('id', artist.id)
+    .single()
+
+  await supabase
+    .from('artists')
+    .update({ track_count: (currentArtist?.track_count ?? 0) + 1 })
+    .eq('id', artist.id)
+
   return NextResponse.json({ episode }, { status: 201 })
 }

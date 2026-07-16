@@ -192,7 +192,7 @@ export default function ProfileClient({ profile, artist, tracks: initialTracks, 
         }
         .tab-card-title { font-size: 15px; font-weight: 800; color: #ffffff; }
         .tab-card-action {
-          font-size: 13px; font-weight: 600; color: #2563EB;
+          font-size: 13px; font-weight: 600; color: #ffffff;
           background: none; border: none; cursor: pointer; font-family: inherit;
         }
 

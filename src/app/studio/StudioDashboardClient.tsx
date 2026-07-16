@@ -87,7 +87,7 @@ export default function StudioDashboardClient({ artist, topTracks, stats }: Prop
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
             <h2 style={{ color: '#fff', fontSize: '16px', fontWeight: 800, margin: 0 }}>{isPodcast ? 'Top Episodes' : 'Top Tracks'}</h2>
-            <Link href={isPodcast ? '/studio/podcasts' : '/studio/tracks'} style={{ color: '#2563eb', fontSize: '13px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '2px' }}>
+            <Link href={isPodcast ? '/studio/podcasts' : '/studio/tracks'} style={{ color: '#fff', fontSize: '13px', fontWeight: 600, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '2px' }}>
               See all <ChevronRight size={14} />
             </Link>
           </div>

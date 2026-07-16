@@ -57,7 +57,7 @@ export default function StudioPodcastsClient({ podcasts: initial }: { podcasts: 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {podcasts.map(p => (
               <div key={p.id} style={{ background: '#161616', border: '1px solid #1f1f1f', borderRadius: '14px', overflow: 'hidden' }}>
-                <Link href={`/podcasts/${p.id}`}>
+                <Link href={`/studio/podcasts/${p.id}`}>
                   <div style={{ aspectRatio: '1', background: '#0d1b3e', display: 'grid', placeItems: 'center', overflow: 'hidden' }}>
                     {p.cover_url
                       ? <img src={p.cover_url} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -69,12 +69,17 @@ export default function StudioPodcastsClient({ podcasts: initial }: { podcasts: 
                   <p style={{ color: '#555', fontSize: '12px', margin: '0 0 10px' }}>
                     {p.episodes?.[0]?.count ?? 0} episode{(p.episodes?.[0]?.count ?? 0) === 1 ? '' : 's'}
                   </p>
-                  <button
-                    onClick={() => setConfirmId(p.id)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#ef4444', fontSize: '12px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                  >
-                    <Trash2 size={12} /> Delete
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Link href={`/studio/podcasts/${p.id}`} style={{ color: '#60a5fa', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}>
+                      Manage episodes
+                    </Link>
+                    <button
+                      onClick={() => setConfirmId(p.id)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#ef4444', fontSize: '12px', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                    >
+                      <Trash2 size={12} /> Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

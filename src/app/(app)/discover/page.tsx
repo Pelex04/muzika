@@ -88,7 +88,7 @@ export default async function DiscoverPage() {
       supabase.from('saved_tracks').select('track_id').eq('user_id', user.id),
       supabase.from('profiles').select('avatar_url, full_name').eq('id', user.id).single(),
       db.from('listening_history')
-        .select('last_played_at, track:tracks(*, artist:artists(id, stage_name, genre, location, verified, avatar_url))')
+        .select('last_played_at, track:tracks(*, artist:artists(id, stage_name, genre, location, verified, avatar_url), podcast:podcasts(cover_url))')
         .eq('user_id', user.id)
         .order('last_played_at', { ascending: false })
         .limit(10),
@@ -97,7 +97,10 @@ export default async function DiscoverPage() {
     purchasedIds = (purchasesRes.data ?? []).map((p: any) => p.track_id)
     savedIds    = (savedRes.data    ?? []).map((s: any) => s.track_id)
     profile     = profileRes.data
-    continueListening = (historyRes.data ?? []).map((h: any) => h.track).filter(Boolean)
+    continueListening = (historyRes.data ?? [])
+      .map((h: any) => h.track)
+      .filter(Boolean)
+      .map((t: any) => ({ ...t, cover_url: t.cover_url ?? t.podcast?.cover_url ?? null }))
     isCreator = !!artistCheckRes.data
     creatorType = (artistCheckRes.data as any)?.creator_type ?? null
 

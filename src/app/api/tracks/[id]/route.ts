@@ -38,7 +38,7 @@ export async function PATCH(
   if (!artist) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
   const body = await req.json()
-  const allowed = ['title', 'lyrics', 'producers', 'featured_artists', 'genre']
+  const allowed = ['title', 'lyrics', 'producers', 'featured_artists', 'genre', 'episode_number']
   const updates: Record<string, any> = { updated_at: new Date().toISOString() }
   for (const key of allowed) {
     if (key in body) updates[key] = body[key]
