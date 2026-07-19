@@ -439,13 +439,15 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
           </section>
         )}
 
-        {/* ── FOOTER LINKS — Company / For Artists / Explore ── */}
-        <div className="border-t border-[#2a2a2a] pt-8 pb-8 grid grid-cols-2 sm:grid-cols-3 gap-8">
+        {/* ── FOOTER LINKS — Company / For Artists / Legal / Explore ── */}
+        <div className="border-t border-[#2a2a2a] pt-8 pb-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
           <div>
             <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">Company</p>
             <ul className="flex flex-col gap-3">
               <li><Link href="/about" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">About</Link></li>
               <li><Link href="/contact" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Contact</Link></li>
+              <li><Link href="/careers" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Careers</Link></li>
+              <li><Link href="/newsroom" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Newsroom</Link></li>
             </ul>
           </div>
           <div>
@@ -453,6 +455,20 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
             <ul className="flex flex-col gap-3">
               <li><Link href="/for-artists/upload" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Upload Music</Link></li>
               <li><Link href="/for-artists/verification" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Artist Verification</Link></li>
+              <li><Link href="/for-artists/help" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Artist Help</Link></li>
+              <li><Link href="/for-artists/royalties" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Royalties and Payment</Link></li>
+              <li><Link href="/for-artists/analytics" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Analytics</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">Legal</p>
+            <ul className="flex flex-col gap-3">
+              <li><Link href="/legal/privacy" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/legal/terms" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link href="/legal/copyright" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Copyright Policy</Link></li>
+              <li><Link href="/legal/dmca" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">DMCA Notice</Link></li>
+              <li><Link href="/legal/cookies" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Cookies Policy</Link></li>
+              <li><Link href="/legal/community-guidelines" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Community Guidelines</Link></li>
             </ul>
           </div>
           <div className="col-span-2 sm:col-span-1">

@@ -364,13 +364,16 @@ export default async function LandingPage() {
           border-top: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* ── FOOTER COLUMNS (Company / For Artists / Explore) ── */
+        /* ── FOOTER COLUMNS (Company / For Artists / Legal / Explore) ── */
         .lp-footer-columns {
           padding: 56px 52px 40px;
           display: grid;
-          grid-template-columns: 1.4fr 1fr 1fr;
-          gap: 40px;
+          grid-template-columns: 1.2fr 1fr 1fr 1fr;
+          gap: 32px;
           border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        @media (max-width: 900px) {
+          .lp-footer-columns { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 720px) {
           .lp-footer-columns { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px 24px; }
@@ -703,6 +706,8 @@ export default async function LandingPage() {
             <ul className="lp-footer-col-links">
               <li><Link href="/about">About</Link></li>
               <li><Link href="/contact">Contact</Link></li>
+              <li><Link href="/careers">Careers</Link></li>
+              <li><Link href="/newsroom">Newsroom</Link></li>
             </ul>
           </div>
           <div>
@@ -710,6 +715,20 @@ export default async function LandingPage() {
             <ul className="lp-footer-col-links">
               <li><Link href="/for-artists/upload">Upload Music</Link></li>
               <li><Link href="/for-artists/verification">Artist Verification</Link></li>
+              <li><Link href="/for-artists/help">Artist Help</Link></li>
+              <li><Link href="/for-artists/royalties">Royalties and Payment</Link></li>
+              <li><Link href="/for-artists/analytics">Analytics</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className="lp-footer-col-title">Legal</p>
+            <ul className="lp-footer-col-links">
+              <li><Link href="/legal/privacy">Privacy Policy</Link></li>
+              <li><Link href="/legal/terms">Terms of Service</Link></li>
+              <li><Link href="/legal/copyright">Copyright Policy</Link></li>
+              <li><Link href="/legal/dmca">DMCA Notice</Link></li>
+              <li><Link href="/legal/cookies">Cookies Policy</Link></li>
+              <li><Link href="/legal/community-guidelines">Community Guidelines</Link></li>
             </ul>
           </div>
         </div>
