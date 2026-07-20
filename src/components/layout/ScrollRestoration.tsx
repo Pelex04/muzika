@@ -30,17 +30,24 @@ export default function ScrollRestoration() {
       main.scrollTop = 0
     }
 
+    const save = () => {
+      sessionStorage.setItem(key, String(main.scrollTop))
+    }
+
     const onScroll = () => {
       if (saveTimeout.current) clearTimeout(saveTimeout.current)
-      saveTimeout.current = setTimeout(() => {
-        sessionStorage.setItem(key, String(main.scrollTop))
-      }, 150)
+      saveTimeout.current = setTimeout(save, 150)
     }
 
     main.addEventListener('scroll', onScroll, { passive: true })
     return () => {
       main.removeEventListener('scroll', onScroll)
       if (saveTimeout.current) clearTimeout(saveTimeout.current)
+      // Flush immediately so navigating away before the debounce fires
+      // (e.g. a quick tap on a footer tab right after scrolling) doesn't
+      // lose the position -- otherwise the next visit to this path finds
+      // nothing saved and resets to the top.
+      save()
     }
   }, [pathname])
 
