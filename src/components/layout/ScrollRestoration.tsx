@@ -64,7 +64,14 @@ export default function ScrollRestoration() {
       tryRestore() // in case content is already there
 
       giveUpTimer = setTimeout(() => {
-        if (!restored) addLog(`GAVE UP after 2s, scrollTop stuck at ${main.scrollTop}`)
+        if (!restored) {
+          // Couldn't reach the exact saved spot (content is shorter than
+          // it was when we saved it) -- land as close as possible instead
+          // of leaving it at the top.
+          const closest = Math.max(0, main.scrollHeight - main.clientHeight)
+          main.scrollTop = closest
+          addLog(`GAVE UP after 2s, clamped to closest=${closest} (target was ${target})`)
+        }
         restored = true
         resizeObserver?.disconnect()
       }, 2000)
