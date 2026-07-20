@@ -35,7 +35,8 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ i
   const artist = await getArtistById(id)
   if (!artist) notFound()
 
-  const tracks = await getArtistTracks(id)
+  const isPodcastCreator = artist.creator_type === 'podcast_creator'
+  const tracks = await getArtistTracks(id, isPodcastCreator ? 'podcast_episode' : 'track')
   const tracksWithArtist = tracks.map(t => ({ ...t, artist }))
 
   // Check if viewer is this artist
@@ -51,7 +52,6 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ i
   }
 
   // Published albums (artists) or podcast shows (podcast creators)
-  const isPodcastCreator = artist.creator_type === 'podcast_creator'
   let albums: any[] = []
   let podcasts: any[] = []
   if (isPodcastCreator) {

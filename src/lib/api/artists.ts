@@ -46,14 +46,17 @@ export async function getArtistById(id: string): Promise<Artist | null> {
   return data as Artist
 }
 
-export async function getArtistTracks(artistId: string): Promise<Track[]> {
+export async function getArtistTracks(
+  artistId: string,
+  contentType: 'track' | 'podcast_episode' = 'track'
+): Promise<Track[]> {
   const supabase = await createClient() as any
   const { data, error } = await supabase
     .from('tracks')
     .select('*')
     .eq('artist_id', artistId)
     .eq('published', true)
-    .eq('content_type', 'track')
+    .eq('content_type', contentType)
     .order('created_at', { ascending: false })
 
   if (error) throw error
