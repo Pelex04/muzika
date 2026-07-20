@@ -21,11 +21,39 @@ export default function ScrollRestoration() {
     // Restore saved position for this path, if any
     const key = `scrollpos:${pathname}`
     const saved = sessionStorage.getItem(key)
+
+    let resizeObserver: ResizeObserver | null = null
+    let giveUpTimer: ReturnType<typeof setTimeout> | null = null
+
     if (saved) {
-      // Wait a tick for content to render before restoring
-      requestAnimationFrame(() => {
-        main.scrollTop = parseInt(saved, 10) || 0
-      })
+      const target = parseInt(saved, 10) || 0
+      let restored = false
+
+      const tryRestore = () => {
+        if (restored) return
+        // Only scroll once the page has actually grown tall enough to
+        // reach the saved position -- pages here fetch data server-side
+        // (e.g. force-dynamic routes), so on remount the container starts
+        // out short/empty and a one-time scroll attempt lands before the
+        // real content (and real scroll height) exists.
+        if (main.scrollHeight - main.clientHeight >= target) {
+          main.scrollTop = target
+          restored = true
+          resizeObserver?.disconnect()
+          if (giveUpTimer) clearTimeout(giveUpTimer)
+        }
+      }
+
+      resizeObserver = new ResizeObserver(tryRestore)
+      resizeObserver.observe(main)
+      tryRestore() // in case content is already there
+
+      // Don't watch forever -- if the saved position is no longer
+      // reachable (e.g. the list is now shorter), stop trying after 2s.
+      giveUpTimer = setTimeout(() => {
+        restored = true
+        resizeObserver?.disconnect()
+      }, 2000)
     } else {
       main.scrollTop = 0
     }
@@ -41,6 +69,8 @@ export default function ScrollRestoration() {
     return () => {
       main.removeEventListener('scroll', onScroll)
       if (saveTimeout.current) clearTimeout(saveTimeout.current)
+      resizeObserver?.disconnect()
+      if (giveUpTimer) clearTimeout(giveUpTimer)
     }
   }, [pathname])
 
