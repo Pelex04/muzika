@@ -15,6 +15,18 @@ const TABS = [
 export default function BottomTabs() {
   const pathname = usePathname()
 
+  // Footer taps can fire before the debounced scroll-save in
+  // ScrollRestoration has had a chance to run (e.g. tapping right after
+  // scrolling, or without scrolling again first). Flush the current
+  // position for the page we're leaving synchronously on click, using the
+  // same sessionStorage key ScrollRestoration reads from, so it's always
+  // accurate by the time we come back to this page.
+  const flushScrollPosition = () => {
+    const main = document.querySelector('.muzika-main') as HTMLElement | null
+    if (!main) return
+    sessionStorage.setItem(`scrollpos:${pathname}`, String(main.scrollTop))
+  }
+
   return (
     <>
       <style>{`
@@ -36,6 +48,7 @@ export default function BottomTabs() {
             <Link
               key={href}
               href={href}
+              onClick={flushScrollPosition}
               style={{
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
