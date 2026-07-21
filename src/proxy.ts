@@ -7,15 +7,21 @@ export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
   const { pathname } = request.nextUrl
 
-  // Supabase may refresh the session token during getUser() below, which
-  // sets fresh cookies onto supabaseResponse via setAll(). A bare
-  // `NextResponse.redirect(url)` is a brand new response object and does
-  // NOT carry those cookies -- the browser would keep resending the old,
-  // stale session cookie forever. Every redirect must go through this so
-  // the refreshed session actually reaches the browser.
+  // Concurrent requests (e.g. several fire at once when a backgrounded tab
+  // resumes) can race on refreshing a near-expiry session token. Supabase
+  // refresh tokens are single-use, so the request that loses the race sees
+  // an invalid session and redirects toward signin while another request
+  // still holding the valid cookie redirects the other way -- these can
+  // bounce off each other into a real ERR_TOO_MANY_REDIRECTS. This counts
+  // hops per navigation chain via a short-lived cookie and, if we're about
+  // to redirect for the 3rd+ time in the same chain, stops and just serves
+  // the page as-is instead of adding another hop.
+  const hopCount = parseInt(request.cookies.get('_rg')?.value ?? '0', 10)
   const redirectTo = (url: URL | string) => {
+    if (hopCount >= 3) return supabaseResponse
     const res = NextResponse.redirect(url)
     supabaseResponse.cookies.getAll().forEach(cookie => res.cookies.set(cookie))
+    res.cookies.set('_rg', String(hopCount + 1), { maxAge: 5, path: '/' })
     return res
   }
 
