@@ -28,11 +28,14 @@ export default async function ProfilePage() {
   if (artist) {
     const { data: t } = await supabase
       .from('tracks')
-      .select('*')
+      .select('*, podcast:podcasts(cover_url)')
       .eq('artist_id', artist.id)
       .order('created_at', { ascending: false })
 
-    tracks = t ?? []
+    tracks = (t ?? []).map((tr: any) => ({
+      ...tr,
+      cover_url: tr.cover_url ?? tr.podcast?.cover_url ?? null,
+    }))
     totalPlays = tracks.reduce((sum: number, t: any) => sum + (t.play_count || 0), 0)
 
     const { data: purchases } = await supabase

@@ -53,14 +53,17 @@ export async function getArtistTracks(
   const supabase = await createClient() as any
   const { data, error } = await supabase
     .from('tracks')
-    .select('*')
+    .select('*, podcast:podcasts(cover_url)')
     .eq('artist_id', artistId)
     .eq('published', true)
     .eq('content_type', contentType)
     .order('created_at', { ascending: false })
 
   if (error) throw error
-  return (data as Track[]) ?? []
+  return ((data ?? []) as any[]).map(t => ({
+    ...t,
+    cover_url: t.cover_url ?? t.podcast?.cover_url ?? null,
+  })) as Track[]
 }
 
 export async function getUserFollowedArtists(userId: string): Promise<string[]> {
