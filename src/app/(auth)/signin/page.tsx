@@ -189,7 +189,7 @@ export default function SignInPage() {
               </div>
 
               <div style={{ textAlign:'right', marginBottom:'20px' }}>
-                <span style={{ fontSize:'13px', color:'#2563EB', fontWeight:600, cursor:'pointer' }}>Forgot password?</span>
+                <Link href="/forgot-password" style={{ fontSize:'13px', color:'#2563EB', fontWeight:600, textDecoration:'none' }}>Forgot password?</Link>
               </div>
 
               <button type="submit" disabled={loading} className="btn-primary">

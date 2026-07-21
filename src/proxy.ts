@@ -109,7 +109,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended']
+  const publicPaths = ['/signin', '/signup', '/landing', '/check-email', '/auth/callback', '/suspended', '/forgot-password', '/reset-password']
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p))
   const isApi = pathname.startsWith('/api/')
   const isStatic = pathname.startsWith('/_next/') || pathname.includes('.')
