@@ -3,6 +3,31 @@ import { Howl } from 'howler'
 import type { Track } from '@/types'
 import { fetchStreamUrl, setCachedUrl } from '@/lib/stream-cache'
 
+// The OS media notification (and lock screen player) is controlled by the
+// Web Media Session API, not by Howler/the <audio> element directly. Without
+// this, the browser falls back to showing the page title ("Playback Music")
+// and generic controls instead of the actual track.
+function updateMediaSessionMetadata(track: Track) {
+  if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: track.title,
+    artist: track.artist?.stage_name ?? 'Playback Music',
+    album: track.album?.title ?? '',
+    artwork: track.cover_url
+      ? [
+          { src: track.cover_url, sizes: '96x96', type: 'image/png' },
+          { src: track.cover_url, sizes: '256x256', type: 'image/png' },
+          { src: track.cover_url, sizes: '512x512', type: 'image/png' },
+        ]
+      : [],
+  })
+}
+
+function setMediaSessionPlaybackState(state: 'playing' | 'paused') {
+  if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) return
+  navigator.mediaSession.playbackState = state
+}
+
 interface PlayerStore {
   currentTrack: Track | null
   queue: Track[]
@@ -80,9 +105,18 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       src: [track.audio_url!],
       html5: true,
       volume: state.volume,
-      onload: () => set({ duration: howl.duration(), isLoading: false }),
-      onplay: () => set({ isPlaying: true }),
-      onpause: () => set({ isPlaying: false }),
+      onload: () => {
+        set({ duration: howl.duration(), isLoading: false })
+        if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+          navigator.mediaSession.setPositionState({
+            duration: howl.duration(),
+            playbackRate: 1,
+            position: 0,
+          })
+        }
+      },
+      onplay: () => { set({ isPlaying: true }); setMediaSessionPlaybackState('playing') },
+      onpause: () => { set({ isPlaying: false }); setMediaSessionPlaybackState('paused') },
       onend: () => {
         const { repeat, next } = get()
         if (repeat === 'one') { howl.seek(0); howl.play() }
@@ -90,6 +124,17 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       },
       onloaderror: () => set({ isLoading: false }),
     })
+
+    updateMediaSessionMetadata(track)
+    if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => get().resume())
+      navigator.mediaSession.setActionHandler('pause', () => get().pause())
+      navigator.mediaSession.setActionHandler('previoustrack', () => get().prev())
+      navigator.mediaSession.setActionHandler('nexttrack', () => get().next())
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        if (details.seekTime != null) get().seek(details.seekTime)
+      })
+    }
 
     const tick = () => {
       if (howl.playing()) set({ currentTime: howl.seek() as number })
@@ -147,8 +192,14 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   },
 
   seek: (time) => {
-    const { _howl } = get()
-    if (_howl) { _howl.seek(time); set({ currentTime: time }) }
+    const { _howl, duration } = get()
+    if (_howl) {
+      _howl.seek(time)
+      set({ currentTime: time })
+      if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+        navigator.mediaSession.setPositionState({ duration, playbackRate: 1, position: time })
+      }
+    }
   },
 
   setVolume: (vol) => { get()._howl?.volume(vol); set({ volume: vol }) },
