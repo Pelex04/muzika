@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import Sidebar from '@/components/layout/Sidebar'
 import MiniPlayer from '@/components/player/MiniPlayer'
 import BottomTabs from '@/components/layout/BottomTabs'
+import InstallPWABanner from '@/components/pwa/InstallPWABanner'
 import ScrollRestoration from '@/components/layout/ScrollRestoration'
 import { ProfileProvider } from '@/lib/profile-context'
 import StudioSwitcher from '@/components/layout/StudioSwitcher'
@@ -50,6 +51,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </main>
           <MiniPlayer />
         </div>
+        <InstallPWABanner />
         <BottomTabs />
         {isArtist && <StudioSwitcher />}
       </div>

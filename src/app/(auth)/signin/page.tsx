@@ -70,7 +70,8 @@ export default function SignInPage() {
       const role = (profileData as any)?.role
       const redirectTo = params.get('redirectTo') ??
         (role === 'admin' ? '/admin' : '/discover')
-      router.push(redirectTo)
+      const sep = redirectTo.includes('?') ? '&' : '?'
+      router.push(`${redirectTo}${sep}fresh_login=1`)
       router.refresh()
     } catch (err) {
       notify.error('Cannot connect to server. Check your internet connection and try again.')
