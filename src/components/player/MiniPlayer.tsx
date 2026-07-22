@@ -4,14 +4,17 @@ import { usePlayerStore } from '@/store/player'
 import { formatDuration } from '@/lib/utils'
 import { SkipBack, SkipForward, Play, Pause, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function MiniPlayer() {
   const {
     currentTrack, isPlaying, currentTime, duration,
     isLoading, togglePlay, next, prev,
   } = usePlayerStore()
+  const pathname = usePathname()
 
   if (!currentTrack) return null
+  if (pathname === '/now-playing') return null
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
 
