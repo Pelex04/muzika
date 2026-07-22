@@ -732,7 +732,7 @@ export default async function LandingPage() {
             </ul>
           </div>
         </div>
-        <div className="lp-footer-columns" style={{ paddingTop: 0, borderTop: 'none', gridTemplateColumns: '1fr' }}>
+        <div className="lp-footer-columns" style={{ paddingTop: 0, borderTop: 'none', display: 'flex', flexWrap: 'wrap', gap: '40px', justifyContent: 'space-between' }}>
           <div>
             <p className="lp-footer-col-title">Explore</p>
             <ul className="lp-footer-col-links" style={{ flexDirection: 'row', gap: '28px', flexWrap: 'wrap' }}>
@@ -742,6 +742,11 @@ export default async function LandingPage() {
               <li><Link href="/songs">Genres</Link></li>
             </ul>
           </div>
+          <div>
+            <p className="lp-footer-col-title">Credits</p>
+            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.65)' }}>Design &amp; Development</p>
+            <p style={{ fontSize: '14px', color: '#ffffff', fontWeight: 600, marginTop: '4px' }}>Rasta Kadema</p>
+          </div>
         </div>
 
         {/* ── FOOTER ── */}
@@ -749,9 +754,6 @@ export default async function LandingPage() {
           <div className="lp-footer-bottom">
             <div>
               <span className="lp-footer-copy">© 2026 Playback</span>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px', letterSpacing: '0.3px' }}>
-                Powered by <span style={{ color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>Rasta Kadema</span>
-              </p>
             </div>
             <ul className="lp-footer-links">
               <li><Link href="/artists" style={{color:'inherit',textDecoration:'none'}}>Artists</Link></li>

@@ -440,7 +440,7 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
         )}
 
         {/* ── FOOTER LINKS — Company / For Artists / Legal / Explore ── */}
-        <div className="border-t border-[#2a2a2a] pt-8 pb-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+        <div className="border-t border-[#2a2a2a] pt-8 pb-8 grid grid-cols-2 sm:grid-cols-5 gap-8">
           <div>
             <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">Company</p>
             <ul className="flex flex-col gap-3">
@@ -479,6 +479,11 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
               <li><Link href="/charts" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Charts</Link></li>
               <li><Link href="/songs" className="text-sm text-[#b3b3b3] hover:text-white transition-colors">Genres</Link></li>
             </ul>
+          </div>
+          <div className="col-span-2 sm:col-span-1">
+            <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">Credits</p>
+            <p className="text-sm text-[#b3b3b3]">Design &amp; Development</p>
+            <p className="text-sm text-white font-semibold mt-1">Rasta Kadema</p>
           </div>
         </div>
 
@@ -529,9 +534,6 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
             <div className="text-center">
               <p className="text-[#717171] text-xs">
                 © {new Date().getFullYear()} Playback · All rights reserved
-              </p>
-              <p style={{ fontSize: '11px', color: 'rgba(113,113,113,0.55)', marginTop: '4px', letterSpacing: '0.3px' }}>
-                Powered by <span style={{ color: 'rgba(113,113,113,0.8)', fontWeight: 600 }}>Rasta Kadema</span>
               </p>
             </div>
           </div>
