@@ -1,13 +1,24 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'sonner'
 import { getAdminClient } from '@/lib/admin'
 import { LogoProvider } from '@/lib/logo-context'
+import ServiceWorkerRegister from '@/components/pwa/ServiceWorkerRegister'
 import './globals.css'
 
 const BASE_URL = 'https://muziqa.vercel.app'
 
+export const viewport: Viewport = {
+  themeColor: '#000000',
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Playback',
+  },
   title: {
     default: 'Playback · Stream & Own Malawian Music',
     template: '%s · Playback',
@@ -64,6 +75,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
+        <ServiceWorkerRegister />
         <LogoProvider logoUrl={settings?.logo_url ?? null}>
           {children}
         </LogoProvider>
