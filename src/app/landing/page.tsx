@@ -745,7 +745,16 @@ export default async function LandingPage() {
           <div>
             <p className="lp-footer-col-title">Credits</p>
             <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.65)' }}>Design &amp; Development</p>
-            <p style={{ fontSize: '14px', color: '#ffffff', fontWeight: 600, marginTop: '4px' }}>Rasta Kadema</p>
+            <div className="lp-footer-col-links" style={{ marginTop: '4px' }}>
+              <a
+                href="https://cheza-x-malawi.vercel.app/about"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontWeight: 600 }}
+              >
+                Rasta Kadema
+              </a>
+            </div>
           </div>
         </div>
 

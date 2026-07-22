@@ -483,7 +483,14 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
           <div className="col-span-2 sm:col-span-1">
             <p className="text-[11px] font-bold text-[#717171] uppercase tracking-[.8px] mb-4">Credits</p>
             <p className="text-sm text-[#b3b3b3]">Design &amp; Development</p>
-            <p className="text-sm text-white font-semibold mt-1">Rasta Kadema</p>
+            <a
+              href="https://cheza-x-malawi.vercel.app/about"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-[#b3b3b3] hover:text-white transition-colors font-semibold mt-1 block"
+            >
+              Rasta Kadema
+            </a>
           </div>
         </div>
 
