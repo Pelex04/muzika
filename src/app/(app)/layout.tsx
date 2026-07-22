@@ -35,6 +35,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <style>{`
           .muzika-main { padding-bottom: 76px; }
           @media (max-width: 768px) { .muzika-main { padding-bottom: 138px; } }
+          /* MiniPlayer hides itself on /now-playing, but BottomTabs doesn't --
+             only drop MiniPlayer's share of the reserved space (76px desktop,
+             the same 76px out of 138px on mobile), not the BottomTabs part. */
+          .muzika-main.now-playing-route { padding-bottom: 0 !important; }
+          @media (max-width: 768px) {
+            .muzika-main.now-playing-route { padding-bottom: 62px !important; }
+          }
         `}</style>
         <Sidebar profile={profile} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>

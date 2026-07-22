@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { usePlayerStore } from '@/store/player'
 import { formatDuration } from '@/lib/utils'
 import { SkipBack, SkipForward, Play, Pause, Loader2 } from 'lucide-react'
@@ -12,9 +13,18 @@ export default function MiniPlayer() {
     isLoading, togglePlay, next, prev,
   } = usePlayerStore()
   const pathname = usePathname()
+  const onNowPlaying = pathname === '/now-playing'
+
+  // .muzika-main reserves bottom padding for this bar unconditionally,
+  // independent of whether we render -- so hiding below without also
+  // clearing that padding leaves an empty gap on this route.
+  useEffect(() => {
+    const main = document.querySelector('.muzika-main')
+    main?.classList.toggle('now-playing-route', onNowPlaying)
+  }, [onNowPlaying])
 
   if (!currentTrack) return null
-  if (pathname === '/now-playing') return null
+  if (onNowPlaying) return null
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
 
