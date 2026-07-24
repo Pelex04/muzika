@@ -37,8 +37,9 @@ export default function BottomTabs() {
         className="muzika-bottom-tabs"
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 300,
-          height: '62px', background: '#121212',
-          borderTop: '1.5px solid #2a2a2a',
+          height: '62px', background: 'rgba(18,18,18,0.55)',
+          backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+          borderTop: '1.5px solid rgba(42,42,42,0.6)',
           gridTemplateColumns: 'repeat(5, 1fr)',
         }}
       >
