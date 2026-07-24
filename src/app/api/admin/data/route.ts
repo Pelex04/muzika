@@ -54,9 +54,23 @@ export async function GET(req: NextRequest) {
     const { data } = await db
       .from('tracks')
       .select('id, title, genre, cover_url, play_count, download_count, published, created_at, artist:artists(id, stage_name, profile:profiles(email))')
+      .eq('content_type', 'track')
       .order('created_at', { ascending: false })
       .limit(100)
     return NextResponse.json({ items: data ?? [] })
+  }
+
+  if (tab === 'podcasts') {
+    const { data } = await db
+      .from('podcasts')
+      .select('id, title, category, cover_url, published, created_at, artist:artists(id, stage_name, profile:profiles(email)), episodes:tracks(count)')
+      .order('created_at', { ascending: false })
+      .limit(100)
+    const items = (data ?? []).map((p: any) => ({
+      ...p,
+      episode_count: p.episodes?.[0]?.count ?? 0,
+    }))
+    return NextResponse.json({ items })
   }
 
   if (tab === 'albums') {

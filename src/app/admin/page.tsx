@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Music2, Disc3, Users, Trash2, ShieldX, ShieldCheck, AlertTriangle, Search, RefreshCw, BookOpen, PenLine, Megaphone, Check, X, BadgeCheck, Calendar } from 'lucide-react'
+import { Music2, Disc3, Users, Trash2, ShieldX, ShieldCheck, AlertTriangle, Search, RefreshCw, BookOpen, PenLine, Megaphone, Check, X, BadgeCheck, Calendar, Podcast } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import Link from 'next/link'
 
-type Tab = 'tracks' | 'albums' | 'users' | 'blog' | 'banner_requests' | 'verification_requests'
+type Tab = 'tracks' | 'albums' | 'podcasts' | 'users' | 'blog' | 'banner_requests' | 'verification_requests'
 
 interface AdminItem {
   id: string
@@ -17,6 +17,7 @@ interface AdminItem {
   category?: string
   cover_url?: string
   play_count?: number
+  episode_count?: number
   role?: string
   status?: string
   message?: string
@@ -40,7 +41,7 @@ export default function AdminPage() {
   const [publishing, setPublishing] = useState(false)
   const [confirm, setConfirm] = useState<{
     open: boolean
-    type: 'delete_track' | 'delete_album' | 'delete_blog' | 'suspend' | 'unsuspend' | null
+    type: 'delete_track' | 'delete_album' | 'delete_podcast' | 'delete_blog' | 'suspend' | 'unsuspend' | null
     item: AdminItem | null
     reason: string
   }>({ open: false, type: null, item: null, reason: '' })
@@ -81,6 +82,7 @@ export default function AdminPage() {
 
     if (type === 'delete_track')  url = `/api/admin/tracks/${item.id}`
     else if (type === 'delete_album') url = `/api/admin/albums/${item.id}`
+    else if (type === 'delete_podcast') url = `/api/admin/podcasts/${item.id}`
     else if (type === 'delete_blog')  url = `/api/admin/blog/${item.id}`
     else if (type === 'suspend')   { url = `/api/admin/users/${item.id}`; method = 'PATCH'; body = { action: 'suspend', reason } }
     else if (type === 'unsuspend') { url = `/api/admin/users/${item.id}`; method = 'PATCH'; body = { action: 'unsuspend', reason } }
@@ -95,6 +97,7 @@ export default function AdminPage() {
       const label =
         type === 'delete_track'  ? 'Track removed' :
         type === 'delete_album'  ? 'Album removed' :
+        type === 'delete_podcast' ? 'Podcast removed' :
         type === 'delete_blog'   ? 'Post removed' :
         type === 'suspend'       ? 'Account suspended' : 'Account restored'
       notify.success(label)
@@ -116,6 +119,7 @@ export default function AdminPage() {
   const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
     { key: 'tracks',          label: 'Tracks',   icon: Music2 },
     { key: 'albums',          label: 'Albums',   icon: Disc3 },
+    { key: 'podcasts',        label: 'Podcasts', icon: Podcast },
     { key: 'blog',            label: 'Blog',     icon: BookOpen },
     { key: 'users',           label: 'Users',    icon: Users },
     { key: 'banner_requests', label: 'Banners',  icon: Megaphone },
@@ -125,6 +129,7 @@ export default function AdminPage() {
   const confirmMeta = {
     delete_track: { title: 'Remove track',     desc: `Remove "${confirm.item?.title}"? This cannot be undone.`,                                             label: 'Remove track',  danger: true },
     delete_album: { title: 'Remove album',     desc: `Remove "${confirm.item?.title}" and all its tracks? This cannot be undone.`,                          label: 'Remove album',  danger: true },
+    delete_podcast: { title: 'Remove podcast', desc: `Remove "${confirm.item?.title}" and all its episodes? This cannot be undone.`,                        label: 'Remove podcast', danger: true },
     delete_blog:  { title: 'Delete post',      desc: `Delete "${confirm.item?.title}"? This cannot be undone.`,                                             label: 'Delete post',   danger: true },
     suspend:      { title: 'Suspend account',  desc: `Suspend ${confirm.item?.full_name ?? confirm.item?.email}? They'll be signed out immediately.`,       label: 'Suspend',       danger: true },
     unsuspend:    { title: 'Restore account',  desc: `Restore access for ${confirm.item?.full_name ?? confirm.item?.email}?`,                               label: 'Restore',       danger: false },
@@ -339,6 +344,25 @@ export default function AdminPage() {
               </div>
               <span className="admin-item-date">{new Date(item.created_at).toLocaleDateString()}</span>
               <button className="admin-btn-remove" onClick={() => openConfirm('delete_album', item)}>
+                <Trash2 size={12} /> Remove
+              </button>
+            </div>
+          ))}
+
+          {/* PODCASTS */}
+          {tab === 'podcasts' && filtered.map(item => (
+            <div key={item.id} className="admin-item">
+              <div className="admin-item-thumb">
+                {item.cover_url && <img src={item.cover_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+              </div>
+              <div className="admin-item-info">
+                <div className="admin-item-title">{item.title}</div>
+                <div className="admin-item-sub">
+                  {item.artist?.stage_name}{item.category ? ` · ${item.category}` : ''} · {item.episode_count ?? 0} episode{item.episode_count === 1 ? '' : 's'}
+                </div>
+              </div>
+              <span className="admin-item-date">{new Date(item.created_at).toLocaleDateString()}</span>
+              <button className="admin-btn-remove" onClick={() => openConfirm('delete_podcast', item)}>
                 <Trash2 size={12} /> Remove
               </button>
             </div>
