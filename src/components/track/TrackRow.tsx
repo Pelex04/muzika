@@ -110,8 +110,8 @@ export default function TrackRow({
             </div>
           ) : (
             <span className={cn(
-              'text-sm font-bold',
-              rank <= 3 ? 'text-white text-base font-black' : 'text-[#717171]'
+              'text-sm font-bold text-white',
+              rank <= 3 && 'text-base font-black'
             )}>
               {rank}
             </span>

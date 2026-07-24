@@ -18,6 +18,7 @@ interface AdminItem {
   cover_url?: string
   play_count?: number
   episode_count?: number
+  published?: boolean
   role?: string
   status?: string
   message?: string
@@ -39,6 +40,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [publishing, setPublishing] = useState(false)
+  const [expandedPodcast, setExpandedPodcast] = useState<string | null>(null)
+  const [episodesByPodcast, setEpisodesByPodcast] = useState<Record<string, AdminItem[]>>({})
+  const [episodesLoading, setEpisodesLoading] = useState<string | null>(null)
   const [confirm, setConfirm] = useState<{
     open: boolean
     type: 'delete_track' | 'delete_album' | 'delete_podcast' | 'delete_blog' | 'suspend' | 'unsuspend' | null
@@ -70,6 +74,22 @@ export default function AdminPage() {
 
   const openConfirm = (type: typeof confirm.type, item: AdminItem) =>
     setConfirm({ open: true, type, item, reason: '' })
+
+  const toggleEpisodes = async (podcastId: string) => {
+    if (expandedPodcast === podcastId) { setExpandedPodcast(null); return }
+    setExpandedPodcast(podcastId)
+    if (episodesByPodcast[podcastId]) return // already fetched
+    setEpisodesLoading(podcastId)
+    try {
+      const res = await fetch(`/api/admin/podcasts/${podcastId}/episodes`)
+      const data = await res.json()
+      setEpisodesByPodcast(prev => ({ ...prev, [podcastId]: data.episodes ?? [] }))
+    } catch {
+      notify.error('Could not load episodes')
+    } finally {
+      setEpisodesLoading(null)
+    }
+  }
 
   const handleConfirm = async () => {
     const { type, item, reason } = confirm
@@ -351,20 +371,55 @@ export default function AdminPage() {
 
           {/* PODCASTS */}
           {tab === 'podcasts' && filtered.map(item => (
-            <div key={item.id} className="admin-item">
-              <div className="admin-item-thumb">
-                {item.cover_url && <img src={item.cover_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-              </div>
-              <div className="admin-item-info">
-                <div className="admin-item-title">{item.title}</div>
-                <div className="admin-item-sub">
-                  {item.artist?.stage_name}{item.category ? ` · ${item.category}` : ''} · {item.episode_count ?? 0} episode{item.episode_count === 1 ? '' : 's'}
+            <div key={item.id}>
+              <div
+                className="admin-item"
+                onClick={() => toggleEpisodes(item.id)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="admin-item-thumb">
+                  {item.cover_url && <img src={item.cover_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                 </div>
+                <div className="admin-item-info">
+                  <div className="admin-item-title">{item.title}</div>
+                  <div className="admin-item-sub">
+                    {item.artist?.stage_name}{item.category ? ` · ${item.category}` : ''} · {item.episode_count ?? 0} episode{item.episode_count === 1 ? '' : 's'}
+                    {' · '}{expandedPodcast === item.id ? 'Hide episodes' : 'View episodes'}
+                  </div>
+                </div>
+                <span className="admin-item-date">{new Date(item.created_at).toLocaleDateString()}</span>
+                <button
+                  className="admin-btn-remove"
+                  onClick={(e) => { e.stopPropagation(); openConfirm('delete_podcast', item) }}
+                >
+                  <Trash2 size={12} /> Remove
+                </button>
               </div>
-              <span className="admin-item-date">{new Date(item.created_at).toLocaleDateString()}</span>
-              <button className="admin-btn-remove" onClick={() => openConfirm('delete_podcast', item)}>
-                <Trash2 size={12} /> Remove
-              </button>
+
+              {expandedPodcast === item.id && (
+                <div style={{ padding: '4px 16px 12px 68px', borderBottom: '1px solid #1f1f1f' }}>
+                  {episodesLoading === item.id ? (
+                    <p style={{ fontSize: '12px', color: '#717171' }}>Loading episodes…</p>
+                  ) : (episodesByPodcast[item.id]?.length ?? 0) === 0 ? (
+                    <p style={{ fontSize: '12px', color: '#717171' }}>No episodes yet.</p>
+                  ) : (
+                    episodesByPodcast[item.id].map(ep => (
+                      <div key={ep.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderBottom: '1px solid #181818' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '6px', background: '#181818', flexShrink: 0, overflow: 'hidden' }}>
+                          {ep.cover_url && <img src={ep.cover_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '13px', color: '#fff', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ep.title}</div>
+                          <div style={{ fontSize: '11px', color: '#717171' }}>
+                            {ep.play_count ?? 0} plays · {ep.published ? 'Published' : 'Unpublished'}
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '11px', color: '#4a4a4a', flexShrink: 0 }}>{new Date(ep.created_at).toLocaleDateString()}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           ))}
 
