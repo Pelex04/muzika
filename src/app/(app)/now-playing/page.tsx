@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   ChevronLeft, Heart, SkipBack, SkipForward, Play, Pause,
-  Shuffle, Repeat, Repeat1, Bookmark, ListPlus, Share2,
+  Shuffle, Repeat, Repeat1, Bookmark, Share2,
   Download, Loader2, Music2, BadgeCheck,
 } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
@@ -13,7 +13,6 @@ import { fetchStreamUrl } from '@/lib/stream-cache'
 import { formatDuration, formatCount } from '@/lib/utils'
 import { notify } from '@/components/ui/notify'
 import { cn } from '@/lib/utils'
-import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
 import type { Artist, Track } from '@/types'
 
 const GENRE_BG: Record<string, string> = {
@@ -34,7 +33,6 @@ export default function NowPlayingPage() {
 
   const [liked, setLiked] = useState(false)
   const [saved, setSaved] = useState(false)
-  const [showPlaylistModal, setShowPlaylistModal] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
 
@@ -240,7 +238,7 @@ export default function NowPlayingPage() {
             <button onClick={toggleShuffle} className={cn('transition-colors', shuffle ? 'text-blue-400' : 'text-[#717171] hover:text-white')}>
               <Shuffle className="w-5 h-5" />
             </button>
-            <button onClick={prev} className="text-[#b3b3b3] hover:text-white transition-colors">
+            <button onClick={prev} className="text-white hover:text-white transition-colors">
               <SkipBack className="w-6 h-6" />
             </button>
             <button
@@ -252,7 +250,7 @@ export default function NowPlayingPage() {
                 : isPlaying ? <Pause className="w-6 h-6 text-black" /> : <Play className="w-6 h-6 text-black ml-1" />
               }
             </button>
-            <button onClick={next} className="text-[#b3b3b3] hover:text-white transition-colors">
+            <button onClick={next} className="text-white hover:text-white transition-colors">
               <SkipForward className="w-6 h-6" />
             </button>
             <button onClick={cycleRepeat} className={cn('transition-colors', repeat !== 'none' ? 'text-blue-400' : 'text-[#717171] hover:text-white')}>
@@ -260,14 +258,10 @@ export default function NowPlayingPage() {
             </button>
           </div>
 
-          <div className="w-full grid grid-cols-4 border-[1.5px] border-[#2a2a2a] rounded-xl overflow-hidden">
+          <div className="w-full grid grid-cols-3 border-[1.5px] border-[#2a2a2a] rounded-xl overflow-hidden">
             <button onClick={handleSave} className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#2a2a2a] hover:bg-[#181818] transition-colors">
               <Bookmark className="w-[18px] h-[18px]" style={{ color: saved ? '#60a5fa' : '#b3b3b3' }} fill={saved ? '#60a5fa' : 'none'} />
               <span className="text-xs font-semibold" style={{ color: saved ? '#60a5fa' : '#b3b3b3' }}>{saved ? 'Saved' : 'Save'}</span>
-            </button>
-            <button onClick={() => setShowPlaylistModal(true)} className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#2a2a2a] hover:bg-[#181818] transition-colors">
-              <ListPlus className="w-[18px] h-[18px] text-[#b3b3b3]" />
-              <span className="text-xs font-semibold text-[#b3b3b3]">Playlist</span>
             </button>
             <button onClick={handleShare} className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#2a2a2a] hover:bg-[#181818] transition-colors">
               <Share2 className="w-[18px] h-[18px] text-[#b3b3b3]" />
@@ -441,7 +435,7 @@ export default function NowPlayingPage() {
               <div className="mb-6">
                 {lyrics ? (
                   <div className="bg-[#181818] rounded-2xl p-5">
-                    <pre className="text-[#e0e0e0] text-sm leading-8 whitespace-pre-wrap font-sans">
+                    <pre className="text-[#e0e0e0] text-base leading-9 whitespace-pre-wrap font-sans">
                       {lyrics}
                     </pre>
                   </div>
@@ -480,10 +474,6 @@ export default function NowPlayingPage() {
           </div>
         )}
       </div>
-
-      {showPlaylistModal && (
-        <AddToPlaylistModal trackId={currentTrack.id} onClose={() => setShowPlaylistModal(false)} />
-      )}
     </div>
   )
 }

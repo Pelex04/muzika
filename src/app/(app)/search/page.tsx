@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Search, X, Music, Users, Loader2, Disc3 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Search, X, Music, Users, Loader2, Disc3, Clock } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
 import { notify } from '@/components/ui/notify'
 import Link from 'next/link'
+import { getRecentSearches, addRecentSearch, removeRecentSearch, clearRecentSearches, type RecentSearchEntry } from '@/lib/recent-searches'
 
 interface SearchResult {
   tracks: any[]
@@ -19,9 +21,15 @@ export default function SearchPage() {
   const [results, setResults] = useState<SearchResult>({ tracks: [], artists: [], albums: [] })
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [recents, setRecents] = useState<RecentSearchEntry[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
   const { play } = usePlayerStore()
+  const router = useRouter()
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  useEffect(() => {
+    setRecents(getRecentSearches())
+  }, [])
 
   // Pre-fill from ?q= param (set by home page search bar)
   useEffect(() => {
@@ -65,6 +73,24 @@ export default function SearchPage() {
     const _streamUrl = await fetchStreamUrl(track.id)
     if (!_streamUrl) { notify.error('Could not load track'); return }
     play({ ...track, audio_url: _streamUrl }, results.tracks)
+    setRecents(addRecentSearch({
+      id: track.id, type: 'track', label: track.title,
+      subLabel: track.artist?.stage_name, image: track.cover_url,
+    }) ?? [])
+  }
+
+  const recordQuery = () => {
+    if (!query.trim()) return
+    setRecents(addRecentSearch({ id: query.trim().toLowerCase(), type: 'query', label: query.trim() }) ?? [])
+  }
+
+  const goToRecent = (entry: RecentSearchEntry) => {
+    if (entry.type === 'query') { setQuery(entry.label); return }
+    if (entry.type === 'track') {
+      handlePlay({ id: entry.id, title: entry.label, cover_url: entry.image, artist: { stage_name: entry.subLabel } })
+      return
+    }
+    if (entry.href) router.push(entry.href)
   }
 
   const artBg = (genre: string) => {
@@ -132,6 +158,7 @@ export default function SearchPage() {
             placeholder="Search songs, artists…"
             value={query}
             onChange={e => setQuery(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') recordQuery() }}
           />
           {loading && <Loader2 size={17} color="#717171" style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }} />}
           {query && !loading && (
@@ -141,13 +168,54 @@ export default function SearchPage() {
           )}
         </div>
 
-        {/* Empty state */}
+        {/* Empty state / Recent searches */}
         {!query && (
-          <div className="empty-search">
-            <div className="empty-search-icon"><Search size={28} color="#717171" /></div>
-            <p style={{ fontSize:'18px', fontWeight:800, color:'#ffffff', marginBottom:'8px' }}>Find your music</p>
-            <p style={{ fontSize:'14px', color:'#717171', lineHeight:1.6 }}>Search for songs, artists, genres and more.</p>
-          </div>
+          recents.length > 0 ? (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', marginTop: '4px' }}>
+                <p className="section-title" style={{ margin: 0 }}>Recent Searches</p>
+                <button
+                  onClick={() => { clearRecentSearches(); setRecents([]) }}
+                  style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Clear all
+                </button>
+              </div>
+              {recents.map(entry => (
+                <div key={`${entry.type}-${entry.id}`} className="result-row" onClick={() => goToRecent(entry)}>
+                  {entry.type === 'query' ? (
+                    <div className="result-art" style={{ background: '#282828', display: 'grid', placeItems: 'center' }}>
+                      <Clock size={18} color="#717171" />
+                    </div>
+                  ) : entry.type === 'artist' ? (
+                    <div className="artist-result-av" style={{ background: 'linear-gradient(135deg,#0d1b3e,#1e3a8a)' }}>
+                      {entry.label.charAt(0).toUpperCase()}
+                    </div>
+                  ) : (
+                    <div className="result-art" style={{ background: '#282828' }}>
+                      {entry.image && <img src={entry.image} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />}
+                    </div>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="result-name">{entry.label}</div>
+                    {entry.subLabel && <div className="result-sub">{entry.subLabel}</div>}
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setRecents(removeRecentSearch(entry.type, entry.id) ?? []) }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: 4, color: '#717171', flexShrink: 0 }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-search">
+              <div className="empty-search-icon"><Search size={28} color="#717171" /></div>
+              <p style={{ fontSize:'18px', fontWeight:800, color:'#ffffff', marginBottom:'8px' }}>Find your music</p>
+              <p style={{ fontSize:'14px', color:'#717171', lineHeight:1.6 }}>Search for songs, artists, genres and more.</p>
+            </div>
+          )
         )}
 
         {/* No results */}
@@ -189,7 +257,15 @@ export default function SearchPage() {
                   Albums ({results.albums.length})
                 </p>
                 {results.albums.map((album: any) => (
-                  <Link key={album.id} href={`/albums/${album.id}`} style={{ textDecoration:'none' }}>
+                  <Link
+                    key={album.id}
+                    href={`/albums/${album.id}`}
+                    style={{ textDecoration:'none' }}
+                    onClick={() => setRecents(addRecentSearch({
+                      id: album.id, type: 'album', label: album.title,
+                      subLabel: album.artist?.stage_name, image: album.cover_url, href: `/albums/${album.id}`,
+                    }) ?? [])}
+                  >
                     <div className="result-row">
                       <div className="result-art" style={{ background: artBg(album.genre) }}>
                         {album.cover_url && <img src={album.cover_url} alt={album.title} style={{ width:'100%',height:'100%',objectFit:'cover' }} />}
@@ -221,7 +297,15 @@ export default function SearchPage() {
                   }
                   const bg = colors[artist.genre] ?? 'linear-gradient(135deg,#0d1b3e,#1e3a8a)'
                   return (
-                    <Link key={artist.id} href={`/artists/${artist.id}`} style={{ textDecoration:'none' }}>
+                    <Link
+                      key={artist.id}
+                      href={`/artists/${artist.id}`}
+                      style={{ textDecoration:'none' }}
+                      onClick={() => setRecents(addRecentSearch({
+                        id: artist.id, type: 'artist', label: artist.stage_name,
+                        subLabel: artist.genre, href: `/artists/${artist.id}`,
+                      }) ?? [])}
+                    >
                       <div className="result-row">
                         <div className="artist-result-av" style={{ background: bg }}>
                           {artist.stage_name?.charAt(0)?.toUpperCase()}

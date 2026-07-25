@@ -1,11 +1,14 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePlayerStore } from '@/store/player'
 import { formatDuration } from '@/lib/utils'
-import { SkipBack, SkipForward, Play, Pause, Loader2 } from 'lucide-react'
+import { Play, Pause, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useDominantColor } from '@/lib/color-extract'
+
+const SWIPE_THRESHOLD = 60
 
 export default function MiniPlayer() {
   const {
@@ -14,6 +17,7 @@ export default function MiniPlayer() {
   } = usePlayerStore()
   const pathname = usePathname()
   const onNowPlaying = pathname === '/now-playing'
+  const accentColor = useDominantColor(currentTrack?.cover_url)
 
   // .muzika-main reserves bottom padding for this bar unconditionally,
   // independent of whether we render -- so hiding below without also
@@ -23,10 +27,36 @@ export default function MiniPlayer() {
     main?.classList.toggle('now-playing-route', onNowPlaying)
   }, [onNowPlaying])
 
+  // Swipe left/right to skip next/previous. Tracks horizontal vs vertical
+  // movement so an accidental vertical scroll on the bar doesn't trigger it.
+  const touchStart = useRef<{ x: number; y: number } | null>(null)
+  const [dragX, setDragX] = useState(0)
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  }
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart.current) return
+    const dx = e.touches[0].clientX - touchStart.current.x
+    const dy = e.touches[0].clientY - touchStart.current.y
+    if (Math.abs(dx) > Math.abs(dy)) setDragX(dx)
+  }
+  const onTouchEnd = () => {
+    if (Math.abs(dragX) > SWIPE_THRESHOLD) {
+      if (dragX < 0) next()
+      else prev()
+    }
+    setDragX(0)
+    touchStart.current = null
+  }
+
   if (!currentTrack) return null
   if (onNowPlaying) return null
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
+  const background = accentColor
+    ? `linear-gradient(100deg, ${accentColor.replace('rgb(', 'rgba(').replace(')', ', 0.5)')} 0%, #181818 75%)`
+    : '#181818'
 
   return (
     <>
@@ -38,8 +68,9 @@ export default function MiniPlayer() {
         className="muzika-player"
         style={{
           position: 'fixed', bottom: 0, right: 0, zIndex: 50,
-          background: '#181818', borderTop: '1px solid #2a2a2a',
+          background, borderTop: '1px solid #2a2a2a',
           boxShadow: '0 -2px 20px rgba(0,0,0,.4)',
+          transition: 'background 600ms ease',
         }}
       >
         {/* Progress bar */}
@@ -47,7 +78,17 @@ export default function MiniPlayer() {
           <div style={{ height: '100%', background: '#3B82F6', width: `${progress}%`, transition: 'width .5s linear' }} />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '0 20px', height: '73px' }}>
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', gap: '14px', padding: '0 20px', height: '73px',
+            transform: dragX ? `translateX(${dragX * 0.3}px)` : undefined,
+            transition: dragX ? 'none' : 'transform 200ms ease',
+            touchAction: 'pan-y',
+          }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
           {/* Art */}
           <Link href="/now-playing" style={{ flexShrink: 0 }}>
             <div style={{ width: '44px', height: '44px', borderRadius: '8px', overflow: 'hidden', background: '#0D1B3E' }}>
@@ -73,11 +114,8 @@ export default function MiniPlayer() {
             {formatDuration(currentTime)} / {formatDuration(duration)}
           </span>
 
-          {/* Controls */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }} onClick={e => e.stopPropagation()}>
-            <button onClick={prev} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: '#b3b3b3' }}>
-              <SkipBack size={20} />
-            </button>
+          {/* Play/Pause only -- next/prev are swipe gestures on this bar now */}
+          <div onClick={e => e.stopPropagation()}>
             <button
               onClick={togglePlay}
               style={{
@@ -90,9 +128,6 @@ export default function MiniPlayer() {
                 ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
                 : isPlaying ? <Pause size={16} /> : <Play size={16} />
               }
-            </button>
-            <button onClick={next} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', color: '#b3b3b3' }}>
-              <SkipForward size={20} />
             </button>
           </div>
         </div>
