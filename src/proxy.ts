@@ -75,10 +75,19 @@ export async function proxy(request: NextRequest) {
   // ── Auth rate limiting ───────────────────────────────────────────
   // 4 attempts per IP per 15 minutes on auth endpoints.
   // This limits brute-force attacks on login/signup without Redis.
+  // Excludes /api/auth/callback and /api/auth/reset-callback: these are
+  // one-time redirect endpoints (email confirmation, password reset,
+  // OAuth), not a brute-forceable surface -- Supabase already invalidates
+  // the underlying code/token on its own end. Counting them here just
+  // burns the same tiny budget as actual signin/signup and blocks
+  // legitimate verification (made worse by email clients that silently
+  // pre-visit links before the user taps them).
   const isAuthEndpoint =
     pathname === '/signin' ||
     pathname === '/signup' ||
-    pathname.startsWith('/api/auth/')
+    (pathname.startsWith('/api/auth/') &&
+      pathname !== '/api/auth/callback' &&
+      pathname !== '/api/auth/reset-callback')
 
   if (isAuthEndpoint) {
     const ip =
