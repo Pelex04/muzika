@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   ChevronLeft, Heart, SkipBack, SkipForward, Play, Pause,
-  Shuffle, Repeat, Repeat1, Bookmark, Share2,
+  Shuffle, Repeat, Repeat1, Bookmark, ListPlus, Share2,
   Download, Loader2, Music2, BadgeCheck,
 } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
@@ -14,6 +14,8 @@ import { formatDuration, formatCount } from '@/lib/utils'
 import { notify } from '@/components/ui/notify'
 import { cn } from '@/lib/utils'
 import type { Artist, Track } from '@/types'
+import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
+import { useDominantColor } from '@/lib/color-extract'
 
 const GENRE_BG: Record<string, string> = {
   'Afropop': '#1e3a8a', 'Gospel': '#065f46', 'Reggae': '#7f1d1d',
@@ -30,9 +32,11 @@ export default function NowPlayingPage() {
     play, togglePlay, next, prev, seek,
     toggleShuffle, cycleRepeat,
   } = usePlayerStore()
+  const accentColor = useDominantColor(currentTrack?.cover_url)
 
   const [liked, setLiked] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [showPlaylistModal, setShowPlaylistModal] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
 
@@ -175,7 +179,15 @@ export default function NowPlayingPage() {
   }
 
   return (
-    <div className="h-full overflow-y-auto" style={{ background: '#121212' }}>
+    <div
+      className="h-full overflow-y-auto"
+      style={{
+        background: accentColor
+          ? `linear-gradient(180deg, ${accentColor.replace('rgb(', 'rgba(').replace(')', ', 0.55)')} 0%, #121212 420px)`
+          : '#121212',
+        transition: 'background 600ms ease',
+      }}
+    >
       <div className="max-w-[680px] mx-auto px-5 md:px-8 pb-12">
 
         {/* ── Back ── */}
@@ -239,7 +251,7 @@ export default function NowPlayingPage() {
               <Shuffle className="w-5 h-5" />
             </button>
             <button onClick={prev} className="text-white hover:text-white transition-colors">
-              <SkipBack className="w-6 h-6" />
+              <SkipBack className="w-6 h-6" fill="currentColor" />
             </button>
             <button
               onClick={togglePlay}
@@ -251,28 +263,32 @@ export default function NowPlayingPage() {
               }
             </button>
             <button onClick={next} className="text-white hover:text-white transition-colors">
-              <SkipForward className="w-6 h-6" />
+              <SkipForward className="w-6 h-6" fill="currentColor" />
             </button>
             <button onClick={cycleRepeat} className={cn('transition-colors', repeat !== 'none' ? 'text-blue-400' : 'text-[#717171] hover:text-white')}>
               {repeat === 'one' ? <Repeat1 className="w-5 h-5" /> : <Repeat className="w-5 h-5" />}
             </button>
           </div>
 
-          <div className="w-full grid grid-cols-3 border-[1.5px] border-[#2a2a2a] rounded-xl overflow-hidden">
-            <button onClick={handleSave} className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#2a2a2a] hover:bg-[#181818] transition-colors">
+          <div className="w-full flex gap-1.5">
+            <button onClick={handleSave} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
               <Bookmark className="w-[18px] h-[18px]" style={{ color: saved ? '#60a5fa' : '#b3b3b3' }} fill={saved ? '#60a5fa' : 'none'} />
               <span className="text-xs font-semibold" style={{ color: saved ? '#60a5fa' : '#b3b3b3' }}>{saved ? 'Saved' : 'Save'}</span>
             </button>
-            <button onClick={handleShare} className="flex flex-col items-center gap-1.5 py-3.5 border-r border-[#2a2a2a] hover:bg-[#181818] transition-colors">
+            <button onClick={() => setShowPlaylistModal(true)} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
+              <ListPlus className="w-[18px] h-[18px] text-[#b3b3b3]" />
+              <span className="text-xs font-semibold text-[#b3b3b3]">Playlist</span>
+            </button>
+            <button onClick={handleShare} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
               <Share2 className="w-[18px] h-[18px] text-[#b3b3b3]" />
               <span className="text-xs font-semibold text-[#b3b3b3]">Share</span>
             </button>
-            <button onClick={handleDownload} disabled={downloading} className="flex flex-col items-center gap-1.5 py-3.5 hover:bg-[#181818] transition-colors">
+            <button onClick={handleDownload} disabled={downloading} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
               {downloading
-                ? <Loader2 className="w-[18px] h-[18px]" style={{ color: '#10B981', animation: 'spin 1s linear infinite' }} />
-                : <Download className="w-[18px] h-[18px]" style={{ color: '#10B981' }} />
+                ? <Loader2 className="w-[18px] h-[18px] text-white" style={{ animation: 'spin 1s linear infinite' }} />
+                : <Download className="w-[18px] h-[18px] text-white" />
               }
-              <span className="text-xs font-bold" style={{ color: '#10B981' }}>{downloading ? 'Saving…' : 'Download'}</span>
+              <span className="text-xs font-bold text-white">{downloading ? 'Saving…' : 'Download'}</span>
             </button>
           </div>
         </div>
@@ -474,6 +490,10 @@ export default function NowPlayingPage() {
           </div>
         )}
       </div>
+
+      {showPlaylistModal && currentTrack && (
+        <AddToPlaylistModal trackId={currentTrack.id} onClose={() => setShowPlaylistModal(false)} />
+      )}
     </div>
   )
 }
