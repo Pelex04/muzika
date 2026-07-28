@@ -236,7 +236,7 @@ export default function NowPlayingPage() {
 
           <div className="w-full">
             <div className="w-full h-1 bg-[#2a2a2a] rounded-full cursor-pointer relative group" onClick={handleSeek}>
-              <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full relative" style={{ width: `${progress}%` }}>
+              <div className="h-full bg-white rounded-full relative" style={{ width: `${progress}%` }}>
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-md opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
             </div>

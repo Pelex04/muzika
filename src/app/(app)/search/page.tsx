@@ -116,8 +116,8 @@ export default function SearchPage() {
           transition: border-color .2s, box-shadow .2s;
         }
         .search-bar-wrap:focus-within {
-          border-color: #2563EB;
-          box-shadow: 0 0 0 3px rgba(59,130,246,.10);
+          border-color: #ffffff;
+          box-shadow: 0 0 0 3px rgba(255,255,255,.10);
         }
         .search-input {
           flex: 1; border: none; background: transparent;
@@ -176,7 +176,7 @@ export default function SearchPage() {
                 <p className="section-title" style={{ margin: 0 }}>Recent Searches</p>
                 <button
                   onClick={() => { clearRecentSearches(); setRecents([]) }}
-                  style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', color: '#ffffff', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
                 >
                   Clear all
                 </button>
@@ -229,6 +229,47 @@ export default function SearchPage() {
         {/* Results */}
         {hasResults && (
           <>
+            {results.artists.length > 0 && (
+              <>
+                <p className="section-title">
+                  <Users size={12} style={{ display:'inline', marginRight:'5px' }} />
+                  Artists ({results.artists.length})
+                </p>
+                {results.artists.map((artist: any) => {
+                  const colors: Record<string,string> = {
+                    'Afropop':'linear-gradient(135deg,#1e3a8a,#2563eb)',
+                    'Gospel':'linear-gradient(135deg,#065f46,#059669)',
+                    'Reggae':'linear-gradient(135deg,#7f1d1d,#dc2626)',
+                    'Hip-Hop':'linear-gradient(135deg,#4c1d95,#7c3aed)',
+                    'RnB':'linear-gradient(135deg,#78350f,#d97706)',
+                  }
+                  const bg = colors[artist.genre] ?? 'linear-gradient(135deg,#0d1b3e,#1e3a8a)'
+                  return (
+                    <Link
+                      key={artist.id}
+                      href={`/artists/${artist.id}`}
+                      style={{ textDecoration:'none' }}
+                      onClick={() => setRecents(addRecentSearch({
+                        id: artist.id, type: 'artist', label: artist.stage_name,
+                        subLabel: artist.genre, href: `/artists/${artist.id}`,
+                      }) ?? [])}
+                    >
+                      <div className="result-row">
+                        <div className="artist-result-av" style={{ background: bg }}>
+                          {artist.stage_name?.charAt(0)?.toUpperCase()}
+                        </div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div className="result-name">{artist.stage_name}</div>
+                          <div className="result-sub">{artist.genre} · {artist.location}</div>
+                        </div>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#717171" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </>
+            )}
+
             {results.tracks.length > 0 && (
               <>
                 <p className="section-title">
@@ -278,47 +319,6 @@ export default function SearchPage() {
                     </div>
                   </Link>
                 ))}
-              </>
-            )}
-
-            {results.artists.length > 0 && (
-              <>
-                <p className="section-title">
-                  <Users size={12} style={{ display:'inline', marginRight:'5px' }} />
-                  Artists ({results.artists.length})
-                </p>
-                {results.artists.map((artist: any) => {
-                  const colors: Record<string,string> = {
-                    'Afropop':'linear-gradient(135deg,#1e3a8a,#2563eb)',
-                    'Gospel':'linear-gradient(135deg,#065f46,#059669)',
-                    'Reggae':'linear-gradient(135deg,#7f1d1d,#dc2626)',
-                    'Hip-Hop':'linear-gradient(135deg,#4c1d95,#7c3aed)',
-                    'RnB':'linear-gradient(135deg,#78350f,#d97706)',
-                  }
-                  const bg = colors[artist.genre] ?? 'linear-gradient(135deg,#0d1b3e,#1e3a8a)'
-                  return (
-                    <Link
-                      key={artist.id}
-                      href={`/artists/${artist.id}`}
-                      style={{ textDecoration:'none' }}
-                      onClick={() => setRecents(addRecentSearch({
-                        id: artist.id, type: 'artist', label: artist.stage_name,
-                        subLabel: artist.genre, href: `/artists/${artist.id}`,
-                      }) ?? [])}
-                    >
-                      <div className="result-row">
-                        <div className="artist-result-av" style={{ background: bg }}>
-                          {artist.stage_name?.charAt(0)?.toUpperCase()}
-                        </div>
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <div className="result-name">{artist.stage_name}</div>
-                          <div className="result-sub">{artist.genre} · {artist.location}</div>
-                        </div>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#717171" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-                      </div>
-                    </Link>
-                  )
-                })}
               </>
             )}
           </>
