@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -44,6 +44,28 @@ export default function NowPlayingPage() {
   const [moreByArtist, setMoreByArtist] = useState<Track[]>([])
   const [related, setRelated] = useState<Track[]>([])
   const [lyrics, setLyrics] = useState<string | null>(null)
+  const lyricsScrollRef = useRef<HTMLDivElement>(null)
+  const userScrollingLyrics = useRef(false)
+  const userScrollResumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Approximate auto-scroll: no per-line timing data exists for lyrics
+  // (just a plain text blob), so this isn't true karaoke-style sync --
+  // it just glides the lyrics box proportionally to playback progress.
+  // Paused for a few seconds after the user manually scrolls, so reading
+  // ahead/back isn't fought against.
+  const handleLyricsUserScroll = () => {
+    userScrollingLyrics.current = true
+    if (userScrollResumeTimer.current) clearTimeout(userScrollResumeTimer.current)
+    userScrollResumeTimer.current = setTimeout(() => { userScrollingLyrics.current = false }, 3000)
+  }
+
+  useEffect(() => {
+    const el = lyricsScrollRef.current
+    if (!el || !lyrics || !duration || userScrollingLyrics.current) return
+    const maxScroll = el.scrollHeight - el.clientHeight
+    if (maxScroll <= 0) return
+    el.scrollTop = (currentTime / duration) * maxScroll
+  }, [currentTime, duration, lyrics])
   const [producers, setProducers] = useState<string[]>([])
   const [featuredArtists, setFeaturedArtists] = useState<{ name: string; artist_id: string | null; avatar_url?: string; verified?: boolean; is_following?: boolean }[]>([])
   const [featuredFollowLoading, setFeaturedFollowLoading] = useState<string | null>(null)
@@ -450,7 +472,12 @@ export default function NowPlayingPage() {
             {activeTab === 'lyrics' && (
               <div className="mb-6">
                 {lyrics ? (
-                  <div className="bg-[#181818] rounded-2xl p-5">
+                  <div
+                    ref={lyricsScrollRef}
+                    onScroll={handleLyricsUserScroll}
+                    className="bg-[#181818] rounded-2xl p-5 overflow-y-auto"
+                    style={{ maxHeight: '360px' }}
+                  >
                     <pre className="text-[#e0e0e0] text-base leading-9 whitespace-pre-wrap font-sans">
                       {lyrics}
                     </pre>

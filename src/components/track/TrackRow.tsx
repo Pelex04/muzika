@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
 import { usePrefetchTrack } from '@/hooks/usePrefetchTrack'
 import { fetchStreamUrl } from '@/lib/stream-cache'
+import { useDominantColor } from '@/lib/color-extract'
 
 interface Props {
   track: Track
@@ -31,6 +32,7 @@ export default function TrackRow({
   const { play, currentTrack, isPlaying } = usePlayerStore()
   const isActive = currentTrack?.id === track.id
   const isCurrentlyPlaying = isActive && isPlaying
+  const accentColor = useDominantColor(isActive ? track.cover_url : undefined) ?? '#60a5fa'
   const [menuOpen, setMenuOpen] = useState(false)
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
   const prefetchRef = usePrefetchTrack(track.id)
@@ -100,9 +102,10 @@ export default function TrackRow({
               {[0, 0.18, 0.09].map((delay, i) => (
                 <div
                   key={i}
-                  className="w-1 bg-blue-500 rounded-sm"
+                  className="w-1 rounded-sm"
                   style={{
                     height: ['55%', '100%', '38%'][i],
+                    background: accentColor,
                     animation: `eqBounce 0.8s ease-in-out ${delay}s infinite alternate`,
                   }}
                 />
@@ -129,10 +132,10 @@ export default function TrackRow({
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className={cn(
-          'text-sm font-bold truncate',
-          isActive ? 'text-blue-400' : 'text-white'
-        )}>{track.title}</p>
+        <p
+          className={cn('text-sm font-bold truncate', !isActive && 'text-white')}
+          style={isActive ? { color: accentColor } : undefined}
+        >{track.title}</p>
         <p className="text-xs text-[#b3b3b3] truncate mt-0.5">
           {track.artist?.stage_name}
           {playCount !== undefined && <span className="ml-1">· {formatCount(playCount)} plays</span>}

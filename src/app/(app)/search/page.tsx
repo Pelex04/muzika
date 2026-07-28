@@ -44,17 +44,25 @@ export default function SearchPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const abortRef = useRef<AbortController | null>(null)
+
   const runSearch = async (q: string) => {
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setLoading(true)
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`)
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, { signal: controller.signal })
       const data = await res.json()
+      if (controller.signal.aborted) return
       setResults(data)
       setSearched(true)
-    } catch {
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return
       notify.error('Search failed')
     }
-    setLoading(false)
+    if (!controller.signal.aborted) setLoading(false)
   }
 
   useEffect(() => {
@@ -188,8 +196,11 @@ export default function SearchPage() {
                       <Clock size={18} color="#717171" />
                     </div>
                   ) : entry.type === 'artist' ? (
-                    <div className="artist-result-av" style={{ background: 'linear-gradient(135deg,#0d1b3e,#1e3a8a)' }}>
-                      {entry.label.charAt(0).toUpperCase()}
+                    <div className="artist-result-av" style={{ background: 'linear-gradient(135deg,#0d1b3e,#1e3a8a)', overflow: 'hidden' }}>
+                      {entry.image
+                        ? <img src={entry.image} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                        : entry.label.charAt(0).toUpperCase()
+                      }
                     </div>
                   ) : (
                     <div className="result-art" style={{ background: '#282828' }}>
@@ -251,12 +262,15 @@ export default function SearchPage() {
                       style={{ textDecoration:'none' }}
                       onClick={() => setRecents(addRecentSearch({
                         id: artist.id, type: 'artist', label: artist.stage_name,
-                        subLabel: artist.genre, href: `/artists/${artist.id}`,
+                        subLabel: artist.genre, href: `/artists/${artist.id}`, image: artist.avatar_url,
                       }) ?? [])}
                     >
                       <div className="result-row">
-                        <div className="artist-result-av" style={{ background: bg }}>
-                          {artist.stage_name?.charAt(0)?.toUpperCase()}
+                        <div className="artist-result-av" style={{ background: bg, overflow: 'hidden' }}>
+                          {artist.avatar_url
+                            ? <img src={artist.avatar_url} alt={artist.stage_name} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+                            : artist.stage_name?.charAt(0)?.toUpperCase()
+                          }
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div className="result-name">{artist.stage_name}</div>
