@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, Play, Disc3, Clock } from 'lucide-react'
+import { ChevronLeft, Play, Disc3, Clock, Bookmark, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
 import MobileTopBar from '@/components/layout/MobileTopBar'
@@ -35,14 +37,58 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
   const router = useRouter()
   const play = usePlayerStore(s => s.play)
   const bg = GENRE_BG[album.genre] ?? GENRE_BG['Afropop']
+  const [saved, setSaved] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   useAutoRefreshOnRelease(isScheduled ? [album.release_date] : [])
 
+  // Tracks can release ahead of the album (its own release_date passing
+  // independently) -- unpublished ones arrive stripped down to just id +
+  // track_number (no title/artist), so they render as placeholders instead
+  // of breaking the normal tracklist.
+  const realTracks = tracks.filter((t: any) => 'title' in t) as Track[]
+  const hasUnreleased = tracks.some((t: any) => !('title' in t))
+  const showPreview = isScheduled || hasUnreleased
+
+  useEffect(() => {
+    if (!userId) return
+    fetch(`/api/albums/${album.id}/save`).then(r => r.json()).then(d => setSaved(!!d.saved)).catch(() => {})
+  }, [album.id, userId])
+
+  const handleSave = async () => {
+    if (!userId) { notify.error('Sign in to save albums'); return }
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/albums/${album.id}/save`, { method: 'POST' })
+      const data = await res.json()
+      setSaved(data.saved)
+      notify.success(data.saved ? (isScheduled ? 'Pre-saved' : 'Saved') : 'Removed')
+    } catch {
+      notify.error('Could not save album')
+    }
+    setSaving(false)
+  }
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/albums/${album.id}`
+    const shareData = {
+      title: album.title,
+      text: `Check out "${album.title}" by ${album.artist?.stage_name ?? 'an artist'} on Playback`,
+      url: shareUrl,
+    }
+    if (navigator.share) {
+      try { await navigator.share(shareData) } catch {}
+    } else {
+      await navigator.clipboard.writeText(shareUrl)
+      notify.success('Link copied to clipboard')
+    }
+  }
+
   const playAll = async () => {
-    if (tracks.length === 0) return
-    const _streamUrl = await fetchStreamUrl(tracks[0].id)
+    if (realTracks.length === 0) return
+    const _streamUrl = await fetchStreamUrl(realTracks[0].id)
     if (!_streamUrl) { toast.error('Could not load track'); return }
-    play({ ...tracks[0], audio_url: _streamUrl }, tracks)
+    play({ ...realTracks[0], audio_url: _streamUrl }, realTracks)
     router.push('/now-playing')
   }
 
@@ -76,12 +122,28 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
                 Releases {new Date(album.release_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
               </p>
             ) : (
-              <p className="text-sm text-[#717171] mt-1 mb-3">{album.release_type === 'ep' ? 'EP' : 'Album'} · {tracks.length} track{tracks.length === 1 ? '' : 's'} · {album.genre}</p>
+              <p className="text-sm text-[#717171] mt-1 mb-3">{album.release_type === 'ep' ? 'EP' : 'Album'} · {realTracks.length} track{realTracks.length === 1 ? '' : 's'} · {album.genre}</p>
             )}
-            {!isScheduled && (
+            {isScheduled ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-full text-sm font-bold hover:bg-gray-200 transition-colors disabled:opacity-60"
+                >
+                  <Bookmark size={14} fill={saved ? 'black' : 'none'} /> {saved ? 'Pre-saved' : 'Pre-save'}
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-2 px-5 py-2.5 border border-[#2a2a2a] text-white rounded-full text-sm font-bold hover:bg-[#181818] transition-colors"
+                >
+                  <Share2 size={14} /> Share
+                </button>
+              </div>
+            ) : (
               <button
                 onClick={playAll}
-                disabled={tracks.length === 0}
+                disabled={realTracks.length === 0}
                 className="flex items-center gap-2 px-5 py-2.5 bg-white text-black rounded-full text-sm font-bold hover:bg-gray-200 disabled:opacity-40 transition-colors"
               >
                 <Play size={14} fill="black" /> Play
@@ -90,22 +152,41 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
           </div>
         </div>
 
-        {isScheduled ? (
+        {isScheduled && (
           <div className="text-center py-10">
             <p className="text-[#b3b3b3] text-sm font-semibold mb-5">Coming soon</p>
             <div className="flex justify-center">
               <CountdownBoxes targetDate={album.release_date} />
             </div>
-            <p className="text-[#555] text-xs mt-8">The tracklist will be available once this album releases.</p>
           </div>
-        ) : tracks.length === 0 ? (
+        )}
+
+        {showPreview ? (
+          <div>
+            <p className="text-xs text-[#717171] uppercase tracking-wide font-bold mb-3">Tracklist preview</p>
+            <div className="flex flex-col gap-0.5">
+              {tracks.map((track: any) => (
+                'title' in track ? (
+                  <TrackRow key={track.id} track={track} rank={track.track_number} userId={userId} queue={realTracks} />
+                ) : (
+                  <div key={track.id} className="flex items-center gap-3 px-3 py-3 opacity-50">
+                    <span className="text-sm text-[#555] font-bold w-5 text-center flex-shrink-0">{track.track_number}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#717171]">Track {track.track_number}</p>
+                    </div>
+                  </div>
+                )
+              ))}
+            </div>
+          </div>
+        ) : realTracks.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-[#717171] text-sm">No tracks in this album yet.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-0.5">
-            {tracks.map((track, i) => (
-              <TrackRow key={track.id} track={track} rank={track.track_number ?? i + 1} userId={userId} queue={tracks} />
+            {realTracks.map((track, i) => (
+              <TrackRow key={track.id} track={track} rank={track.track_number ?? i + 1} userId={userId} queue={realTracks} />
             ))}
           </div>
         )}

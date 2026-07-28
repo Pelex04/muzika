@@ -27,17 +27,21 @@ export default async function AlbumDetailPage({
   const isViewable = album && (album.published || (album.is_scheduled && album.release_date))
   if (!isViewable) notFound()
 
-  // Only fetch tracks for albums that are actually published -- scheduled
-  // album tracks must stay hidden until release, per the earlier fix.
-  const tracks = album.published
-    ? (await db
-        .from('tracks')
-        .select('*, artist:artists(stage_name, genre, location, verified)')
-        .eq('album_id', id)
-        .eq('published', true)
-        .order('track_number', { ascending: true })
-      ).data
-    : []
+  // Tracks can release on their own schedule ahead of the album itself
+  // (e.g. a single dropping before the full album) -- so fetch every track
+  // regardless of the album's own publish state, in correct track_number
+  // order, and only expose full metadata for the ones actually published.
+  // Unpublished ones are stripped down to just their position, so nothing
+  // about them (title, features, etc.) leaks before their own release_date.
+  const { data: allTracks } = await db
+    .from('tracks')
+    .select('*, artist:artists(stage_name, genre, location, verified)')
+    .eq('album_id', id)
+    .order('track_number', { ascending: true })
+
+  const tracks = (allTracks ?? []).map((t: any) =>
+    t.published ? t : { id: t.id, track_number: t.track_number, published: false }
+  )
 
   return (
     <AlbumDetailClient
