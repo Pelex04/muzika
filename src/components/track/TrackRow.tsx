@@ -28,7 +28,9 @@ export default function TrackRow({
   track, rank, showRank = true, showTrend = false,
   trend = 'neutral', playCount, userId, queue, variant = 'plain'
 }: Props) {
-  const { play, currentTrack, isPlaying } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
+  const currentTrack = usePlayerStore(s => s.currentTrack)
+  const isPlaying = usePlayerStore(s => s.isPlaying)
   const isActive = currentTrack?.id === track.id
   const isCurrentlyPlaying = isActive && isPlaying
   const accentColor = '#0ABAB5'

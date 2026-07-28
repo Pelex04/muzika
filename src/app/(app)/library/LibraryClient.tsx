@@ -23,7 +23,7 @@ export default function LibraryClient({ savedTracks, playlists: initialPlaylists
   const [creating, setCreating] = useState(false)
   const [newName, setNewName] = useState('')
   const [showCreate, setShowCreate] = useState(false)
-  const { play } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
 
   const createPlaylist = async () => {
     if (!newName.trim()) { notify.error('Give your playlist a name'); return }

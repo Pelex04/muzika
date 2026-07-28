@@ -22,7 +22,7 @@ const SLIDE_THEMES = [
 ]
 
 export default function HeroBanner({ tracks }: { tracks: Track[] }) {
-  const { play } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
   const router = useRouter()
   const [active, setActive] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)

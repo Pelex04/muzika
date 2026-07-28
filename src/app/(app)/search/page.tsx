@@ -23,7 +23,7 @@ export default function SearchPage() {
   const [searched, setSearched] = useState(false)
   const [recents, setRecents] = useState<RecentSearchEntry[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
-  const { play } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
   const router = useRouter()
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 

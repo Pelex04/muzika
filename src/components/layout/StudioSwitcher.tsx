@@ -7,7 +7,7 @@ import { usePlayerStore } from '@/store/player'
 
 export default function StudioSwitcher() {
   const pathname = usePathname()
-  const { currentTrack } = usePlayerStore()
+  const currentTrack = usePlayerStore(s => s.currentTrack)
   const onNowPlaying = pathname === '/now-playing'
 
   // The mini player (when visible) sits directly above BottomTabs and is

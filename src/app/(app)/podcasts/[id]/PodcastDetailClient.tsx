@@ -18,7 +18,7 @@ interface Props {
 
 export default function PodcastDetailClient({ podcast, episodes, userId }: Props) {
   const router = useRouter()
-  const { play } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
 
   // Episodes without their own cover fall back to the show's artwork
   const episodesWithCover = episodes.map(e => ({ ...e, cover_url: e.cover_url ?? podcast.cover_url }))

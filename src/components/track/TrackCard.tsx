@@ -17,7 +17,9 @@ interface Props {
 }
 
 export default function TrackCard({ track, userId, queue }: Props) {
-  const { play, currentTrack, isPlaying } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
+  const currentTrack = usePlayerStore(s => s.currentTrack)
+  const isPlaying = usePlayerStore(s => s.isPlaying)
   const isActive = currentTrack?.id === track.id && isPlaying
   const [saved, setSaved] = useState(track.is_saved ?? false)
   const [menuOpen, setMenuOpen] = useState(false)

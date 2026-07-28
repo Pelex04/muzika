@@ -18,7 +18,7 @@ interface Props {
 
 export default function PlaylistDetailClient({ playlist, tracks: initialTracks, isOwner }: Props) {
   const router = useRouter()
-  const { play } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
   const [tracks, setTracks] = useState(initialTracks)
   const [deleting, setDeleting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)

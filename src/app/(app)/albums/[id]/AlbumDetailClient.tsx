@@ -33,7 +33,7 @@ interface Props {
 
 export default function AlbumDetailClient({ album, tracks, userId, isScheduled }: Props) {
   const router = useRouter()
-  const { play } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
   const bg = GENRE_BG[album.genre] ?? GENRE_BG['Afropop']
 
   useAutoRefreshOnRelease(isScheduled ? [album.release_date] : [])

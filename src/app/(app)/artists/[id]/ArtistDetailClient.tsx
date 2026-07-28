@@ -65,7 +65,7 @@ export default function ArtistDetailClient({
   bannerRequest, isOwnProfile, userId,
 }: Props) {
   const router = useRouter()
-  const { play } = usePlayerStore()
+  const play = usePlayerStore(s => s.play)
   const isPodcastCreator = artist.creator_type === 'podcast_creator'
   const [following, setFollowing] = useState(artist.is_following ?? false)
   const [followLoading, setFollowLoading] = useState(false)
