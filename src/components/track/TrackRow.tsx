@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils'
 import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
 import { usePrefetchTrack } from '@/hooks/usePrefetchTrack'
 import { fetchStreamUrl } from '@/lib/stream-cache'
-import { useDominantColor } from '@/lib/color-extract'
 
 interface Props {
   track: Track
@@ -32,7 +31,7 @@ export default function TrackRow({
   const { play, currentTrack, isPlaying } = usePlayerStore()
   const isActive = currentTrack?.id === track.id
   const isCurrentlyPlaying = isActive && isPlaying
-  const accentColor = useDominantColor(isActive ? track.cover_url : undefined) ?? '#60a5fa'
+  const accentColor = '#0ABAB5'
   const [menuOpen, setMenuOpen] = useState(false)
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
   const prefetchRef = usePrefetchTrack(track.id)
