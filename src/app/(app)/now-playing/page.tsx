@@ -202,7 +202,7 @@ export default function NowPlayingPage() {
 
   return (
     <div
-      className="h-full overflow-y-auto"
+      className="h-full overflow-y-auto relative"
       style={{
         background: accentColor
           ? `linear-gradient(180deg, ${accentColor.replace('rgb(', 'rgba(').replace(')', ', 0.55)')} 0%, #121212 420px)`
@@ -210,10 +210,20 @@ export default function NowPlayingPage() {
         transition: 'background 600ms ease',
       }}
     >
-      <div className="max-w-[680px] mx-auto px-5 md:px-8 pb-12">
+      {accentColor && (
+        <div
+          className="pointer-events-none absolute top-0 left-0 right-0 z-10"
+          style={{ height: '110px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)' }}
+        />
+      )}
+      <div className="max-w-[680px] mx-auto px-5 md:px-8 pb-12 relative z-20">
 
         {/* ── Back ── */}
-        <div className="flex items-center gap-1.5 text-[#b3b3b3] cursor-pointer hover:text-white transition-colors pt-6 pb-4" onClick={() => router.back()}>
+        <div
+          className="flex items-center gap-1.5 text-[#b3b3b3] cursor-pointer hover:text-white transition-colors pt-6 pb-4"
+          style={{ textShadow: accentColor ? '0 1px 10px rgba(0,0,0,0.7)' : undefined }}
+          onClick={() => router.back()}
+        >
           <ChevronLeft className="w-4 h-4" />
           <span className="text-sm font-semibold">Now Playing</span>
           <span className="text-[#717171] mx-1">·</span>

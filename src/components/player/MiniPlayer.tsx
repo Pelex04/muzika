@@ -75,7 +75,7 @@ export default function MiniPlayer() {
       >
         {/* Progress bar */}
         <div style={{ height: '3px', background: '#2a2a2a', width: '100%' }}>
-          <div style={{ height: '100%', background: '#3B82F6', width: `${progress}%`, transition: 'width .5s linear' }} />
+          <div style={{ height: '100%', background: '#ffffff', width: `${progress}%`, transition: 'width .5s linear' }} />
         </div>
 
         <div

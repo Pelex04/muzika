@@ -17,7 +17,7 @@ const ITEMS = [
 
 export default function QuickNav({ active }: { active: string }) {
   return (
-    <div className="flex gap-3.5 mb-7 overflow-x-auto pb-1 scrollbar-none">
+    <div className="flex gap-3.5 mb-7 overflow-x-auto pb-1 scrollbar-none -mx-5 px-5 md:-mx-9 md:px-9">
       {ITEMS.map(({ href, label, icon: Icon }) => {
         const isActive = label.toLowerCase() === active
         return (
