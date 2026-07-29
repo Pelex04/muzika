@@ -38,6 +38,7 @@ export default async function AlbumDetailPage({
     .select('*, artist:artists(stage_name, genre, location, verified)')
     .eq('album_id', id)
     .order('track_number', { ascending: true })
+    .order('created_at', { ascending: true })
 
   const tracks = (allTracks ?? []).map((t: any) =>
     t.published ? t : { id: t.id, track_number: t.track_number, published: false }

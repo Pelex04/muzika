@@ -165,14 +165,19 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
           <div>
             <p className="text-xs text-[#717171] uppercase tracking-wide font-bold mb-3">Tracklist preview</p>
             <div className="flex flex-col gap-0.5">
-              {tracks.map((track: any) => (
+              {tracks.map((track: any, i: number) => (
                 'title' in track ? (
-                  <TrackRow key={track.id} track={track} rank={track.track_number} userId={userId} queue={realTracks} />
+                  <TrackRow key={track.id} track={track} rank={track.track_number ?? i + 1} userId={userId} queue={realTracks} />
                 ) : (
-                  <div key={track.id} className="flex items-center gap-3 px-3 py-3 opacity-50">
-                    <span className="text-sm text-[#555] font-bold w-5 text-center flex-shrink-0">{track.track_number}</span>
+                  <div key={track.id} className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-lg">
+                    <div className="w-6 flex-shrink-0 flex items-center justify-center">
+                      <span className="text-sm text-[#717171] font-bold">{track.track_number ?? i + 1}</span>
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-[#717171]">Track {track.track_number}</p>
+                      <p className="text-sm font-semibold text-[#b3b3b3]">Track {track.track_number ?? i + 1}</p>
+                      {album.artist?.stage_name && (
+                        <p className="text-xs text-[#555] mt-0.5">{album.artist.stage_name}</p>
+                      )}
                     </div>
                   </div>
                 )

@@ -51,6 +51,21 @@ export async function POST(req: NextRequest) {
     coverUrl = publicUrl
   }
 
+  // Auto-assign the next position within the album -- this is what lets
+  // the album page show a track in its correct slot (e.g. "Track 10")
+  // regardless of whether it's released yet, so it has to be set at
+  // upload time rather than left null.
+  let trackNumber: number | null = null
+  if (albumId) {
+    const { data: existing } = await supabase
+      .from('tracks')
+      .select('track_number')
+      .eq('album_id', albumId)
+      .order('track_number', { ascending: false })
+      .limit(1)
+    trackNumber = (existing?.[0]?.track_number ?? 0) + 1
+  }
+
   const { data: track, error: trackError } = await supabase
     .from('tracks')
     .insert({
@@ -61,6 +76,7 @@ export async function POST(req: NextRequest) {
       audio_path: audioPath,
       cover_url: coverUrl,
       album_id: albumId ?? null,
+      track_number: trackNumber,
       producers: producers ?? [],
       featured_artists: featuredArtists ?? [],
       lyrics: lyrics ?? null,
