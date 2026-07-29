@@ -79,7 +79,7 @@ function HScroll({ children, className = '' }: { children: React.ReactNode; clas
   return (
     <div
       ref={ref}
-      className={`flex gap-3.5 overflow-x-auto pb-2 select-none ${className}`}
+      className={`flex gap-3.5 overflow-x-auto pb-2 select-none -mx-5 px-5 md:-mx-9 md:px-9 ${className}`}
       style={{ cursor: 'grab', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       onMouseDown={onMouseDown}
       onMouseLeave={onMouseLeave}
