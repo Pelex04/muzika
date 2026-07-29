@@ -29,7 +29,7 @@ export async function GET(
       .single(),
     supabase
       .from('tracks')
-      .select('*, artist:artists(stage_name, genre, location, verified)')
+      .select('*, artist:artists(stage_name, genre, location, verified), podcast:podcasts(cover_url)')
       .eq('artist_id', track.artist_id)
       .eq('published', true)
       .neq('id', trackId)
@@ -37,7 +37,7 @@ export async function GET(
       .limit(10),
     supabase
       .from('tracks')
-      .select('*, artist:artists(stage_name, genre, location, verified)')
+      .select('*, artist:artists(stage_name, genre, location, verified), podcast:podcasts(cover_url)')
       .eq('genre', track.genre)
       .eq('published', true)
       .neq('id', trackId)
@@ -95,10 +95,13 @@ export async function GET(
     })
   }
 
+  const withCoverFallback = (rows: any[]) =>
+    rows.map(t => ({ ...t, cover_url: t.cover_url ?? t.podcast?.cover_url ?? null }))
+
   return NextResponse.json({
     artist: artistRes.data ? { ...artistRes.data, is_following: isFollowing } : null,
-    moreByArtist: moreByArtistRes.data ?? [],
-    related: relatedRes.data ?? [],
+    moreByArtist: withCoverFallback(moreByArtistRes.data ?? []),
+    related: withCoverFallback(relatedRes.data ?? []),
     lyrics: track.lyrics ?? null,
     producers: track.producers ?? [],
     featuredArtists: matchedFeatured,

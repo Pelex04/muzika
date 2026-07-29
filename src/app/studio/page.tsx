@@ -18,7 +18,7 @@ export default async function StudioPage() {
   if (!artist) redirect('/become-artist')
 
   const [tracksRes, playsRes, followersRes, earningsRes] = await Promise.all([
-    db.from('tracks').select('id, title, cover_url, play_count, download_count, created_at, genre').eq('artist_id', artist.id).eq('published', true).order('play_count', { ascending: false }).limit(5),
+    db.from('tracks').select('id, title, cover_url, play_count, download_count, created_at, genre, podcast:podcasts(cover_url)').eq('artist_id', artist.id).eq('published', true).order('play_count', { ascending: false }).limit(5),
     db.from('tracks').select('play_count').eq('artist_id', artist.id).eq('published', true),
     db.from('artist_follows').select('id', { count: 'exact' }).eq('artist_id', artist.id),
     db.from('purchases').select('amount_mwk').eq('artist_id', artist.id).eq('payment_status', 'completed'),
@@ -31,7 +31,7 @@ export default async function StudioPage() {
   return (
     <StudioDashboardClient
       artist={artist}
-      topTracks={tracksRes.data ?? []}
+      topTracks={(tracksRes.data ?? []).map((t: any) => ({ ...t, cover_url: t.cover_url ?? t.podcast?.cover_url ?? null }))}
       stats={{ totalPlays, totalFollowers, totalEarnings, totalTracks: artist.track_count ?? 0 }}
     />
   )

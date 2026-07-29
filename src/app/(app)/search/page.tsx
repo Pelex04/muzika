@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, X, Music, Users, Loader2, Disc3, Clock } from 'lucide-react'
+import { Search, X, Music, Users, Loader2, Disc3, Clock, BadgeCheck } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
@@ -273,7 +273,10 @@ export default function SearchPage() {
                           }
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <div className="result-name">{artist.stage_name}</div>
+                          <div className="result-name flex items-center gap-1">
+                            {artist.stage_name}
+                            {artist.verified && <BadgeCheck size={14} className="text-blue-500 flex-shrink-0" />}
+                          </div>
                           <div className="result-sub">{artist.genre} · {artist.location}</div>
                         </div>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#717171" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>

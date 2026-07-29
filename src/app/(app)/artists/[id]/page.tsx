@@ -79,11 +79,11 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ i
 
   if (isOwnProfile) {
     const [stRes, saRes, brRes] = await Promise.all([
-      db.from('tracks').select('id, title, cover_url, release_date, genre').eq('artist_id', id).eq('is_scheduled', true).order('release_date', { ascending: true }),
+      db.from('tracks').select('id, title, cover_url, release_date, genre, podcast:podcasts(cover_url)').eq('artist_id', id).eq('is_scheduled', true).order('release_date', { ascending: true }),
       db.from('albums').select('id, title, cover_url, release_date').eq('artist_id', id).eq('is_scheduled', true).order('release_date', { ascending: true }),
       db.from('banner_requests').select('*').eq('artist_id', id).single(),
     ])
-    scheduledTracks = stRes.data ?? []
+    scheduledTracks = (stRes.data ?? []).map((t: any) => ({ ...t, cover_url: t.cover_url ?? t.podcast?.cover_url ?? null }))
     scheduledAlbums = saRes.data ?? []
     bannerRequest = brRes.data ?? null
   }
