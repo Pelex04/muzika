@@ -16,6 +16,8 @@ function scoreVibrancy(r: number, g: number, b: number): number {
   return saturation * (1 - Math.abs(lightness - 0.5) * 2)
 }
 
+export const __colorDebug: Record<string, any> = {}
+
 function extractDominantColor(url: string): Promise<string | null> {
   return new Promise((resolve) => {
     const img = new Image()
@@ -27,7 +29,7 @@ function extractDominantColor(url: string): Promise<string | null> {
         canvas.width = size
         canvas.height = size
         const ctx = canvas.getContext('2d')
-        if (!ctx) return resolve(null)
+        if (!ctx) { __colorDebug[url] = { error: 'no ctx' }; return resolve(null) }
         ctx.drawImage(img, 0, 0, size, size)
         const { data } = ctx.getImageData(0, 0, size, size)
 
@@ -40,9 +42,11 @@ function extractDominantColor(url: string): Promise<string | null> {
         // represents the artwork, not a rare accent.
         const buckets = new Map<string, { r: number; g: number; b: number; count: number }>()
         const BUCKET = 24
+        let opaquePixels = 0
         for (let i = 0; i < data.length; i += 4) {
           const [r, g, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]]
           if (a < 200) continue
+          opaquePixels++
           const key = `${Math.round(r / BUCKET)}-${Math.round(g / BUCKET)}-${Math.round(b / BUCKET)}`
           const existing = buckets.get(key)
           if (existing) {
@@ -59,14 +63,19 @@ function extractDominantColor(url: string): Promise<string | null> {
           const score = scoreVibrancy(r, g, b) * Math.sqrt(bucket.count)
           if (score > bestScore) { bestScore = score; bestColor = [Math.round(r), Math.round(g), Math.round(b)] }
         }
+        __colorDebug[url] = {
+          naturalSize: `${img.naturalWidth}x${img.naturalHeight}`,
+          opaquePixels, bucketCount: buckets.size, bestScore: bestScore.toFixed(3), bestColor,
+        }
         resolve(`rgb(${bestColor[0]}, ${bestColor[1]}, ${bestColor[2]})`)
-      } catch {
+      } catch (e: any) {
         // Canvas tainted (CORS) or any other failure -- just fall back to
         // the default background rather than breaking the player.
+        __colorDebug[url] = { error: e?.message || String(e) }
         resolve(null)
       }
     }
-    img.onerror = () => resolve(null)
+    img.onerror = (e) => { __colorDebug[url] = { error: 'image failed to load' }; resolve(null) }
     img.src = url
   })
 }

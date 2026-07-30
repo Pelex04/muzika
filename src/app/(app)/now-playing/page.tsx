@@ -15,7 +15,7 @@ import { notify } from '@/components/ui/notify'
 import { cn } from '@/lib/utils'
 import type { Artist, Track } from '@/types'
 import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
-import { useDominantColor } from '@/lib/color-extract'
+import { useDominantColor, __colorDebug } from '@/lib/color-extract'
 
 const GENRE_BG: Record<string, string> = {
   'Afropop': '#1e3a8a', 'Gospel': '#065f46', 'Reggae': '#7f1d1d',
@@ -249,6 +249,13 @@ export default function NowPlayingPage() {
                 </div>
               )
             }
+          </div>
+
+          {/* TEMPORARY DEBUG -- remove once color extraction is confirmed working */}
+          <div style={{ width: '100%', maxWidth: '300px', background: '#000', border: '1px solid #333', borderRadius: 8, padding: 8, fontSize: 10, color: '#0f0', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+            <div>cover_url: {currentTrack.cover_url ?? 'NULL'}</div>
+            <div>accentColor: {accentColor ?? 'null (no color yet / failed)'}</div>
+            <div>debug: {currentTrack.cover_url ? JSON.stringify(__colorDebug[currentTrack.cover_url] ?? 'not yet run') : 'n/a'}</div>
           </div>
 
           <div className="w-full flex items-center justify-between">
