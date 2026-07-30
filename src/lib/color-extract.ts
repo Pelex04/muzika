@@ -23,7 +23,7 @@ function extractDominantColor(url: string): Promise<string | null> {
     img.onload = () => {
       try {
         const canvas = document.createElement('canvas')
-        const size = 24
+        const size = 48
         canvas.width = size
         canvas.height = size
         const ctx = canvas.getContext('2d')
@@ -31,13 +31,33 @@ function extractDominantColor(url: string): Promise<string | null> {
         ctx.drawImage(img, 0, 0, size, size)
         const { data } = ctx.getImageData(0, 0, size, size)
 
-        let bestScore = -1
-        let bestColor: [number, number, number] = [24, 24, 24]
+        // Bin pixels into coarse color buckets and track both how often
+        // each occurs and its average color. A single very saturated
+        // pixel (e.g. a small bright badge/logo) would otherwise win over
+        // a large dominant-but-only-moderately-saturated area (e.g. a
+        // deep navy background covering most of the image) -- weighting
+        // by frequency as well as vibrancy favors the color that actually
+        // represents the artwork, not a rare accent.
+        const buckets = new Map<string, { r: number; g: number; b: number; count: number }>()
+        const BUCKET = 24
         for (let i = 0; i < data.length; i += 4) {
           const [r, g, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]]
           if (a < 200) continue
-          const score = scoreVibrancy(r, g, b)
-          if (score > bestScore) { bestScore = score; bestColor = [r, g, b] }
+          const key = `${Math.round(r / BUCKET)}-${Math.round(g / BUCKET)}-${Math.round(b / BUCKET)}`
+          const existing = buckets.get(key)
+          if (existing) {
+            existing.r += r; existing.g += g; existing.b += b; existing.count++
+          } else {
+            buckets.set(key, { r, g, b, count: 1 })
+          }
+        }
+
+        let bestScore = -1
+        let bestColor: [number, number, number] = [24, 24, 24]
+        for (const bucket of buckets.values()) {
+          const r = bucket.r / bucket.count, g = bucket.g / bucket.count, b = bucket.b / bucket.count
+          const score = scoreVibrancy(r, g, b) * Math.sqrt(bucket.count)
+          if (score > bestScore) { bestScore = score; bestColor = [Math.round(r), Math.round(g), Math.round(b)] }
         }
         resolve(`rgb(${bestColor[0]}, ${bestColor[1]}, ${bestColor[2]})`)
       } catch {
