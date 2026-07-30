@@ -60,7 +60,14 @@ export function useDominantColor(url: string | null | undefined) {
 
     let cancelled = false
     extractDominantColor(url).then((result) => {
-      colorCache.set(url, result)
+      // Only cache real successes. Podcast episodes commonly share the
+      // exact same cover (the show's own art, reused across episodes
+      // without one of their own) -- caching a failure here would
+      // permanently break the background color for every other episode
+      // sharing that URL for the rest of the session, even though a
+      // retry would likely succeed. Unique per-track covers rarely hit
+      // this since a one-time failure wouldn't recur across other tracks.
+      if (result) colorCache.set(url, result)
       if (!cancelled) setColor(result)
     })
     return () => { cancelled = true }
