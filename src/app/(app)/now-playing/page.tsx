@@ -47,6 +47,7 @@ export default function NowPlayingPage() {
   const [lyrics, setLyrics] = useState<string | null>(null)
   const [showFullLyrics, setShowFullLyrics] = useState(false)
   const lyricsScrollRef = useRef<HTMLDivElement>(null)
+  const fullLyricsScrollRef = useRef<HTMLDivElement>(null)
   const userScrollingLyrics = useRef(false)
   const userScrollResumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -54,7 +55,9 @@ export default function NowPlayingPage() {
   // (just a plain text blob), so this isn't true karaoke-style sync --
   // it just glides the lyrics box proportionally to playback progress.
   // Paused for a few seconds after the user manually scrolls, so reading
-  // ahead/back isn't fought against.
+  // ahead/back isn't fought against. Drives both the small in-page box
+  // and the full-screen view -- they're mounted at the same time (the
+  // full-screen one just overlays on top), so both need it independently.
   const handleLyricsUserScroll = () => {
     userScrollingLyrics.current = true
     if (userScrollResumeTimer.current) clearTimeout(userScrollResumeTimer.current)
@@ -62,11 +65,14 @@ export default function NowPlayingPage() {
   }
 
   useEffect(() => {
-    const el = lyricsScrollRef.current
-    if (!el || !lyrics || !duration || userScrollingLyrics.current) return
-    const maxScroll = el.scrollHeight - el.clientHeight
-    if (maxScroll <= 0) return
-    el.scrollTop = (currentTime / duration) * maxScroll
+    if (!lyrics || !duration || userScrollingLyrics.current) return
+    for (const ref of [lyricsScrollRef, fullLyricsScrollRef]) {
+      const el = ref.current
+      if (!el) continue
+      const maxScroll = el.scrollHeight - el.clientHeight
+      if (maxScroll <= 0) continue
+      el.scrollTop = (currentTime / duration) * maxScroll
+    }
   }, [currentTime, duration, lyrics])
   const [producers, setProducers] = useState<string[]>([])
   const [featuredArtists, setFeaturedArtists] = useState<{ name: string; artist_id: string | null; avatar_url?: string; verified?: boolean; is_following?: boolean }[]>([])
@@ -520,15 +526,14 @@ export default function NowPlayingPage() {
             )}
 
             {showFullLyrics && lyrics && (
-              <div
-                className="fixed inset-0 z-[500] flex flex-col"
-                style={{
-                  background: accentColor
-                    ? `linear-gradient(160deg, ${accentColor.replace('rgb(', 'rgba(').replace(')', ', 0.4)')}, #0a0a0a 55%)`
-                    : '#0a0a0a',
-                }}
-              >
-                <div className="flex items-center justify-between px-5 pt-6 pb-4 flex-shrink-0">
+              <div className="fixed inset-0 z-[500] flex flex-col" style={{ background: '#0a0a0a' }}>
+                {accentColor && (
+                  <div
+                    className="pointer-events-none absolute top-0 left-0 right-0"
+                    style={{ height: '260px', background: `linear-gradient(to bottom, ${accentColor.replace('rgb(', 'rgba(').replace(')', ', 0.45)')} 0%, rgba(0,0,0,0) 100%)` }}
+                  />
+                )}
+                <div className="relative flex items-center justify-between px-5 pt-6 pb-4 flex-shrink-0">
                   <div className="min-w-0 pr-3">
                     <p className="text-sm font-bold text-white truncate">{currentTrack.title}</p>
                     <p className="text-xs text-[#b3b3b3] truncate">{currentTrack.artist?.stage_name}</p>
@@ -540,7 +545,11 @@ export default function NowPlayingPage() {
                     <X size={18} className="text-white" />
                   </button>
                 </div>
-                <div className="flex-1 overflow-y-auto px-5 pb-10">
+                <div
+                  ref={fullLyricsScrollRef}
+                  onScroll={handleLyricsUserScroll}
+                  className="relative flex-1 overflow-y-auto px-5 pb-10"
+                >
                   <pre className="text-white text-2xl font-bold leading-[3rem] whitespace-pre-wrap font-sans">
                     {lyrics}
                   </pre>

@@ -48,7 +48,7 @@ export default function SongsClient({ tracks, userId, activeGenre }: Props) {
         </div>
 
         {/* Search */}
-        <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 transition-all">
+        <div className="flex items-center gap-3 bg-[#181818] border-[1.5px] border-[#2a2a2a] rounded-xl px-4 py-3 mb-5 focus-within:border-white focus-within:ring-2 focus-within:ring-white/10 transition-all">
           <Search className="w-4 h-4 text-[#717171] flex-shrink-0" />
           <input
             className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#717171]"
