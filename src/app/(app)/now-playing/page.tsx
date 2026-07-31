@@ -6,7 +6,7 @@ import Link from 'next/link'
 import {
   ChevronLeft, Heart, SkipBack, SkipForward, Play, Pause,
   Shuffle, Repeat, Repeat1, Bookmark, ListPlus, Share2,
-  Download, Loader2, Music2, BadgeCheck,
+  Download, Loader2, Music2, BadgeCheck, Maximize2, X,
 } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils'
 import type { Artist, Track } from '@/types'
 import AddToPlaylistModal from '@/components/playlist/AddToPlaylistModal'
 import { useDominantColor } from '@/lib/color-extract'
+import MarqueeText from '@/components/ui/MarqueeText'
 
 const GENRE_BG: Record<string, string> = {
   'Afropop': '#1e3a8a', 'Gospel': '#065f46', 'Reggae': '#7f1d1d',
@@ -44,6 +45,7 @@ export default function NowPlayingPage() {
   const [moreByArtist, setMoreByArtist] = useState<Track[]>([])
   const [related, setRelated] = useState<Track[]>([])
   const [lyrics, setLyrics] = useState<string | null>(null)
+  const [showFullLyrics, setShowFullLyrics] = useState(false)
   const lyricsScrollRef = useRef<HTMLDivElement>(null)
   const userScrollingLyrics = useRef(false)
   const userScrollResumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -252,10 +254,11 @@ export default function NowPlayingPage() {
           </div>
 
           <div className="w-full flex items-center justify-between">
-            <div className="min-w-0">
-              <h2 className="text-[21px] font-black text-white tracking-tight truncate">{currentTrack.title}</h2>
+            <div className="min-w-0 flex-1">
+              <MarqueeText text={currentTrack.title} className="text-[21px] font-black text-white tracking-tight" />
               <Link href={artist ? `/artists/${artist.id}` : '#'} className="text-sm text-[#b3b3b3] mt-0.5 hover:text-white hover:underline truncate block">
                 {currentTrack.artist?.stage_name}
+                {featuredArtists.length > 0 && ` ft. ${featuredArtists.map(f => f.name).join(', ')}`}
               </Link>
             </div>
             <button
@@ -483,20 +486,65 @@ export default function NowPlayingPage() {
               <div className="mb-6">
                 {lyrics ? (
                   <div
-                    ref={lyricsScrollRef}
-                    onScroll={handleLyricsUserScroll}
-                    className="bg-[#181818] rounded-2xl p-5 overflow-y-auto"
-                    style={{ maxHeight: '360px' }}
+                    className="rounded-2xl overflow-hidden relative"
+                    style={{
+                      background: accentColor
+                        ? `linear-gradient(160deg, ${accentColor.replace('rgb(', 'rgba(').replace(')', ', 0.35)')}, #141414 65%)`
+                        : '#181818',
+                      transition: 'background 600ms ease',
+                    }}
                   >
-                    <pre className="text-[#e0e0e0] text-base leading-9 whitespace-pre-wrap font-sans">
-                      {lyrics}
-                    </pre>
+                    <button
+                      onClick={() => setShowFullLyrics(true)}
+                      className="absolute top-3 right-3 z-10 flex items-center gap-1 px-2.5 py-1.5 bg-black/40 backdrop-blur-sm rounded-full text-[11px] font-bold text-white hover:bg-black/60 transition-colors"
+                    >
+                      <Maximize2 size={11} /> View full
+                    </button>
+                    <div
+                      ref={lyricsScrollRef}
+                      onScroll={handleLyricsUserScroll}
+                      className="p-5 overflow-y-auto"
+                      style={{ maxHeight: '360px' }}
+                    >
+                      <pre className="text-white text-xl font-bold leading-10 whitespace-pre-wrap font-sans">
+                        {lyrics}
+                      </pre>
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12">
                     <p className="text-[#555] text-sm">No lyrics available for this track</p>
                   </div>
                 )}
+              </div>
+            )}
+
+            {showFullLyrics && lyrics && (
+              <div
+                className="fixed inset-0 z-[500] flex flex-col"
+                style={{
+                  background: accentColor
+                    ? `linear-gradient(160deg, ${accentColor.replace('rgb(', 'rgba(').replace(')', ', 0.4)')}, #0a0a0a 55%)`
+                    : '#0a0a0a',
+                }}
+              >
+                <div className="flex items-center justify-between px-5 pt-6 pb-4 flex-shrink-0">
+                  <div className="min-w-0 pr-3">
+                    <p className="text-sm font-bold text-white truncate">{currentTrack.title}</p>
+                    <p className="text-xs text-[#b3b3b3] truncate">{currentTrack.artist?.stage_name}</p>
+                  </div>
+                  <button
+                    onClick={() => setShowFullLyrics(false)}
+                    className="w-9 h-9 rounded-full bg-black/30 grid place-items-center flex-shrink-0"
+                  >
+                    <X size={18} className="text-white" />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto px-5 pb-10">
+                  <pre className="text-white text-2xl font-bold leading-[3rem] whitespace-pre-wrap font-sans">
+                    {lyrics}
+                  </pre>
+                </div>
               </div>
             )}
 
