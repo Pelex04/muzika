@@ -58,6 +58,7 @@ export interface Track {
   content_type?: 'track' | 'podcast_episode'
   podcast_id?: string | null
   episode_number?: number | null
+  featured_artists?: string[]
   created_at: string
   updated_at: string
   // joined

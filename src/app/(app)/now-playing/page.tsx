@@ -536,7 +536,10 @@ export default function NowPlayingPage() {
                 <div className="relative flex items-center justify-between px-5 pt-6 pb-4 flex-shrink-0">
                   <div className="min-w-0 pr-3">
                     <p className="text-sm font-bold text-white truncate">{currentTrack.title}</p>
-                    <p className="text-xs text-[#b3b3b3] truncate">{currentTrack.artist?.stage_name}</p>
+                    <p className="text-xs text-[#b3b3b3] truncate">
+                      {currentTrack.artist?.stage_name}
+                      {featuredArtists.length > 0 && ` ft. ${featuredArtists.map(f => f.name).join(', ')}`}
+                    </p>
                   </div>
                   <button
                     onClick={() => setShowFullLyrics(false)}

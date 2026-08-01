@@ -106,6 +106,7 @@ export default function MiniPlayer() {
             </p>
             <p style={{ fontSize: '12px', color: '#b3b3b3' }}>
               {currentTrack.artist?.stage_name}
+              {currentTrack.featured_artists && currentTrack.featured_artists.length > 0 && ` ft. ${currentTrack.featured_artists.join(', ')}`}
             </p>
           </Link>
 

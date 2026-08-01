@@ -139,6 +139,7 @@ export default function TrackRow({
         >{track.title}</p>
         <p className="text-xs text-[#b3b3b3] truncate mt-0.5">
           {track.artist?.stage_name}
+          {track.featured_artists && track.featured_artists.length > 0 && ` ft. ${track.featured_artists.join(', ')}`}
           {playCount !== undefined && <span className="ml-1">· {formatCount(playCount)} plays</span>}
         </p>
       </div>

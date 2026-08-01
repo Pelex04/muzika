@@ -135,7 +135,10 @@ export default function TrackCard({ track, userId, queue }: Props) {
       {/* Info */}
       <div className="pt-2 px-0.5">
         <p className="text-[13px] font-bold text-white truncate">{track.title}</p>
-        <p className="text-[12px] text-[#b3b3b3] mt-0.5 truncate">{track.artist?.stage_name}</p>
+        <p className="text-[12px] text-[#b3b3b3] mt-0.5 truncate">
+          {track.artist?.stage_name}
+          {track.featured_artists && track.featured_artists.length > 0 && ` ft. ${track.featured_artists.join(', ')}`}
+        </p>
       </div>
 
       {playlistModalOpen && (
