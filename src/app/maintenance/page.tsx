@@ -9,7 +9,7 @@ export default function MaintenancePage() {
 
         .m-root {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          background: #080f24;
+          background: #0a0505;
           color: #fff;
           min-height: 100vh;
           display: flex;
@@ -19,6 +19,15 @@ export default function MaintenancePage() {
           padding: 48px 24px 32px;
           position: relative;
           overflow: hidden;
+          animation: m-screen-shake 6s ease-in-out infinite;
+        }
+        @keyframes m-screen-shake {
+          0%, 91%, 100% { transform: translate(0, 0); }
+          92% { transform: translate(-2px, 1px); }
+          93% { transform: translate(2px, -1px); }
+          94% { transform: translate(-1px, 2px); }
+          95% { transform: translate(1px, -2px); }
+          96% { transform: translate(0, 0); }
         }
 
         .m-blob {
@@ -29,14 +38,20 @@ export default function MaintenancePage() {
           z-index: 0;
         }
         .m-blob-1 {
-          width: 600px; height: 600px;
-          background: radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%);
-          top: -200px; left: -200px;
+          width: 620px; height: 620px;
+          background: radial-gradient(circle, rgba(220,38,38,0.22) 0%, transparent 70%);
+          top: -220px; left: -220px;
+          animation: m-blob-pulse 5s ease-in-out infinite;
         }
         .m-blob-2 {
-          width: 500px; height: 500px;
-          background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);
-          bottom: -150px; right: -150px;
+          width: 520px; height: 520px;
+          background: radial-gradient(circle, rgba(153,27,27,0.16) 0%, transparent 70%);
+          bottom: -160px; right: -160px;
+          animation: m-blob-pulse 5s ease-in-out infinite 1.2s;
+        }
+        @keyframes m-blob-pulse {
+          0%, 100% { opacity: 0.7; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.12); }
         }
 
         .m-card {
@@ -57,106 +72,115 @@ export default function MaintenancePage() {
           padding-top: 24px;
         }
         .m-footer-text {
-          font-size: 12px; color: rgba(107,122,159,0.5); letter-spacing: 0.2px;
+          font-size: 12px; color: rgba(180,140,140,0.4); letter-spacing: 0.2px;
         }
 
         .m-logo {
           display: inline-flex; align-items: center; gap: 10px;
-          margin-bottom: 52px;
+          margin-bottom: 48px;
         }
         .m-logo-mark {
           width: 36px; height: 36px; border-radius: 10px;
           overflow: hidden;
           display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 0 24px rgba(37,99,235,0.4);
+          box-shadow: 0 0 24px rgba(220,38,38,0.5);
+          filter: grayscale(0.4);
         }
         .m-logo-mark img { width: 100%; height: 100%; object-fit: cover; }
-        .m-logo-text {
-          font-family: 'Outfit', 'Inter', system-ui, sans-serif;
-          font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: #fff;
-        }
-        .m-logo-text span { color: #2563eb; }
 
+        /* Dramatic 3D power-off centerpiece */
+        .m-scene {
+          perspective: 900px;
+          width: 120px; height: 120px;
+          margin: 0 auto 32px;
+        }
         .m-icon-wrap {
-          width: 72px; height: 72px; border-radius: 20px; margin: 0 auto 28px;
-          background: rgba(37,99,235,0.08);
-          border: 1px solid rgba(37,99,235,0.2);
+          width: 100%; height: 100%; border-radius: 28px;
+          background: linear-gradient(160deg, rgba(220,38,38,0.16), rgba(0,0,0,0.4));
+          border: 1px solid rgba(220,38,38,0.35);
           display: flex; align-items: center; justify-content: center;
+          transform-style: preserve-3d;
+          animation: m-icon-3d 5s ease-in-out infinite, m-icon-jolt 5s linear infinite;
+          box-shadow: 0 0 50px rgba(220,38,38,0.35), inset 0 0 30px rgba(220,38,38,0.08);
+        }
+        @keyframes m-icon-3d {
+          0%, 100% { transform: rotateY(-18deg) rotateX(6deg); }
+          50% { transform: rotateY(18deg) rotateX(-6deg); }
+        }
+        @keyframes m-icon-jolt {
+          0%, 88%, 100% { filter: brightness(1) saturate(1); }
+          89% { filter: brightness(2.2) saturate(1.6); }
+          90% { filter: brightness(0.7) saturate(1); }
+          91% { filter: brightness(1.8) saturate(1.8); }
         }
         .m-icon {
-          width: 32px; height: 32px;
-          animation: m-pulse 3s ease-in-out infinite;
+          width: 52px; height: 52px;
+          animation: m-icon-pulse 2.2s ease-in-out infinite;
         }
-        @keyframes m-pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(0.92); }
+        @keyframes m-icon-pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.55; }
         }
 
         .m-eyebrow {
-          font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-          text-transform: uppercase; color: #2563eb; margin-bottom: 14px;
+          font-size: 11px; font-weight: 800; letter-spacing: 2px;
+          text-transform: uppercase; color: #f87171; margin-bottom: 14px;
+          display: inline-flex; align-items: center; gap: 7px;
         }
+        .m-eyebrow-dot {
+          width: 7px; height: 7px; border-radius: 50%; background: #ef4444;
+          box-shadow: 0 0 10px #ef4444;
+          animation: m-dot-blink 1.1s ease-in-out infinite;
+        }
+        @keyframes m-dot-blink {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.25; }
+        }
+
         .m-heading {
-          font-size: clamp(28px, 6vw, 38px);
-          font-weight: 900; letter-spacing: -0.8px; line-height: 1.15;
+          font-size: clamp(30px, 7vw, 42px);
+          font-weight: 900; letter-spacing: -0.9px; line-height: 1.1;
           margin-bottom: 16px; color: #fff;
         }
         .m-body {
-          font-size: 15px; line-height: 1.75; color: #8b9cc8;
-          max-width: 380px; margin: 0 auto 40px;
+          font-size: 15px; line-height: 1.75; color: #c4a3a3;
+          max-width: 380px; margin: 0 auto 32px;
         }
 
-        .m-progress-wrap {
-          background: rgba(255,255,255,0.05);
-          border-radius: 100px; height: 3px;
-          overflow: hidden; margin-bottom: 40px;
+        .m-contact-btn {
+          display: inline-flex; align-items: center; gap: 9px;
+          background: linear-gradient(135deg, #dc2626, #991b1b);
+          color: #fff; font-weight: 800; font-size: 15px;
+          padding: 15px 30px; border-radius: 100px;
+          text-decoration: none;
+          box-shadow: 0 10px 30px rgba(220,38,38,0.35);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+          margin-bottom: 44px;
         }
-        .m-progress-bar {
-          height: 100%; border-radius: 100px;
-          background: linear-gradient(90deg, #2563eb, #7c3aed);
-          animation: m-progress 2.8s ease-in-out infinite;
+        .m-contact-btn:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 14px 36px rgba(220,38,38,0.5);
         }
-        @keyframes m-progress {
-          0% { width: 0%; margin-left: 0; }
-          50% { width: 60%; margin-left: 20%; }
-          100% { width: 0%; margin-left: 100%; }
-        }
-
-        .m-status {
-          display: inline-flex; align-items: center; gap: 8px;
-          margin-bottom: 52px;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 100px;
-          padding: 7px 16px;
-        }
-        .m-status-line {
-          width: 16px; height: 1.5px;
-          background: linear-gradient(90deg, #2563eb, #7c3aed);
-          border-radius: 2px;
-          flex-shrink: 0;
-        }
-        .m-status-text { font-size: 12px; color: #6b7a9f; font-weight: 500; letter-spacing: 0.3px; }
 
         .m-social {
           display: flex; align-items: center; justify-content: center; gap: 12px;
         }
         .m-social-link {
           width: 38px; height: 38px; border-radius: 50%;
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(220,38,38,0.15);
           display: flex; align-items: center; justify-content: center;
-          text-decoration: none; color: #6b7a9f;
+          text-decoration: none; color: #8b6c6c;
           transition: all 0.2s ease;
         }
         .m-social-link:hover {
-          background: rgba(37,99,235,0.12);
-          border-color: rgba(37,99,235,0.3);
-          color: #93b4fd;
+          background: rgba(220,38,38,0.14);
+          border-color: rgba(220,38,38,0.4);
+          color: #f87171;
         }
 
         @media (max-width: 480px) {
-          .m-logo { margin-bottom: 40px; }
+          .m-logo { margin-bottom: 36px; }
           .m-body { font-size: 14px; }
         }
       `}</style>
@@ -170,30 +194,25 @@ export default function MaintenancePage() {
             <div className="m-logo-mark"><img src="/logo.png" alt="Playback" /></div>
           </div>
 
-          <div className="m-icon-wrap">
-            <svg className="m-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="16" cy="16" r="13" stroke="#2563eb" strokeWidth="1.5"/>
-              <path d="M16 9v7l4 4" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M7.5 3.5C5 5.2 3 7.8 2 10.8" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-              <path d="M24.5 3.5C27 5.2 29 7.8 30 10.8" stroke="#7c3aed" strokeWidth="1.5" strokeLinecap="round" opacity="0.45"/>
-            </svg>
+          <div className="m-scene">
+            <div className="m-icon-wrap">
+              <svg className="m-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="16" cy="16" r="12.5" stroke="#ef4444" strokeWidth="2"/>
+                <path d="M16 9v6" stroke="#ef4444" strokeWidth="2.5" strokeLinecap="round"/>
+                <circle cx="16" cy="21.5" r="1.4" fill="#ef4444"/>
+              </svg>
+            </div>
           </div>
 
-          <p className="m-eyebrow">Scheduled Maintenance</p>
-          <h1 className="m-heading">We'll be back<br />shortly.</h1>
+          <p className="m-eyebrow"><span className="m-eyebrow-dot" />Service Down</p>
+          <h1 className="m-heading">Playback is down.</h1>
           <p className="m-body">
-            We're making improvements to give you a better experience.
-            Playback will be back online very soon — thank you for your patience.
+            Something's broken on our end. Please contact the developer directly so this can get fixed.
           </p>
 
-          <div className="m-progress-wrap">
-            <div className="m-progress-bar" />
-          </div>
-
-          <div className="m-status">
-            <div className="m-status-line" />
-            <span className="m-status-text">Systems are being updated</span>
-          </div>
+          <a href="mailto:playbackcharts@gmail.com" className="m-contact-btn">
+            Contact Developer
+          </a>
 
           <div className="m-social">
             <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="m-social-link" aria-label="X">
@@ -218,9 +237,6 @@ export default function MaintenancePage() {
 
         <div className="m-footer">
           <p className="m-footer-text">© {new Date().getFullYear()} Playback · All rights reserved</p>
-          <p style={{ fontSize: '11px', color: 'rgba(107,122,159,0.35)', marginTop: '5px', letterSpacing: '0.3px' }}>
-            Powered by <span style={{ color: 'rgba(107,122,159,0.55)', fontWeight: 600 }}>Rasta Kadema</span>
-          </p>
         </div>
       </div>
     </>
