@@ -184,11 +184,12 @@ export default function NowPlayingPage() {
   }
 
   const handleDownload = async () => {
+    if (currentTrack.is_downloadable === false) { notify.error('The artist made this track streaming-only'); return }
     setDownloading(true)
     try {
       const res = await fetch(`/api/tracks/${currentTrack.id}/download`)
       const data = await res.json()
-      if (!data.url) { notify.error('Could not download track'); setDownloading(false); return }
+      if (!data.url) { notify.error(data.error ?? 'Could not download track'); setDownloading(false); return }
       const a = document.createElement('a')
       a.href = data.url
       a.download = data.filename ?? currentTrack.title
@@ -261,7 +262,12 @@ export default function NowPlayingPage() {
 
           <div className="w-full flex items-center justify-between">
             <div className="min-w-0 flex-1">
-              <MarqueeText text={currentTrack.title} className="text-[21px] font-black text-white tracking-tight" />
+              <div className="flex items-center gap-1.5">
+                {currentTrack.explicit && (
+                  <span className="inline-flex items-center justify-center w-4 h-4 flex-shrink-0 text-[10px] font-bold bg-[#5a5a5a] text-white rounded-[3px]">E</span>
+                )}
+                <MarqueeText text={currentTrack.title} className="text-[21px] font-black text-white tracking-tight" />
+              </div>
               <Link href={artist ? `/artists/${artist.id}` : '#'} className="text-sm text-[#b3b3b3] mt-0.5 hover:text-white hover:underline truncate block">
                 {currentTrack.artist?.stage_name}
                 {featuredArtists.length > 0 && ` ft. ${featuredArtists.map(f => f.name).join(', ')}`}
@@ -324,13 +330,15 @@ export default function NowPlayingPage() {
               <Share2 className="w-[18px] h-[18px] text-[#b3b3b3]" />
               <span className="text-xs font-semibold text-[#b3b3b3]">Share</span>
             </button>
-            <button onClick={handleDownload} disabled={downloading} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
-              {downloading
-                ? <Loader2 className="w-[18px] h-[18px] text-white" style={{ animation: 'spin 1s linear infinite' }} />
-                : <Download className="w-[18px] h-[18px] text-white" />
-              }
-              <span className="text-xs font-bold text-white">{downloading ? 'Saving…' : 'Download'}</span>
-            </button>
+            {currentTrack.is_downloadable !== false && (
+              <button onClick={handleDownload} disabled={downloading} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
+                {downloading
+                  ? <Loader2 className="w-[18px] h-[18px] text-white" style={{ animation: 'spin 1s linear infinite' }} />
+                  : <Download className="w-[18px] h-[18px] text-white" />
+                }
+                <span className="text-xs font-bold text-white">{downloading ? 'Saving…' : 'Download'}</span>
+              </button>
+            )}
           </div>
         </div>
 

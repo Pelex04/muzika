@@ -12,12 +12,15 @@ export async function GET(
 
   const { data: track, error } = await supabase
     .from('tracks')
-    .select('audio_path, title')
+    .select('audio_path, title, is_downloadable')
     .eq('id', id)
     .eq('published', true)
     .single()
 
   if (error || !track) return NextResponse.json({ error: 'Track not found' }, { status: 404 })
+  if (track.is_downloadable === false) {
+    return NextResponse.json({ error: 'The artist has made this track streaming-only' }, { status: 403 })
+  }
 
   // Generate a signed URL with a forced download filename
   const ext = track.audio_path.split('.').pop()

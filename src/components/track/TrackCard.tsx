@@ -58,9 +58,10 @@ export default function TrackCard({ track, userId, queue }: Props) {
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation()
     setMenuOpen(false)
+    if (track.is_downloadable === false) { notify.error('The artist made this track streaming-only'); return }
     const res = await fetch(`/api/tracks/${track.id}/download`)
     const data = await res.json()
-    if (!data.url) { notify.error('Could not download track'); return }
+    if (!data.url) { notify.error(data.error ?? 'Could not download track'); return }
     const a = document.createElement('a')
     a.href = data.url
     a.download = data.filename ?? track.title
@@ -125,9 +126,11 @@ export default function TrackCard({ track, userId, queue }: Props) {
             <button onClick={handleShare} style={menuItemStyle}>
               <Share2 size={14} color="#b3b3b3" /> Share
             </button>
-            <button onClick={handleDownload} style={menuItemStyle}>
-              <Download size={14} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
-            </button>
+            {track.is_downloadable !== false && (
+              <button onClick={handleDownload} style={menuItemStyle}>
+                <Download size={14} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
+              </button>
+            )}
           </div>
         </>
       )}
@@ -135,9 +138,14 @@ export default function TrackCard({ track, userId, queue }: Props) {
       {/* Info */}
       <div className="pt-2 px-0.5">
         <p className="text-[13px] font-bold text-white truncate">{track.title}</p>
-        <p className="text-[12px] text-[#b3b3b3] mt-0.5 truncate">
-          {track.artist?.stage_name}
-          {track.featured_artists && track.featured_artists.length > 0 && ` ft. ${track.featured_artists.join(', ')}`}
+        <p className="text-[12px] text-[#b3b3b3] mt-0.5 truncate flex items-center gap-1">
+          {track.explicit && (
+            <span className="inline-flex items-center justify-center w-3.5 h-3.5 flex-shrink-0 text-[9px] font-bold bg-[#5a5a5a] text-white rounded-[3px]">E</span>
+          )}
+          <span className="truncate">
+            {track.artist?.stage_name}
+            {track.featured_artists && track.featured_artists.length > 0 && ` ft. ${track.featured_artists.join(', ')}`}
+          </span>
         </p>
       </div>
 

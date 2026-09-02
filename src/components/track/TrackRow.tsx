@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Play, Pause, MoreVertical, TrendingUp, TrendingDown, Bookmark, ListPlus, Share2, Download, X } from 'lucide-react'
+import { TrendingUp, TrendingDown, ListPlus, Download } from 'lucide-react'
 import { usePlayerStore } from '@/store/player'
 import { formatCount } from '@/lib/utils'
 import { notify } from '@/components/ui/notify'
@@ -34,7 +34,6 @@ export default function TrackRow({
   const isActive = currentTrack?.id === track.id
   const isCurrentlyPlaying = isActive && isPlaying
   const accentColor = '#0ABAB5'
-  const [menuOpen, setMenuOpen] = useState(false)
   const [playlistModalOpen, setPlaylistModalOpen] = useState(false)
   const prefetchRef = usePrefetchTrack(track.id)
 
@@ -49,32 +48,12 @@ export default function TrackRow({
     play({ ...track, audio_url: _streamUrl }, queue)
   }
 
-  const handleSave = async (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setMenuOpen(false)
-    const res = await fetch(`/api/tracks/${track.id}/save`, { method: 'POST' })
-    const data = await res.json()
-    notify.success(data.saved ? 'Saved to library' : 'Removed from library')
-  }
-
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setMenuOpen(false)
-    const shareUrl = `${window.location.origin}/songs?track=${track.id}`
-    if (navigator.share) {
-      try { await navigator.share({ title: track.title, url: shareUrl }) } catch {}
-    } else {
-      await navigator.clipboard.writeText(shareUrl)
-      notify.success('Link copied to clipboard')
-    }
-  }
-
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    setMenuOpen(false)
+    if (track.is_downloadable === false) { notify.error('The artist made this track streaming-only'); return }
     const res = await fetch(`/api/tracks/${track.id}/download`)
     const data = await res.json()
-    if (!data.url) { notify.error('Could not download track'); return }
+    if (!data.url) { notify.error(data.error ?? 'Could not download track'); return }
     const a = document.createElement('a')
     a.href = data.url
     a.download = data.filename ?? track.title
@@ -82,6 +61,11 @@ export default function TrackRow({
     a.click()
     document.body.removeChild(a)
     notify.success('Download started')
+  }
+
+  const handleAddToPlaylist = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setPlaylistModalOpen(true)
   }
 
   return (
@@ -137,10 +121,15 @@ export default function TrackRow({
           className={cn('text-sm font-bold truncate', !isActive && 'text-white')}
           style={isActive ? { color: accentColor } : undefined}
         >{track.title}</p>
-        <p className="text-xs text-[#b3b3b3] truncate mt-0.5">
-          {track.artist?.stage_name}
-          {track.featured_artists && track.featured_artists.length > 0 && ` ft. ${track.featured_artists.join(', ')}`}
-          {playCount !== undefined && <span className="ml-1">· {formatCount(playCount)} plays</span>}
+        <p className="text-xs text-[#b3b3b3] truncate mt-0.5 flex items-center gap-1">
+          {track.explicit && (
+            <span className="inline-flex items-center justify-center w-3.5 h-3.5 flex-shrink-0 text-[9px] font-bold bg-[#5a5a5a] text-white rounded-[3px]">E</span>
+          )}
+          <span className="truncate">
+            {track.artist?.stage_name}
+            {track.featured_artists && track.featured_artists.length > 0 && ` ft. ${track.featured_artists.join(', ')}`}
+            {playCount !== undefined && <span className="ml-1">· {formatCount(playCount)} plays</span>}
+          </span>
         </p>
       </div>
 
@@ -152,46 +141,25 @@ export default function TrackRow({
         </div>
       )}
 
-      {/* More */}
-      <button
-        className="w-7 h-7 rounded-md flex-shrink-0 grid place-items-center text-[#717171] hover:bg-[#3a3a3a] hover:text-white opacity-0 group-hover:opacity-100 transition-all relative"
-        onClick={e => { e.stopPropagation(); setMenuOpen(v => !v) }}
-      >
-        <MoreVertical className="w-4 h-4" />
-      </button>
-
-      {/* Context menu */}
-      {menuOpen && (
-        <>
-          <div
-            style={{ position: 'fixed', inset: 0, zIndex: 90 }}
-            onClick={e => { e.stopPropagation(); setMenuOpen(false) }}
-          />
-          <div
-            onClick={e => e.stopPropagation()}
-            style={{
-              position: 'absolute', right: '14px', top: '48px', zIndex: 100,
-              background: '#282828', borderRadius: '12px',
-              boxShadow: '0 8px 24px rgba(0,0,0,.5)',
-              border: '1px solid #3a3a3a',
-              minWidth: '180px', padding: '6px',
-            }}
+      {/* Quick actions */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {track.is_downloadable !== false && (
+          <button
+            aria-label="Download"
+            className="w-8 h-8 rounded-full flex-shrink-0 grid place-items-center bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] transition-colors"
+            onClick={handleDownload}
           >
-            <button onClick={handleSave} style={menuItemStyle}>
-              <Bookmark size={15} color="#b3b3b3" /> Save to Library
-            </button>
-            <button onClick={e => { e.stopPropagation(); setMenuOpen(false); setPlaylistModalOpen(true) }} style={menuItemStyle}>
-              <ListPlus size={15} color="#b3b3b3" /> Add to Playlist
-            </button>
-            <button onClick={handleShare} style={menuItemStyle}>
-              <Share2 size={15} color="#b3b3b3" /> Share
-            </button>
-            <button onClick={handleDownload} style={menuItemStyle}>
-              <Download size={15} color="#10B981" /> <span style={{ color: '#10B981' }}>Download</span>
-            </button>
-          </div>
-        </>
-      )}
+            <Download className="w-[15px] h-[15px]" />
+          </button>
+        )}
+        <button
+          aria-label="Add to playlist"
+          className="w-8 h-8 rounded-full flex-shrink-0 grid place-items-center bg-[#2a2a2a] text-white hover:bg-[#3a3a3a] transition-colors"
+          onClick={handleAddToPlaylist}
+        >
+          <ListPlus className="w-[15px] h-[15px]" />
+        </button>
+      </div>
 
       {playlistModalOpen && (
         <div onClick={e => e.stopPropagation()}>
@@ -207,14 +175,6 @@ export default function TrackRow({
       `}</style>
     </div>
   )
-}
-
-const menuItemStyle: React.CSSProperties = {
-  display: 'flex', alignItems: 'center', gap: '10px',
-  width: '100%', padding: '9px 12px', borderRadius: '8px',
-  border: 'none', background: 'transparent', cursor: 'pointer',
-  fontSize: '13.5px', fontWeight: 600, color: '#ffffff',
-  textAlign: 'left', fontFamily: 'inherit',
 }
 
 function ArtPlaceholder({ genre, small }: { genre: string; small?: boolean }) {

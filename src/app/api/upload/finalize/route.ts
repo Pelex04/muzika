@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Podcast creators upload episodes, not tracks. Use the Podcast tab.' }, { status: 403 })
   }
 
-  const { title, genre, audioPath, coverPath, albumId, producers, featuredArtists, lyrics, releaseDate } = await req.json() as {
+  const { title, genre, audioPath, coverPath, albumId, producers, featuredArtists, lyrics, releaseDate, explicit, downloadable } = await req.json() as {
     title: string
     genre: string
     audioPath: string
@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
     featuredArtists?: string[]
     lyrics?: string | null
     releaseDate?: string | null
+    explicit?: boolean
+    downloadable?: boolean
   }
 
   if (!title?.trim() || !genre || !audioPath) {
@@ -83,6 +85,8 @@ export async function POST(req: NextRequest) {
       release_date: releaseDate ?? null,
       is_scheduled: isScheduled,
       published: !isScheduled,
+      explicit: !!explicit,
+      is_downloadable: downloadable !== false,
     })
     .select()
     .single()

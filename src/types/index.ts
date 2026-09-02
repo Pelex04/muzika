@@ -53,6 +53,8 @@ export interface Track {
   play_count: number
   download_count: number
   published: boolean
+  explicit: boolean
+  is_downloadable: boolean
   album_id?: string | null
   track_number?: number | null
   content_type?: 'track' | 'podcast_episode'

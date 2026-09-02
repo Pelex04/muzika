@@ -22,6 +22,8 @@ interface PendingTrack {
   lyrics: string
   scheduled: boolean
   releaseDate: string
+  explicit: boolean
+  downloadable: boolean
 }
 
 type UploadMode = 'single' | 'album' | 'podcast'
@@ -104,6 +106,8 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
   const [lyrics, setLyrics] = useState('')
   const [releaseDate, setReleaseDate] = useState('')
   const [isScheduled, setIsScheduled] = useState(false)
+  const [isExplicit, setIsExplicit] = useState(false)
+  const [isDownloadable, setIsDownloadable] = useState(true)
 
   // ── ALBUM STATE ──
   const [albumTitle, setAlbumTitle] = useState('')
@@ -168,6 +172,8 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
         lyrics: '',
         scheduled: false,
         releaseDate: '',
+        explicit: false,
+        downloadable: true,
       })),
     ])
   }, [])
@@ -259,6 +265,8 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
           featuredArtists: parseTags(featuredArtists),
           lyrics: lyrics.trim() || null,
           releaseDate: isScheduled && releaseDate ? new Date(releaseDate).toISOString() : null,
+          explicit: isExplicit,
+          downloadable: isDownloadable,
         }),
       })
       const result = await res.json()
@@ -319,6 +327,8 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
             releaseDate: t.scheduled && t.releaseDate
               ? new Date(t.releaseDate).toISOString()
               : (albumScheduled && albumReleaseDate ? new Date(albumReleaseDate).toISOString() : null),
+            explicit: t.explicit,
+            downloadable: t.downloadable,
           }),
         })
       }
@@ -494,6 +504,10 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
                 placeholder="Paste your lyrics here…" />
             </div>
 
+            <TrackFlagsField
+              explicit={isExplicit} onExplicit={() => setIsExplicit(e => !e)}
+              downloadable={isDownloadable} onDownloadable={() => setIsDownloadable(d => !d)} />
+
             <SchedulerField
               scheduled={isScheduled} onToggle={() => setIsScheduled(s => !s)}
               date={releaseDate} onDate={setReleaseDate}
@@ -595,6 +609,10 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
                               className="w-full px-3 py-2.5 border border-[#2a2a2a] rounded-lg text-xs text-white bg-[#111] focus:outline-none focus:border-blue-500 transition-all resize-none"
                               placeholder="Paste lyrics…" />
                           </div>
+                          <TrackFlagsField
+                            explicit={t.explicit} onExplicit={() => updatePendingTrack(t.id, 'explicit', !t.explicit)}
+                            downloadable={t.downloadable} onDownloadable={() => updatePendingTrack(t.id, 'downloadable', !t.downloadable)}
+                            compact />
                           <div className="border-t border-[#2a2a2a] pt-3">
                             <label className="flex items-center gap-2 cursor-pointer mb-2">
                               <input
@@ -732,6 +750,42 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
             </div>
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+function FlagToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  return (
+    <button type="button" onClick={onToggle}
+      className="w-10 h-5.5 rounded-full transition-colors relative flex-shrink-0"
+      style={{ background: on ? '#2563eb' : '#2a2a2a', padding: '3px' }}>
+      <div className="w-4 h-4 rounded-full bg-white transition-all" style={{ marginLeft: on ? '18px' : '0px' }} />
+    </button>
+  )
+}
+
+function TrackFlagsField({ explicit, onExplicit, downloadable, onDownloadable, compact = false }: {
+  explicit: boolean; onExplicit: () => void; downloadable: boolean; onDownloadable: () => void; compact?: boolean
+}) {
+  return (
+    <div className={cn('space-y-2', compact ? 'border-t border-[#2a2a2a] pt-3' : '')}>
+      <div className="flex items-center justify-between bg-[#181818] border border-[#2a2a2a] rounded-xl p-3">
+        <div>
+          <p className="text-sm font-semibold text-white flex items-center gap-1.5">
+            <span className="inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold bg-[#5a5a5a] text-white rounded-[3px]">E</span>
+            Explicit content
+          </p>
+          <p className="text-[11px] text-[#555]">Flags strong language or mature themes to listeners</p>
+        </div>
+        <FlagToggle on={explicit} onToggle={onExplicit} />
+      </div>
+      <div className="flex items-center justify-between bg-[#181818] border border-[#2a2a2a] rounded-xl p-3">
+        <div>
+          <p className="text-sm font-semibold text-white">Allow downloads</p>
+          <p className="text-[11px] text-[#555]">Turn off for streaming-only — fans can listen but not save the file</p>
+        </div>
+        <FlagToggle on={downloadable} onToggle={onDownloadable} />
       </div>
     </div>
   )

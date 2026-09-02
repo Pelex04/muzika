@@ -103,6 +103,10 @@ create table if not exists public.tracks (
 alter table public.tracks add column if not exists album_id uuid;
 alter table public.tracks add column if not exists track_number integer;
 
+-- Explicit content flag + per-track download control (safe no-op if columns already exist)
+alter table public.tracks add column if not exists explicit boolean not null default false;
+alter table public.tracks add column if not exists is_downloadable boolean not null default true;
+
 alter table public.tracks enable row level security;
 
 drop policy if exists "Published tracks viewable by all" on tracks;
