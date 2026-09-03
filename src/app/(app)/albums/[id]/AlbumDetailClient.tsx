@@ -13,6 +13,7 @@ import TrackRow from '@/components/track/TrackRow'
 import CountdownBoxes from '@/components/ui/CountdownBoxes'
 import { useAutoRefreshOnRelease } from '@/hooks/useAutoRefreshOnRelease'
 import type { Track } from '@/types'
+import { getAlbumOtherArtists } from '@/lib/utils'
 
 const GENRE_BG: Record<string, string> = {
   'Afropop': 'linear-gradient(135deg,#1e3a8a,#2563eb)',
@@ -47,6 +48,7 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
   // track_number (no title/artist), so they render as placeholders instead
   // of breaking the normal tracklist.
   const realTracks = tracks.filter((t: any) => 'title' in t) as Track[]
+  const otherArtists = getAlbumOtherArtists(realTracks, album.artist?.stage_name)
   const hasUnreleased = tracks.some((t: any) => !('title' in t))
   const showPreview = isScheduled || hasUnreleased
 
@@ -115,6 +117,9 @@ export default function AlbumDetailClient({ album, tracks, userId, isScheduled }
               <Link href={`/artists/${album.artist.id}`} className="text-sm text-[#b3b3b3] hover:text-white hover:underline">
                 {album.artist.stage_name}
               </Link>
+            )}
+            {otherArtists.length > 0 && (
+              <p className="text-xs text-[#555] mt-0.5">with {otherArtists.join(', ')}</p>
             )}
             {isScheduled ? (
               <p className="text-sm text-[#fbbf24] mt-1 mb-3 font-semibold flex items-center gap-1.5">

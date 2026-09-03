@@ -7,8 +7,8 @@ import { notify } from '@/components/ui/notify'
 import { Upload, Music, Image, CheckCircle2, Loader2, Disc3, X, Plus, GripVertical, Users, Mic2, FileText, Calendar, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import MobileTopBar from '@/components/layout/MobileTopBar'
+import { useGenres } from '@/hooks/useGenres'
 
-const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Amapiano']
 const MAX_AUDIO_MB = 50
 const MAX_COVER_MB = 5
 
@@ -792,11 +792,30 @@ function TrackFlagsField({ explicit, onExplicit, downloadable, onDownloadable, c
 }
 
 function GenrePicker({ selected, onSelect }: { selected: string; onSelect: (g: string) => void }) {
+  const { options, addGenre } = useGenres('music')
+  const [adding, setAdding] = useState(false)
+  const [newGenre, setNewGenre] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const submitNewGenre = async () => {
+    if (!newGenre.trim() || submitting) return
+    setSubmitting(true)
+    const resolved = await addGenre(newGenre)
+    setSubmitting(false)
+    if (resolved) {
+      onSelect(resolved)
+      setNewGenre('')
+      setAdding(false)
+    } else {
+      notify.error('Could not add that genre')
+    }
+  }
+
   return (
     <div>
       <label className="block text-[11px] font-bold text-[#b3b3b3] uppercase tracking-[.7px] mb-2">Genre</label>
-      <div className="flex flex-wrap gap-2">
-        {GENRES.map(g => (
+      <div className="flex flex-wrap gap-2 items-center">
+        {options.map(g => (
           <button key={g} type="button" onClick={() => onSelect(g)}
             className={cn('px-4 py-1.5 rounded-full border-[1.5px] text-sm font-semibold transition-all',
               selected === g ? 'bg-white border-white text-black' : 'bg-transparent border-[#3a3a3a] text-[#b3b3b3] hover:border-blue-400'
@@ -804,6 +823,32 @@ function GenrePicker({ selected, onSelect }: { selected: string; onSelect: (g: s
             {g}
           </button>
         ))}
+        {adding ? (
+          <div className="flex items-center gap-1.5">
+            <input
+              autoFocus
+              value={newGenre}
+              onChange={e => setNewGenre(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); submitNewGenre() } if (e.key === 'Escape') { setAdding(false); setNewGenre('') } }}
+              placeholder="New genre…"
+              maxLength={30}
+              className="px-3 py-1.5 rounded-full border-[1.5px] border-blue-500 bg-transparent text-sm text-white outline-none w-32"
+            />
+            <button type="button" onClick={submitNewGenre} disabled={submitting || !newGenre.trim()}
+              className="px-3 py-1.5 rounded-full bg-blue-600 text-white text-sm font-semibold disabled:opacity-50">
+              Add
+            </button>
+            <button type="button" onClick={() => { setAdding(false); setNewGenre('') }}
+              className="w-7 h-7 rounded-full grid place-items-center text-[#b3b3b3] hover:bg-[#2a2a2a]">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <button type="button" onClick={() => setAdding(true)}
+            className="px-4 py-1.5 rounded-full border-[1.5px] border-dashed border-[#3a3a3a] text-sm font-semibold text-[#717171] hover:border-blue-400 hover:text-blue-400 transition-all flex items-center gap-1">
+            <Plus className="w-3.5 h-3.5" /> Add genre
+          </button>
+        )}
       </div>
     </div>
   )

@@ -6,11 +6,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Music2, Mic, Mic2, MapPin, FileText, ChevronRight, Loader2 } from 'lucide-react'
+import { Music2, Mic, Mic2, MapPin, FileText, ChevronRight, Loader2, Plus, X } from 'lucide-react'
 import Link from 'next/link'
+import { useGenres } from '@/hooks/useGenres'
 
-const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Dancehall', 'Amapiano']
-const PODCAST_CATEGORIES = ['Music', 'Comedy', 'News', 'Education', 'Sports', 'Culture', 'Business', 'Religion', 'Other']
 const CITIES = ['Blantyre', 'Lilongwe', 'Mzuzu', 'Zomba', 'Kasungu', 'Balaka', 'Mangochi', 'Other']
 
 const schema = z.object({
@@ -53,6 +52,25 @@ function BecomeArtistForm() {
   const bio = watch('bio') || ''
   const selectedGenre = watch('genre')
   const selectedLocation = watch('location')
+
+  const { options: genreOptions, addGenre } = useGenres(isPodcast ? 'podcast' : 'music')
+  const [addingGenre, setAddingGenre] = useState(false)
+  const [newGenre, setNewGenre] = useState('')
+  const [addingGenreLoading, setAddingGenreLoading] = useState(false)
+
+  const submitNewGenre = async () => {
+    if (!newGenre.trim() || addingGenreLoading) return
+    setAddingGenreLoading(true)
+    const resolved = await addGenre(newGenre)
+    setAddingGenreLoading(false)
+    if (resolved) {
+      setValue('genre', resolved, { shouldValidate: true })
+      setNewGenre('')
+      setAddingGenre(false)
+    } else {
+      toast.error('Could not add that genre')
+    }
+  }
 
   const focus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.target.style.borderColor = '#2563EB'
@@ -175,11 +193,11 @@ function BecomeArtistForm() {
           {/* Genre / Category */}
           <div style={{ marginBottom: '18px' }}>
             <label style={S.label}>{isPodcast ? 'Primary Category' : 'Primary Genre'}</label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {(isPodcast ? PODCAST_CATEGORIES : GENRES).map(g => (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
+              {genreOptions.map(g => (
                 <button
                   key={g} type="button"
-                  onClick={() => setValue('genre', g)}
+                  onClick={() => setValue('genre', g, { shouldValidate: true })}
                   style={{
                     padding: '7px 14px', borderRadius: '20px', cursor: 'pointer',
                     fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
@@ -193,6 +211,52 @@ function BecomeArtistForm() {
                   {g}
                 </button>
               ))}
+              {addingGenre ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input
+                    autoFocus
+                    value={newGenre}
+                    onChange={e => setNewGenre(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') { e.preventDefault(); submitNewGenre() }
+                      if (e.key === 'Escape') { setAddingGenre(false); setNewGenre('') }
+                    }}
+                    placeholder={isPodcast ? 'New category…' : 'New genre…'}
+                    maxLength={30}
+                    style={{
+                      padding: '6px 12px', borderRadius: '20px', width: '120px',
+                      border: '1.5px solid #2563EB', background: 'transparent',
+                      fontSize: '13px', color: '#ffffff', outline: 'none', fontFamily: 'inherit',
+                    }}
+                  />
+                  <button type="button" onClick={submitNewGenre} disabled={addingGenreLoading || !newGenre.trim()}
+                    style={{
+                      padding: '7px 14px', borderRadius: '20px', border: 'none',
+                      background: '#2563EB', color: '#fff', fontSize: '13px', fontWeight: 600,
+                      cursor: 'pointer', fontFamily: 'inherit', opacity: addingGenreLoading || !newGenre.trim() ? 0.5 : 1,
+                    }}>
+                    Add
+                  </button>
+                  <button type="button" onClick={() => { setAddingGenre(false); setNewGenre('') }}
+                    style={{
+                      width: '28px', height: '28px', borderRadius: '50%', border: 'none',
+                      background: 'transparent', color: '#717171', cursor: 'pointer',
+                      display: 'grid', placeItems: 'center',
+                    }}>
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => setAddingGenre(true)}
+                  style={{
+                    padding: '7px 14px', borderRadius: '20px', cursor: 'pointer',
+                    fontSize: '13px', fontWeight: 600, fontFamily: 'inherit',
+                    border: '1.5px dashed #3a3a3a', background: 'transparent', color: '#717171',
+                    display: 'flex', alignItems: 'center', gap: '5px', transition: 'all .15s',
+                  }}>
+                  <Plus size={13} /> {isPodcast ? 'Add category' : 'Add genre'}
+                </button>
+              )}
             </div>
             {errors.genre && <p style={{ color: '#EF4444', fontSize: '12px', marginTop: '4px' }}>{errors.genre.message}</p>}
           </div>

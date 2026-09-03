@@ -65,7 +65,7 @@ export default async function ArtistDetailPage({ params }: { params: Promise<{ i
   } else {
     const { data } = await supabase
       .from('albums')
-      .select('*, tracks:tracks(count)')
+      .select('*, tracks:tracks(count), track_features:tracks(featured_artists)')
       .eq('artist_id', id)
       .eq('published', true)
       .order('created_at', { ascending: false })

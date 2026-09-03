@@ -7,7 +7,7 @@ import { ChevronLeft, BadgeCheck, Play, Music2, Disc3, Mic2, Clock, Globe, Exter
 import { notify } from '@/components/ui/notify'
 import { usePlayerStore } from '@/store/player'
 import { fetchStreamUrl } from '@/lib/stream-cache'
-import { formatCount } from '@/lib/utils'
+import { formatCount, getAlbumOtherArtists } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import TrackRow from '@/components/track/TrackRow'
 import MobileTopBar from '@/components/layout/MobileTopBar'
@@ -279,6 +279,12 @@ export default function ArtistDetailClient({
                           <p className="text-xs text-[#717171] mt-0.5">
                             {album.tracks?.[0]?.count ?? 0} tracks · {new Date(album.created_at).getFullYear()}
                           </p>
+                          {(() => {
+                            const others = getAlbumOtherArtists(album.track_features, album.artist?.stage_name)
+                            return others.length > 0
+                              ? <p className="text-xs text-[#555] mt-0.5 truncate">ft. {others.slice(0, 2).join(', ')}{others.length > 2 ? ` & ${others.length - 2} more` : ''}</p>
+                              : null
+                          })()}
                         </div>
                       </div>
                     </Link>

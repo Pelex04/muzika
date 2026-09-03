@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Disc3, Clock } from 'lucide-react'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import AlbumsAutoRefresh from './AlbumsAutoRefresh'
+import { getAlbumOtherArtists, formatAlbumArtistLabel } from '@/lib/utils'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Albums · Playback' }
@@ -14,7 +15,7 @@ export default async function AlbumsPage() {
 
   const { data: publishedAlbums } = await db
     .from('albums')
-    .select('id, title, genre, cover_url, created_at, release_type, artist:artists(id, stage_name, avatar_url)')
+    .select('id, title, genre, cover_url, created_at, release_type, artist:artists(id, stage_name, avatar_url), tracks(featured_artists)')
     .eq('published', true)
     .order('created_at', { ascending: false })
     .limit(60)
@@ -23,7 +24,7 @@ export default async function AlbumsPage() {
   // link to a countdown page, not their tracks (which stay hidden until release).
   const { data: scheduledAlbums } = await db
     .from('albums')
-    .select('id, title, genre, cover_url, release_date, release_type, artist:artists(id, stage_name, avatar_url)')
+    .select('id, title, genre, cover_url, release_date, release_type, artist:artists(id, stage_name, avatar_url), tracks(featured_artists)')
     .eq('is_scheduled', true)
     .gt('release_date', new Date().toISOString())
     .order('release_date', { ascending: true })
@@ -75,7 +76,7 @@ export default async function AlbumsPage() {
                   <div className="pt-2 px-0.5">
                     <p className="text-sm font-bold text-white truncate mb-0.5">{album.title}</p>
                     <p className="text-xs text-[#717171] truncate">
-                      {album.artist?.stage_name} · {album.genre}
+                      {formatAlbumArtistLabel(album.artist?.stage_name, getAlbumOtherArtists(album.tracks, album.artist?.stage_name))} · {album.genre}
                     </p>
                     <p className="text-xs mt-0.5" style={{ color: album._scheduled ? '#fbbf24' : '#555' }}>
                       {album._scheduled

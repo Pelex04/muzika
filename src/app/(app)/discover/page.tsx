@@ -57,7 +57,7 @@ export default async function DiscoverPage() {
     const albumIds = topAlbumsRaw.map((a: any) => a.id)
     const { data: albumsWithArtist } = await db
       .from('albums')
-      .select('id, title, genre, cover_url, created_at, artist:artists(id, stage_name, avatar_url)')
+      .select('id, title, genre, cover_url, created_at, artist:artists(id, stage_name, avatar_url), tracks(featured_artists)')
       .in('id', albumIds)
     const byId = new Map((albumsWithArtist ?? []).map((a: any) => [a.id, a]))
     topAlbums = albumIds.map((id: string) => byId.get(id)).filter(Boolean)

@@ -427,6 +427,35 @@ returns void as $$
   update tracks set download_count = download_count + 1 where id = track_id;
 $$ language sql security definer;
 
+-- ─── GENRES (custom + preset, shared across artists) ─────
+create table if not exists public.genres (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  category text not null default 'music' check (category in ('music', 'podcast')),
+  created_by uuid references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create unique index if not exists genres_category_name_lower_idx
+  on public.genres (category, lower(name));
+
+alter table public.genres enable row level security;
+
+drop policy if exists "genres_select_all" on public.genres;
+create policy "genres_select_all" on public.genres
+  for select using (true);
+
+drop policy if exists "genres_insert_authenticated" on public.genres;
+create policy "genres_insert_authenticated" on public.genres
+  for insert to authenticated with check (true);
+
+insert into public.genres (name, category) values
+  ('Afropop', 'music'), ('Gospel', 'music'), ('Hip-Hop', 'music'), ('Reggae', 'music'),
+  ('RnB', 'music'), ('Traditional', 'music'), ('Jazz', 'music'), ('Dancehall', 'music'), ('Amapiano', 'music'),
+  ('Music', 'podcast'), ('Comedy', 'podcast'), ('News', 'podcast'), ('Education', 'podcast'),
+  ('Sports', 'podcast'), ('Culture', 'podcast'), ('Business', 'podcast'), ('Religion', 'podcast'), ('Other', 'podcast')
+on conflict do nothing;
+
 -- ════════════════════════════════════════════════════════
 --  DONE. To make yourself an admin (required to write blog
 --  posts), run this once with your own user id:

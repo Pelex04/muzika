@@ -12,10 +12,12 @@ import QuickNav from '@/components/layout/QuickNav'
 import { useLogo } from '@/lib/logo-context'
 import Link from 'next/link'
 import type { Track, Artist } from '@/types'
+import { getAlbumOtherArtists, formatAlbumArtistLabel } from '@/lib/utils'
 
 interface Album {
   id: string; title: string; genre: string; cover_url: string | null
   artist?: { id: string; stage_name: string; avatar_url: string | null }
+  tracks?: { featured_artists?: string[] | null }[]
 }
 
 interface Playlist {
@@ -396,7 +398,9 @@ export default function DiscoverClient({ trendingTracks, tracks, artists, podcas
                     }
                   </div>
                   <p className="text-[13px] font-bold text-white truncate">{album.title}</p>
-                  <p className="text-[12px] text-[#717171] mt-0.5 truncate">{album.artist?.stage_name}</p>
+                  <p className="text-[12px] text-[#717171] mt-0.5 truncate">
+                    {formatAlbumArtistLabel(album.artist?.stage_name, getAlbumOtherArtists(album.tracks, album.artist?.stage_name))}
+                  </p>
                 </Link>
               ))}
             </HScroll>

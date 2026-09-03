@@ -41,3 +41,41 @@ export function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2)
 }
+
+// Given an album's tracks (each with a featured_artists array) and its
+// main artist's name, returns the other collaborating artist names —
+// deduped case-insensitively and never including the main artist.
+export function getAlbumOtherArtists(
+  tracks: Array<{ featured_artists?: string[] | null }> | null | undefined,
+  mainArtistName?: string | null
+): string[] {
+  if (!tracks?.length) return []
+  const mainLower = (mainArtistName ?? '').trim().toLowerCase()
+  const seen = new Set<string>()
+  const others: string[] = []
+  for (const t of tracks) {
+    for (const name of t.featured_artists ?? []) {
+      const trimmed = name.trim()
+      const lower = trimmed.toLowerCase()
+      if (!trimmed || lower === mainLower || seen.has(lower)) continue
+      seen.add(lower)
+      others.push(trimmed)
+    }
+  }
+  return others
+}
+
+// "Main Artist" or "Main Artist, Feat A, Feat B" (capped, with "& N more"
+// once there are more collaborators than fit comfortably in a UI label).
+export function formatAlbumArtistLabel(
+  mainArtistName?: string | null,
+  others: string[] = [],
+  maxShown = 2
+): string {
+  const main = mainArtistName ?? ''
+  if (!others.length) return main
+  const shown = others.slice(0, maxShown)
+  const remaining = others.length - shown.length
+  const suffix = remaining > 0 ? `, & ${remaining} more` : ''
+  return `${main}, ${shown.join(', ')}${suffix}`
+}
