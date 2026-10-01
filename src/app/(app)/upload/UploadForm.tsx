@@ -8,6 +8,8 @@ import { Upload, Music, Image, CheckCircle2, Loader2, Disc3, X, Plus, GripVertic
 import { cn } from '@/lib/utils'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import { useGenres } from '@/hooks/useGenres'
+import { compressAudio } from '@/lib/compress-audio'
+import { compressImage } from '@/lib/compress-image'
 
 const MAX_AUDIO_MB = 50
 const MAX_COVER_MB = 5
@@ -220,17 +222,24 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
     setPendingTracks(prev => prev.map(t => t.id === id ? { ...t, [key]: val } : t))
 
   const uploadFileDirect = async (file: File, kind: 'audio' | 'cover'): Promise<string> => {
+    // Shrink the file client-side before it ever touches Storage. Audio
+    // only gets re-encoded when it's lossless or unusually large (see
+    // compress-audio.ts); images only when they're not already small.
+    const prepared = kind === 'audio'
+      ? await compressAudio(file, pct => setProgressLabel(`Compressing audio… ${pct}%`))
+      : await compressImage(file)
+
     const res = await fetch('/api/upload/signed-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename: file.name, kind }),
+      body: JSON.stringify({ filename: prepared.name, kind }),
     })
     const { signedUrl, path, error } = await res.json()
     if (error || !signedUrl) throw new Error(error ?? 'Could not get upload URL')
     const uploadRes = await fetch(signedUrl, {
       method: 'PUT',
-      headers: { 'Content-Type': file.type || 'application/octet-stream' },
-      body: file,
+      headers: { 'Content-Type': prepared.type || 'application/octet-stream' },
+      body: prepared,
     })
     if (!uploadRes.ok) throw new Error('File upload failed')
     return path

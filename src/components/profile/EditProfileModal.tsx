@@ -4,6 +4,7 @@ import { useState, useRef } from 'react'
 import { X, Camera, Loader2 } from 'lucide-react'
 import { notify } from '@/components/ui/notify'
 import type { Profile, Artist } from '@/types'
+import { compressImage } from '@/lib/compress-image'
 
 const GENRES = ['Afropop', 'Gospel', 'Hip-Hop', 'Reggae', 'RnB', 'Traditional', 'Jazz', 'Dancehall', 'Amapiano']
 const PODCAST_CATEGORIES = ['Music', 'Comedy', 'News', 'Education', 'Sports', 'Culture', 'Business', 'Religion', 'Other']
@@ -68,18 +69,19 @@ export default function EditProfileModal({ profile, artist, onClose, onSaved }: 
       let avatarPath: string | undefined
 
       if (avatarFile) {
+        const preparedAvatar = await compressImage(avatarFile)
         const urlRes = await fetch('/api/profile/avatar-upload-url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename: avatarFile.name }),
+          body: JSON.stringify({ filename: preparedAvatar.name }),
         })
         const { signedUrl, path, error } = await urlRes.json()
         if (error || !signedUrl) throw new Error(error ?? 'Could not get upload URL')
 
         const uploadRes = await fetch(signedUrl, {
           method: 'PUT',
-          headers: { 'Content-Type': avatarFile.type || 'application/octet-stream' },
-          body: avatarFile,
+          headers: { 'Content-Type': preparedAvatar.type || 'application/octet-stream' },
+          body: preparedAvatar,
         })
         if (!uploadRes.ok) throw new Error('Photo upload failed')
         avatarPath = path
