@@ -72,6 +72,8 @@ export async function POST(
       release_date: releaseDate ?? null,
       is_scheduled: isScheduled,
       published: !isScheduled,
+      // Episode audio goes through B2 now too (see /api/upload/signed-url)
+      audio_storage: 'b2',
     })
     .select()
     .single()

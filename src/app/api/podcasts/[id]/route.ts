@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getAdminClient } from '@/lib/admin'
+import { deleteTrackAudioFiles } from '@/lib/storage-cleanup'
 
 export async function GET(
   req: NextRequest,
@@ -60,11 +61,10 @@ export async function DELETE(
 
   const { data: episodes } = await admin
     .from('tracks')
-    .select('id, audio_path')
+    .select('id, audio_path, audio_storage')
     .eq('podcast_id', id)
 
-  const audioPaths = (episodes ?? []).map((e: any) => e.audio_path).filter(Boolean)
-  if (audioPaths.length) await admin.storage.from('tracks').remove(audioPaths)
+  await deleteTrackAudioFiles(admin, episodes ?? [])
 
   if (podcast.cover_url) {
     try {

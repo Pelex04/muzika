@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin, logAdminAction, getAdminClient } from '@/lib/admin'
+import { deleteB2Object } from '@/lib/b2'
 
 export async function DELETE(
   req: NextRequest,
@@ -20,13 +21,19 @@ export async function DELETE(
 
   const { data: track } = await db
     .from('tracks')
-    .select('audio_path, cover_url, artist_id, title')
+    .select('audio_path, cover_url, artist_id, title, audio_storage')
     .eq('id', id)
     .single()
 
   if (!track) return NextResponse.json({ error: 'Track not found' }, { status: 404 })
 
-  if (track.audio_path) await db.storage.from('tracks').remove([track.audio_path])
+  if (track.audio_path) {
+    if (track.audio_storage === 'b2') {
+      try { await deleteB2Object(track.audio_path) } catch (err) { console.error('B2 delete error:', err) }
+    } else {
+      await db.storage.from('tracks').remove([track.audio_path])
+    }
+  }
   if (track.cover_url) {
     try {
       const match = new URL(track.cover_url).pathname.match(/\/public\/covers\/(.+)$/)

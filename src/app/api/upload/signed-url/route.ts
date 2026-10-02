@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { slugify } from '@/lib/utils'
+import { getB2UploadUrl } from '@/lib/b2'
 
-// Issues a signed upload URL so the browser can upload the audio file
-// DIRECTLY to Supabase Storage, bypassing our serverless function entirely.
-// This matters because Vercel hard-caps serverless request bodies at
-// 4.5MB regardless of any Next.js config -- any track larger than that
-// would previously fail silently (uploads "succeed" with no error, but
-// the file never actually lands in storage, so it can't play).
+// Issues a signed upload URL so the browser can upload the file DIRECTLY
+// to storage, bypassing our serverless function entirely. This matters
+// because Vercel hard-caps serverless request bodies at 4.5MB regardless
+// of any Next.js config -- any track larger than that would previously
+// fail silently (uploads "succeed" with no error, but the file never
+// actually lands in storage, so it can't play).
+//
+// Audio goes to Backblaze B2 (Supabase's free storage quota filled up);
+// covers stay on Supabase Storage since they're small and low-volume.
 export async function POST(req: NextRequest) {
   const supabase = await createClient() as any
   const { data: { user } } = await supabase.auth.getUser()
@@ -21,16 +25,26 @@ export async function POST(req: NextRequest) {
 
   if (!artist) return NextResponse.json({ error: 'Artist profile required' }, { status: 403 })
 
-  const { filename, kind } = await req.json() as { filename: string; kind: 'audio' | 'cover' }
+  const { filename, kind, contentType } = await req.json() as { filename: string; kind: 'audio' | 'cover'; contentType?: string }
 
   if (!filename || !kind) {
     return NextResponse.json({ error: 'Missing filename or kind' }, { status: 400 })
   }
 
   const ext = filename.split('.').pop()
-  const bucket = kind === 'audio' ? 'tracks' : 'covers'
   const path = `${artist.id}/${Date.now()}-${slugify(filename.replace(/\.[^.]+$/, ''))}.${ext}`
 
+  if (kind === 'audio') {
+    try {
+      const signedUrl = await getB2UploadUrl(path, contentType || 'audio/mpeg')
+      return NextResponse.json({ signedUrl, path, bucket: 'b2', provider: 'b2' })
+    } catch (err) {
+      console.error('B2 signed URL error:', err)
+      return NextResponse.json({ error: 'Could not prepare upload (storage not configured)' }, { status: 500 })
+    }
+  }
+
+  const bucket = 'covers'
   const { data, error } = await supabase.storage
     .from(bucket)
     .createSignedUploadUrl(path)
@@ -42,5 +56,6 @@ export async function POST(req: NextRequest) {
     token: data.token,
     path,
     bucket,
+    provider: 'supabase',
   })
 }

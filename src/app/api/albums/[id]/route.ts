@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { deleteTrackAudioFiles } from '@/lib/storage-cleanup'
 
 function getAdmin() {
   return createAdminClient(
@@ -48,12 +49,11 @@ export async function DELETE(
   // Step 4: fetch all tracks on this album (any status — published or scheduled)
   const { data: tracks } = await admin
     .from('tracks')
-    .select('id, audio_path, cover_url')
+    .select('id, audio_path, cover_url, audio_storage')
     .eq('album_id', id)
 
-  // Step 5: delete all track audio files from storage
-  const audioPaths = (tracks ?? []).map((t: any) => t.audio_path).filter(Boolean)
-  if (audioPaths.length) await admin.storage.from('tracks').remove(audioPaths)
+  // Step 5: delete all track audio files from storage (Supabase and/or B2)
+  await deleteTrackAudioFiles(admin, tracks ?? [])
 
   // Step 6: delete album cover from storage
   if (album.cover_url) {

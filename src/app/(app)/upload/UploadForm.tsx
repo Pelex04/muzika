@@ -229,16 +229,19 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
       ? await compressAudio(file, pct => setProgressLabel(`Compressing audio… ${pct}%`))
       : await compressImage(file)
 
+    const contentType = prepared.type || 'application/octet-stream'
     const res = await fetch('/api/upload/signed-url', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename: prepared.name, kind }),
+      body: JSON.stringify({ filename: prepared.name, kind, contentType }),
     })
     const { signedUrl, path, error } = await res.json()
     if (error || !signedUrl) throw new Error(error ?? 'Could not get upload URL')
+    // B2's presigned PUT URL is signed against this exact content-type,
+    // so it has to match what we told /api/upload/signed-url.
     const uploadRes = await fetch(signedUrl, {
       method: 'PUT',
-      headers: { 'Content-Type': prepared.type || 'application/octet-stream' },
+      headers: { 'Content-Type': contentType },
       body: prepared,
     })
     if (!uploadRes.ok) throw new Error('File upload failed')

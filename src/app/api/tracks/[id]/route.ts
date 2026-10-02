@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { deleteB2Object } from '@/lib/b2'
 
 function getAdmin() {
   return createAdminClient(
@@ -64,7 +65,7 @@ export async function DELETE(
   // Step 2: fetch the track (user client — RLS lets published tracks be read)
   const { data: track } = await supabase
     .from('tracks')
-    .select('audio_path, cover_url, artist_id')
+    .select('audio_path, cover_url, artist_id, audio_storage')
     .eq('id', id)
     .single()
 
@@ -90,7 +91,11 @@ export async function DELETE(
 
   // Step 5: delete audio from storage
   if (track.audio_path) {
-    await admin.storage.from('tracks').remove([track.audio_path])
+    if (track.audio_storage === 'b2') {
+      try { await deleteB2Object(track.audio_path) } catch (err) { console.error('B2 delete error:', err) }
+    } else {
+      await admin.storage.from('tracks').remove([track.audio_path])
+    }
   }
 
   // Step 6: delete cover from storage

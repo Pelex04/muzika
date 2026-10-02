@@ -87,6 +87,10 @@ export async function POST(req: NextRequest) {
       published: !isScheduled,
       explicit: !!explicit,
       is_downloadable: downloadable !== false,
+      // Every new upload's audio goes through B2 now (see
+      // /api/upload/signed-url) -- existing tracks default to
+      // 'supabase' via the column default and are unaffected.
+      audio_storage: 'b2',
     })
     .select()
     .single()

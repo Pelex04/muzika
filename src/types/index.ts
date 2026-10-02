@@ -55,6 +55,7 @@ export interface Track {
   published: boolean
   explicit: boolean
   is_downloadable: boolean
+  audio_storage?: 'supabase' | 'b2'
   album_id?: string | null
   track_number?: number | null
   content_type?: 'track' | 'podcast_episode'

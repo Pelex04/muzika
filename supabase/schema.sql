@@ -107,6 +107,10 @@ alter table public.tracks add column if not exists track_number integer;
 alter table public.tracks add column if not exists explicit boolean not null default false;
 alter table public.tracks add column if not exists is_downloadable boolean not null default true;
 
+-- Which storage provider holds this track's audio file (safe no-op if column already exists)
+alter table public.tracks add column if not exists audio_storage text not null default 'supabase'
+  check (audio_storage in ('supabase', 'b2'));
+
 alter table public.tracks enable row level security;
 
 drop policy if exists "Published tracks viewable by all" on tracks;
