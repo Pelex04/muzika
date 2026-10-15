@@ -226,7 +226,7 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
     // only gets re-encoded when it's lossless or unusually large (see
     // compress-audio.ts); images only when they're not already small.
     const prepared = kind === 'audio'
-      ? await compressAudio(file, pct => setProgressLabel(`Compressing audio… ${pct}%`))
+      ? await compressAudio(file, (pct, stage) => setProgressLabel(stage === 'decoding' ? 'Reading audio…' : `Compressing audio… ${pct}%`))
       : await compressImage(file)
 
     const contentType = prepared.type || 'application/octet-stream'
