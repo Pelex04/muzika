@@ -35,6 +35,14 @@ function getB2Client(): S3Client {
     // B2's S3 compatibility layer expects path-style addressing
     // (bucket in the URL path, not as a subdomain).
     forcePathStyle: true,
+    // Recent AWS SDK versions add a CRC32 checksum to every request by
+    // default. For a presigned PUT it gets computed over an EMPTY body
+    // (the SDK never sees the file the browser will upload), so the URL
+    // ends up demanding a checksum the real file can't match, and B2
+    // doesn't support these checksum params anyway. Only send checksums
+    // when an operation actually requires one.
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   })
   return client
 }
