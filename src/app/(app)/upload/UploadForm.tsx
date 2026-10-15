@@ -239,12 +239,24 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
     if (error || !signedUrl) throw new Error(error ?? 'Could not get upload URL')
     // B2's presigned PUT URL is signed against this exact content-type,
     // so it has to match what we told /api/upload/signed-url.
-    const uploadRes = await fetch(signedUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': contentType },
-      body: prepared,
-    })
-    if (!uploadRes.ok) throw new Error('File upload failed')
+    let uploadRes: Response
+    try {
+      uploadRes = await fetch(signedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': contentType },
+        body: prepared,
+      })
+    } catch {
+      // fetch() only throws (as a bare "Failed to fetch") when the browser
+      // never got a usable response -- for a direct-to-storage upload
+      // that's almost always CORS or a network drop, not a server error.
+      const host = (() => { try { return new URL(signedUrl).host } catch { return 'storage' } })()
+      throw new Error(
+        `Couldn't reach ${host} from ${window.location.origin}. ` +
+        `Usually this means the storage bucket's CORS rule doesn't allow this site, or the connection dropped.`
+      )
+    }
+    if (!uploadRes.ok) throw new Error(`Storage rejected the upload (HTTP ${uploadRes.status})`)
     return path
   }
 
