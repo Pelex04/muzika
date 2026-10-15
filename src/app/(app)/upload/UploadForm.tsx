@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useRouter } from 'next/navigation'
 import { notify } from '@/components/ui/notify'
-import { Upload, Music, Image, CheckCircle2, Loader2, Disc3, X, Plus, GripVertical, Users, Mic2, FileText, Calendar, ExternalLink } from 'lucide-react'
+import { Upload, Music, Image, CheckCircle2, Loader2, Disc3, X, Plus, GripVertical, Users, Mic2, FileText, Calendar, ExternalLink, TriangleAlert } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import MobileTopBar from '@/components/layout/MobileTopBar'
 import { useGenres } from '@/hooks/useGenres'
@@ -137,6 +137,40 @@ export default function UploadForm({ existingPodcasts = [], creatorType = 'artis
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
+
+  // While an upload is in flight: warn before the tab is closed/reloaded,
+  // and ask the browser to keep the screen on. A locked screen or a
+  // backgrounded tab pauses the page's JavaScript on phones, which stalls
+  // the compression and the upload. (Browsers release a wake lock when the
+  // tab is hidden, so it's re-requested when the user comes back.)
+  useEffect(() => {
+    if (!uploading) return
+
+    const onBeforeUnload = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
+    window.addEventListener('beforeunload', onBeforeUnload)
+
+    let lock: WakeLockSentinel | null = null
+    let cancelled = false
+    const acquire = async () => {
+      try {
+        if (!('wakeLock' in navigator)) return
+        await lock?.release().catch(() => {})
+        const next = await navigator.wakeLock.request('screen')
+        if (cancelled) next.release().catch(() => {})
+        else lock = next
+      } catch { /* denied or unsupported -- the warning banner still shows */ }
+    }
+    const onVisible = () => { if (document.visibilityState === 'visible') acquire() }
+    acquire()
+    document.addEventListener('visibilitychange', onVisible)
+
+    return () => {
+      cancelled = true
+      window.removeEventListener('beforeunload', onBeforeUnload)
+      document.removeEventListener('visibilitychange', onVisible)
+      lock?.release().catch(() => {})
+    }
+  }, [uploading])
   const [progress, setProgress] = useState(0)
   const [progressLabel, setProgressLabel] = useState('')
 
@@ -904,6 +938,12 @@ function ProgressBar({ progress, label }: { progress: number; label: string }) {
       <div className="flex justify-between text-xs text-[#b3b3b3] mb-1"><span>{label}</span><span>{progress}%</span></div>
       <div className="w-full h-2 bg-[#2a2a2a] rounded-full overflow-hidden">
         <div className="h-full bg-blue-500 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+      </div>
+      <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
+        <TriangleAlert className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+        <p className="text-xs leading-relaxed text-amber-200">
+          Keep this page open and your screen on until it finishes. Switching apps, locking your phone, or closing the tab will stop the upload.
+        </p>
       </div>
     </div>
   )
