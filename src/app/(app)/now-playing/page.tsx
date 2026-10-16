@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -317,27 +317,23 @@ export default function NowPlayingPage() {
             </button>
           </div>
 
-          <div className="w-full flex gap-1.5">
-            <button onClick={handleSave} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
-              <Bookmark className="w-[18px] h-[18px]" style={{ color: saved ? '#60a5fa' : '#b3b3b3' }} fill={saved ? '#60a5fa' : 'none'} />
-              <span className="text-xs font-semibold" style={{ color: saved ? '#60a5fa' : '#b3b3b3' }}>{saved ? 'Saved' : 'Save'}</span>
-            </button>
-            <button onClick={() => setShowPlaylistModal(true)} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
-              <ListPlus className="w-[18px] h-[18px] text-[#b3b3b3]" />
-              <span className="text-xs font-semibold text-[#b3b3b3]">Playlist</span>
-            </button>
-            <button onClick={handleShare} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
-              <Share2 className="w-[18px] h-[18px] text-[#b3b3b3]" />
-              <span className="text-xs font-semibold text-[#b3b3b3]">Share</span>
-            </button>
+          <div className="w-full flex justify-around">
+            <ActionButton label={saved ? 'Saved' : 'Save'} onClick={handleSave} active={saved}>
+              <Bookmark className="w-5 h-5" style={{ color: saved ? '#60a5fa' : '#ffffff' }} fill={saved ? '#60a5fa' : 'none'} />
+            </ActionButton>
+            <ActionButton label="Playlist" onClick={() => setShowPlaylistModal(true)}>
+              <ListPlus className="w-5 h-5 text-white" />
+            </ActionButton>
+            <ActionButton label="Share" onClick={handleShare}>
+              <Share2 className="w-5 h-5 text-white" />
+            </ActionButton>
             {currentTrack.is_downloadable !== false && (
-              <button onClick={handleDownload} disabled={downloading} className="flex-1 flex flex-col items-center gap-1.5 py-3.5 rounded-xl hover:bg-[#181818] transition-colors">
+              <ActionButton label={downloading ? 'Saving…' : 'Download'} onClick={handleDownload} disabled={downloading}>
                 {downloading
-                  ? <Loader2 className="w-[18px] h-[18px] text-white" style={{ animation: 'spin 1s linear infinite' }} />
-                  : <Download className="w-[18px] h-[18px] text-white" />
+                  ? <Loader2 className="w-5 h-5 text-white" style={{ animation: 'spin 1s linear infinite' }} />
+                  : <Download className="w-5 h-5 text-white" />
                 }
-                <span className="text-xs font-bold text-white">{downloading ? 'Saving…' : 'Download'}</span>
-              </button>
+              </ActionButton>
             )}
           </div>
         </div>
@@ -600,6 +596,32 @@ export default function NowPlayingPage() {
         <AddToPlaylistModal trackId={currentTrack.id} onClose={() => setShowPlaylistModal(false)} />
       )}
     </div>
+  )
+}
+
+// Round icon-only action button (Save / Playlist / Share / Download).
+// No visible text -- `label` is kept for screen readers and the hover
+// tooltip. Module-level so it isn't re-created on every render.
+function ActionButton({ label, onClick, disabled, active, children }: {
+  label: string
+  onClick: () => void
+  disabled?: boolean
+  active?: boolean
+  children: ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      title={label}
+      className={cn(
+        'w-[52px] h-[52px] rounded-full grid place-items-center transition-colors disabled:opacity-60',
+        active ? 'bg-blue-500/20' : 'bg-[#1f1f1f] hover:bg-[#2a2a2a] active:bg-[#333]'
+      )}
+    >
+      {children}
+    </button>
   )
 }
 
