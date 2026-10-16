@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut, BookOpen, Search, Disc3 } from 'lucide-react'
+import { Home, Music, BarChart2, Users, Newspaper, Upload, Play, Music2, LogOut, BookOpen, Search, Disc3, ShieldCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import NotificationBell from './NotificationBell'
 import { useLogo } from '@/lib/logo-context'
@@ -97,6 +97,25 @@ export default function Sidebar({ profile }: { profile: Profile | null }) {
             </Link>
           ) : (
             navItem('/become-artist', 'Become an Artist', Upload)
+          )}
+
+          {profile?.role === 'admin' && (
+            <>
+              <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.1px', color: 'rgba(255,255,255,0.28)', padding: '20px 12px 7px', textTransform: 'uppercase' }}>Admin</p>
+              <Link
+                href="/admin"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '11px',
+                  padding: '9px 12px', borderRadius: '8px', marginBottom: '1px',
+                  fontSize: '13.5px', fontWeight: 600, textDecoration: 'none',
+                  background: 'rgba(99,102,241,0.14)',
+                  color: '#a5b4fc', transition: 'all .15s',
+                }}
+              >
+                <ShieldCheck size={16} style={{ flexShrink: 0 }} />
+                Switch to Admin
+              </Link>
+            </>
           )}
         </nav>
 

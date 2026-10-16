@@ -7,6 +7,7 @@ import InstallPWABanner from '@/components/pwa/InstallPWABanner'
 import ScrollRestoration from '@/components/layout/ScrollRestoration'
 import { ProfileProvider } from '@/lib/profile-context'
 import StudioSwitcher from '@/components/layout/StudioSwitcher'
+import AdminSwitcher from '@/components/layout/AdminSwitcher'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient() as any
@@ -26,6 +27,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .single()
 
   const isArtist = !!(artist?.id)
+  const isAdmin = profile?.role === 'admin'
   const avatarUrl = profile?.avatar_url ?? artist?.avatar_url ?? null
   const avatarInitial = profile?.full_name?.charAt(0)?.toUpperCase() ?? '?'
 
@@ -54,6 +56,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <InstallPWABanner />
         <BottomTabs />
         {isArtist && <StudioSwitcher />}
+        {isAdmin && <AdminSwitcher stacked={isArtist} />}
       </div>
     </ProfileProvider>
   )
