@@ -234,14 +234,6 @@ export async function proxy(request: NextRequest) {
       return redirectTo(url)
     }
 
-    // Non-admin users hitting signin after login → discover
-    // Admin users hitting /discover after login → /admin
-    if (pathname === '/discover' && profile?.role === 'admin') {
-      const url = request.nextUrl.clone()
-      url.pathname = '/admin'
-      return redirectTo(url)
-    }
-
     return supabaseResponse
   } catch {
     const url = request.nextUrl.clone()
